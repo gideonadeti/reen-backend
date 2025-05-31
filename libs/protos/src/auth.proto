@@ -1,0 +1,32 @@
+syntax = "proto3";
+package auth;
+import "google/protobuf/timestamp.proto";
+
+service AuthService {
+  rpc SignUp(SignUpRequest) returns (SignUpResponse) {}
+}
+
+message SignUpRequest {
+  string name = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message SignUpResponse {
+  string accessToken = 1;
+  User user = 2;
+}
+
+message User {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  google.protobuf.Timestamp createdAt = 4;
+  google.protobuf.Timestamp updatedAt = 5;
+  UserRole role = 6;
+}
+
+enum UserRole {
+  NADMIN = 0; // Non-Admin
+  ADMIN = 1;
+}
