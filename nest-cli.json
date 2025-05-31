@@ -27,6 +27,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/auth/tsconfig.app.json"
       }
+    },
+    "protos": {
+      "type": "library",
+      "root": "libs/protos",
+      "entryFile": "index",
+      "sourceRoot": "libs/protos/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/protos/tsconfig.lib.json"
+      }
     }
   }
 }

@@ -17,6 +17,13 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {}
+    "paths": {
+      "@app/protos": [
+        "libs/protos/src"
+      ],
+      "@app/protos/*": [
+        "libs/protos/src/*"
+      ]
+    }
   }
 }
