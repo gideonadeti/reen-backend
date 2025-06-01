@@ -2,14 +2,13 @@ syntax = "proto3";
 package auth;
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/empty.proto";
 
 service AuthService {
   rpc SignUp(SignUpRequest) returns (SignUpInResponse) {}
   rpc ValidateUser(ValidateUserRequest) returns (User) {}
   rpc SignIn(User) returns (SignUpInResponse) {}
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
-  rpc SignOut(SignOutRequest) returns (google.protobuf.Empty) {}
+  rpc SignOut(SignOutRequest) returns (SignOutResponse) {}
 }
 
 message SignUpRequest {
@@ -51,3 +50,11 @@ message RefreshTokenRequest {
 message RefreshTokenResponse { string accessToken = 1; }
 
 message SignOutRequest { string userId = 1; }
+
+message SignOutResponse {
+  string id = 1;
+  string userId = 2;
+  string value = 3;
+  google.protobuf.Timestamp createdAt = 4;
+  google.protobuf.Timestamp updatedAt = 5;
+}
