@@ -24,7 +24,7 @@ export interface SignUpRequest {
   password: string;
 }
 
-export interface SignUpResponse {
+export interface SignUpInResponse {
   refreshToken: string;
   accessToken: string;
   user: User | undefined;
@@ -65,21 +65,21 @@ wrappers[".google.protobuf.Timestamp"] = {
 } as any;
 
 export interface AuthServiceClient {
-  signUp(request: SignUpRequest): Observable<SignUpResponse>;
+  signUp(request: SignUpRequest): Observable<SignUpInResponse>;
 
   validateUser(request: ValidateUserRequest): Observable<User>;
 
-  signIn(request: User): Observable<SignUpResponse>;
+  signIn(request: User): Observable<SignUpInResponse>;
 
   refreshToken(request: RefreshTokenRequest): Observable<RefreshTokenResponse>;
 }
 
 export interface AuthServiceController {
-  signUp(request: SignUpRequest): Promise<SignUpResponse> | Observable<SignUpResponse> | SignUpResponse;
+  signUp(request: SignUpRequest): Promise<SignUpInResponse> | Observable<SignUpInResponse> | SignUpInResponse;
 
   validateUser(request: ValidateUserRequest): Promise<User> | Observable<User> | User;
 
-  signIn(request: User): Promise<SignUpResponse> | Observable<SignUpResponse> | SignUpResponse;
+  signIn(request: User): Promise<SignUpInResponse> | Observable<SignUpInResponse> | SignUpInResponse;
 
   refreshToken(
     request: RefreshTokenRequest,
