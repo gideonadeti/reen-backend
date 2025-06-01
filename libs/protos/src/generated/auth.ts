@@ -25,6 +25,7 @@ export interface SignUpRequest {
 }
 
 export interface SignUpResponse {
+  refreshToken: string;
   accessToken: string;
   user: User | undefined;
 }
