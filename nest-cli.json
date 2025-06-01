@@ -36,6 +36,15 @@
         "tsConfigPath": "apps/auth/tsconfig.app.json"
       }
     },
+    "interceptors": {
+      "type": "library",
+      "root": "libs/interceptors",
+      "entryFile": "index",
+      "sourceRoot": "libs/interceptors/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/interceptors/tsconfig.lib.json"
+      }
+    },
     "interfaces": {
       "type": "library",
       "root": "libs/interfaces",
@@ -52,7 +61,9 @@
       "sourceRoot": "libs/protos/src",
       "compilerOptions": {
         "tsConfigPath": "libs/protos/tsconfig.lib.json",
-        "assets": ["**/*.proto"],
+        "assets": [
+          "**/*.proto"
+        ],
         "watchAssets": true
       }
     }

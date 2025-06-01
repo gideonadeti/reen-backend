@@ -90,6 +90,7 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
+      "^@app/interceptors(|/.*)$": "<rootDir>/libs/interceptors/src/$1",
       "^@app/interfaces(|/.*)$": "<rootDir>/libs/interfaces/src/$1",
       "^@app/protos(|/.*)$": "<rootDir>/libs/protos/src/$1"
     }

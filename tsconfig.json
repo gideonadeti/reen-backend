@@ -18,6 +18,12 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
+      "@app/interceptors": [
+        "libs/interceptors/src"
+      ],
+      "@app/interceptors/*": [
+        "libs/interceptors/src/*"
+      ],
       "@app/interfaces": [
         "libs/interfaces/src"
       ],
