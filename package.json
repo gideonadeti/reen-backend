@@ -18,7 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/reen-backend/test/jest-e2e.json",
-    "gen:protos": "ts-node gen-protos.ts"
+    "gen:protos": "ts-node gen-protos.ts",
+    "start:dev:all": "concurrently -n api-gateway,auth -c cyan,blue \"npm run start:dev\" \"npm run start:dev auth\""
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.13.4",
@@ -50,6 +51,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
+    "concurrently": "^9.1.2",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
