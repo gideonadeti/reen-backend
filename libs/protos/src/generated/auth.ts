@@ -8,6 +8,7 @@
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { wrappers } from "protobufjs";
 import { Observable } from "rxjs";
+import { Empty } from "./google/protobuf/empty";
 
 export const protobufPackage = "auth";
 
@@ -53,6 +54,10 @@ export interface RefreshTokenResponse {
   accessToken: string;
 }
 
+export interface SignOutRequest {
+  userId: string;
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -72,6 +77,8 @@ export interface AuthServiceClient {
   signIn(request: User): Observable<SignUpInResponse>;
 
   refreshToken(request: RefreshTokenRequest): Observable<RefreshTokenResponse>;
+
+  signOut(request: SignOutRequest): Observable<Empty>;
 }
 
 export interface AuthServiceController {
@@ -84,11 +91,13 @@ export interface AuthServiceController {
   refreshToken(
     request: RefreshTokenRequest,
   ): Promise<RefreshTokenResponse> | Observable<RefreshTokenResponse> | RefreshTokenResponse;
+
+  signOut(request: SignOutRequest): void;
 }
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["signUp", "validateUser", "signIn", "refreshToken"];
+    const grpcMethods: string[] = ["signUp", "validateUser", "signIn", "refreshToken", "signOut"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);
