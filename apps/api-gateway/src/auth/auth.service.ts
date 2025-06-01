@@ -1,4 +1,4 @@
-import { CookieOptions, Response } from 'express';
+import { CookieOptions, Request, Response } from 'express';
 import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import {
@@ -93,6 +93,25 @@ export class AuthService implements OnModuleInit {
       });
     } catch (error) {
       this.handleError(error as GrpcError, 'sign in');
+    }
+  }
+
+  async refreshToken(req: Request, res: Response) {
+    const user = req.user as User;
+    const refreshTokenFromCookie = (req.cookies as { refreshToken: string })
+      .refreshToken;
+
+    try {
+      const response = await firstValueFrom(
+        this.authService.refreshToken({
+          user,
+          refreshToken: refreshTokenFromCookie,
+        }),
+      );
+
+      res.json(response);
+    } catch (error) {
+      this.handleError(error as GrpcError, 'refresh');
     }
   }
 }

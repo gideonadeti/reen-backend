@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { AUTH_PACKAGE_NAME } from '@app/protos';
 import { LocalStrategy } from './strategies/local.strategy';
+import { RefreshJwtStrategy } from './strategies/refresh-jwt.strategy';
 
 @Module({
   imports: [
@@ -21,6 +22,6 @@ import { LocalStrategy } from './strategies/local.strategy';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy],
+  providers: [AuthService, LocalStrategy, RefreshJwtStrategy],
 })
 export class AuthModule {}
