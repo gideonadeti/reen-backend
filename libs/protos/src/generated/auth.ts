@@ -39,6 +39,11 @@ export interface User {
   role: UserRole;
 }
 
+export interface ValidateUserRequest {
+  email: string;
+  pass: string;
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -52,15 +57,23 @@ wrappers[".google.protobuf.Timestamp"] = {
 
 export interface AuthServiceClient {
   signUp(request: SignUpRequest): Observable<SignUpResponse>;
+
+  validateUser(request: ValidateUserRequest): Observable<User>;
+
+  signIn(request: User): Observable<SignUpResponse>;
 }
 
 export interface AuthServiceController {
   signUp(request: SignUpRequest): Promise<SignUpResponse> | Observable<SignUpResponse> | SignUpResponse;
+
+  validateUser(request: ValidateUserRequest): Promise<User> | Observable<User> | User;
+
+  signIn(request: User): Promise<SignUpResponse> | Observable<SignUpResponse> | SignUpResponse;
 }
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["signUp"];
+    const grpcMethods: string[] = ["signUp", "validateUser", "signIn"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);

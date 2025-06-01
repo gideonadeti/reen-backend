@@ -72,4 +72,21 @@ export class AuthService implements OnModuleInit {
       this.handleError(error as GrpcError, 'sign up');
     }
   }
+
+  async validateUser(email: string, pass: string) {
+    return await firstValueFrom(this.authService.validateUser({ email, pass }));
+  }
+
+  async signIn(user: User, res: Response) {
+    try {
+      const response = await firstValueFrom(this.authService.signIn(user));
+
+      const { refreshToken, accessToken } = response;
+
+      res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
+      res.json({ accessToken, user });
+    } catch (error) {
+      this.handleError(error as GrpcError, 'sign in');
+    }
+  }
 }
