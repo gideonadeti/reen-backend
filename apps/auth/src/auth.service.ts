@@ -67,10 +67,10 @@ export class AuthService {
     });
   }
 
-  private handleError(error: any, action: string) {
-    this.logger.error(`Failed to ${action}`, (error as Error).stack);
+  private handleError(error: Error, action: string) {
+    this.logger.error(`Failed to ${action}`, error.stack);
 
-    throw new RpcException(error as Error);
+    throw new RpcException(error);
   }
 
   async signUp(signUpRequest: SignUpRequest) {
@@ -91,7 +91,7 @@ export class AuthService {
         role: UserRole[rest.role],
       });
     } catch (error) {
-      this.handleError(error, 'sign up');
+      this.handleError(error as Error, 'sign up');
     }
   }
 }
