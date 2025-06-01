@@ -6,8 +6,13 @@ import { JwtService } from '@nestjs/jwt';
 import { RpcException } from '@nestjs/microservices';
 
 import { PrismaService } from './prisma/prisma.service';
-import { SignUpRequest, User, UserRole } from '@app/protos';
 import { AuthPayload } from '@app/interfaces';
+import {
+  SignUpRequest,
+  User,
+  UserRole,
+  ValidateUserRequest,
+} from '@app/protos';
 
 @Injectable()
 export class AuthService {
@@ -92,6 +97,36 @@ export class AuthService {
       });
     } catch (error) {
       this.handleError(error as Error, 'sign up');
+    }
+  }
+
+  async validateUser({ email, pass }: ValidateUserRequest) {
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: { email },
+      });
+
+      if (!user) return null;
+      if (!user.password) return null;
+
+      const isCorrectPassword = await bcrypt.compare(pass, user.password);
+
+      if (!isCorrectPassword) return null;
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...rest } = user;
+
+      return rest;
+    } catch (error) {
+      this.handleError(error as Error, 'validate user');
+    }
+  }
+
+  async signIn(user: User) {
+    try {
+      return await this.handleSuccessfulAuth(user);
+    } catch (error) {
+      this.handleError(error as Error, 'sign in');
     }
   }
 }

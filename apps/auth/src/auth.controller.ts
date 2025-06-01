@@ -2,7 +2,12 @@ import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 
 import { AuthService } from './auth.service';
-import { AUTH_SERVICE_NAME, SignUpRequest } from '@app/protos';
+import {
+  AUTH_SERVICE_NAME,
+  SignUpRequest,
+  User,
+  ValidateUserRequest,
+} from '@app/protos';
 
 @Controller()
 export class AuthController {
@@ -11,5 +16,15 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   signUp(data: SignUpRequest) {
     return this.authService.signUp(data);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  validateUser(data: ValidateUserRequest) {
+    return this.authService.validateUser(data);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  signIn(data: User) {
+    return this.authService.signIn(data);
   }
 }
