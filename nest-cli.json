@@ -28,6 +28,15 @@
         "tsConfigPath": "apps/auth/tsconfig.app.json"
       }
     },
+    "interfaces": {
+      "type": "library",
+      "root": "libs/interfaces",
+      "entryFile": "index",
+      "sourceRoot": "libs/interfaces/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/interfaces/tsconfig.lib.json"
+      }
+    },
     "protos": {
       "type": "library",
       "root": "libs/protos",
@@ -35,7 +44,9 @@
       "sourceRoot": "libs/protos/src",
       "compilerOptions": {
         "tsConfigPath": "libs/protos/tsconfig.lib.json",
-        "assets": ["**/*.proto"],
+        "assets": [
+          "**/*.proto"
+        ],
         "watchAssets": true
       }
     }

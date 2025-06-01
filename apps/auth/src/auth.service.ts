@@ -1,13 +1,97 @@
-import { SignUpRequest } from '@app/protos';
+import * as bcrypt from 'bcryptjs';
 import { Injectable, Logger } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { RpcException } from '@nestjs/microservices';
+
+import { PrismaService } from './prisma/prisma.service';
+import { SignUpRequest, User, UserRole } from '@app/protos';
+import { AuthPayload } from '@app/interfaces';
 
 @Injectable()
 export class AuthService {
+  constructor(
+    private prismaService: PrismaService,
+    private configService: ConfigService,
+    private jwtService: JwtService,
+  ) {}
+
   private logger = new Logger(AuthService.name);
 
-  signUp(signUpRequest: SignUpRequest) {
-    this.logger.log(`signUpRequest: ${JSON.stringify(signUpRequest)}`);
+  private async hashPassword(password: string) {
+    const salt = await bcrypt.genSalt(10);
 
-    return { message: 'success' };
+    return bcrypt.hash(password, salt);
+  }
+
+  private async handleSuccessfulAuth(user: User) {
+    const payload = this.createAuthPayload(user) as AuthPayload;
+    const accessToken = this.createJwtToken('access', payload);
+    const refreshToken = this.createJwtToken('refresh', payload);
+    const hashedRefreshToken = await this.hashPassword(refreshToken);
+    const userId = user.id;
+    const existingRefreshToken =
+      await this.prismaService.refreshToken.findUnique({
+        where: { userId },
+      });
+
+    if (existingRefreshToken) {
+      await this.prismaService.refreshToken.update({
+        where: { userId },
+        data: { value: hashedRefreshToken },
+      });
+    } else {
+      await this.prismaService.refreshToken.create({
+        data: { userId, value: hashedRefreshToken },
+      });
+    }
+
+    return {
+      refreshToken,
+      accessToken,
+      user,
+    };
+  }
+
+  private createAuthPayload(user: User) {
+    return { email: user.email, sub: user.id, role: user.role, jti: uuidv4() };
+  }
+
+  private createJwtToken(type: 'access' | 'refresh', payload: AuthPayload) {
+    return this.jwtService.sign(payload, {
+      ...(type === 'refresh' && {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        expiresIn: '7d',
+      }),
+    });
+  }
+
+  private handleError(error: any, action: string) {
+    this.logger.error(`Failed to ${action}`, (error as Error).stack);
+
+    throw new RpcException(error as Error);
+  }
+
+  async signUp(signUpRequest: SignUpRequest) {
+    try {
+      const hashedPassword = await this.hashPassword(signUpRequest.password);
+      const user = await this.prismaService.user.create({
+        data: {
+          ...signUpRequest,
+          password: hashedPassword,
+        },
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...rest } = user;
+
+      return await this.handleSuccessfulAuth({
+        ...rest,
+        role: UserRole[rest.role],
+      });
+    } catch (error) {
+      this.handleError(error, 'sign up');
+    }
   }
 }

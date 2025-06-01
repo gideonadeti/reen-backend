@@ -18,6 +18,12 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
+      "@app/interfaces": [
+        "libs/interfaces/src"
+      ],
+      "@app/interfaces/*": [
+        "libs/interfaces/src/*"
+      ],
       "@app/protos": [
         "libs/protos/src"
       ],
