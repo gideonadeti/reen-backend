@@ -1,26 +1,73 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { Response } from 'express';
+import { CookieOptions, Response } from 'express';
 import { ClientGrpc } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  OnModuleInit,
+} from '@nestjs/common';
 
 import { SignUpDto } from './dtos/sign-up.dto';
+import { MicroserviceError } from '@app/interfaces';
 import {
   AUTH_PACKAGE_NAME,
   AUTH_SERVICE_NAME,
   AuthServiceClient,
+  User,
+  UserRole,
 } from '@app/protos';
+
+const REFRESH_COOKIE_OPTIONS: CookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict' as const,
+  path: '/auth/refresh-token',
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
 
 @Injectable()
 export class AuthService implements OnModuleInit {
   constructor(@Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc) {}
 
   private authService: AuthServiceClient;
+  private logger = new Logger(AuthService.name);
 
   onModuleInit() {
     this.authService =
       this.authClient.getService<AuthServiceClient>(AUTH_SERVICE_NAME);
   }
 
-  signUp(signUpDto: SignUpDto, res: Response) {
-    res.json(signUpDto);
+  private handleError(error: MicroserviceError, action: string) {
+    this.logger.error(`Failed to ${action}`, error);
+
+    if (
+      error.name === 'PrismaClientKnownRequestError' &&
+      error.code === 'P2002'
+    ) {
+      throw new ConflictException('Email is already in use');
+    }
+
+    throw new InternalServerErrorException(`Failed to ${action}`);
+  }
+
+  async signUp(signUpDto: SignUpDto, res: Response) {
+    try {
+      const response = await firstValueFrom(this.authService.signUp(signUpDto));
+      const { refreshToken, accessToken, user } = response;
+
+      res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
+      res.status(201).json({
+        accessToken,
+        user: {
+          ...user,
+          role: UserRole[(user as User).role],
+        },
+      });
+    } catch (error) {
+      this.handleError(error as MicroserviceError, 'sign up');
+    }
   }
 }
