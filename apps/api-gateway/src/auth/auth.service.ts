@@ -112,4 +112,15 @@ export class AuthService implements OnModuleInit {
       this.handleError(error as GrpcError, 'refresh token');
     }
   }
+
+  async signOut(userId: string, res: Response) {
+    try {
+      await firstValueFrom(this.authService.signOut({ userId }));
+
+      res.clearCookie('refreshToken', REFRESH_COOKIE_OPTIONS);
+      res.sendStatus(200);
+    } catch (error) {
+      this.handleError(error as GrpcError, 'sign out');
+    }
+  }
 }

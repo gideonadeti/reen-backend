@@ -7,6 +7,7 @@ import { AuthController } from './auth.controller';
 import { AUTH_PACKAGE_NAME } from '@app/protos';
 import { LocalStrategy } from './strategies/local.strategy';
 import { RefreshJwtStrategy } from './strategies/refresh-jwt.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -22,6 +23,6 @@ import { RefreshJwtStrategy } from './strategies/refresh-jwt.strategy';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, RefreshJwtStrategy],
+  providers: [AuthService, LocalStrategy, RefreshJwtStrategy, JwtStrategy],
 })
 export class AuthModule {}

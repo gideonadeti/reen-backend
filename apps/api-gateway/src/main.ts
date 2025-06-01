@@ -28,6 +28,7 @@ const bootstrap = async () => {
     .setTitle('API Gateway')
     .setDescription('API Gateway for REEN backend')
     .setVersion('1.0.0')
+    .addBearerAuth()
     .build();
   const options: SwaggerDocumentOptions = {
     operationIdFactory: (_controllerKey: string, methodKey: string) =>
