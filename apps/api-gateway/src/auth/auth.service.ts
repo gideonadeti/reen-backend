@@ -84,7 +84,13 @@ export class AuthService implements OnModuleInit {
       const { refreshToken, accessToken } = response;
 
       res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
-      res.json({ accessToken, user });
+      res.json({
+        accessToken,
+        user: {
+          ...user,
+          role: UserRole[user.role],
+        },
+      });
     } catch (error) {
       this.handleError(error as GrpcError, 'sign in');
     }
