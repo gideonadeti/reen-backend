@@ -20,7 +20,7 @@
     "test:e2e": "jest --config ./apps/reen-backend/test/jest-e2e.json",
     "gen:protos": "ts-node gen-protos.ts",
     "start:dev:all": "concurrently -n api-gateway,auth -c cyan,blue \"npm run start:dev\" \"npm run start:dev auth\"",
-    "build:libs": "concurrently -n protos,interfaces,interceptors,middlewares -c cyan,blue,magenta,yellow \"nest build protos\" \"nest build interfaces\" \"nest build interceptors\" \"nest build middlewares\""
+    "build:libs": "concurrently -n protos,interfaces,interceptors -c cyan,blue,magenta \"nest build protos\" \"nest build interfaces\" \"nest build interceptors\""
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.13.4",

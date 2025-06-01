@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { AuthModule } from './auth/auth.module';
-import { ApiGatewayLoggingMiddleware } from '@app/middlewares';
+import { LoggingMiddleware } from './logging/logging.middleware';
 
 @Module({
   imports: [
@@ -17,6 +17,6 @@ import { ApiGatewayLoggingMiddleware } from '@app/middlewares';
 })
 export class ApiGatewayModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ApiGatewayLoggingMiddleware).forRoutes('*');
+    consumer.apply(LoggingMiddleware).forRoutes('*');
   }
 }
