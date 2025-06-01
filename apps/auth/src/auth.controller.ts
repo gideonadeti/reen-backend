@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import {
   AUTH_SERVICE_NAME,
   RefreshTokenRequest,
+  SignOutRequest,
   SignUpRequest,
   User,
   ValidateUserRequest,
@@ -32,5 +33,10 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   refreshToken(data: RefreshTokenRequest) {
     return this.authService.refreshToken(data);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  signOut(data: SignOutRequest) {
+    return this.authService.signOut(data);
   }
 }

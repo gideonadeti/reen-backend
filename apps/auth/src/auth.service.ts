@@ -9,6 +9,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { AuthPayload } from '@app/interfaces';
 import {
   RefreshTokenRequest,
+  SignOutRequest,
   SignUpRequest,
   User,
   UserRole,
@@ -157,6 +158,16 @@ export class AuthService {
       return { accessToken };
     } catch (error) {
       this.handleError(error as Error, 'refresh token');
+    }
+  }
+
+  async signOut({ userId }: SignOutRequest) {
+    try {
+      return await this.prismaService.refreshToken.delete({
+        where: { userId },
+      });
+    } catch (error) {
+      this.handleError(error as Error, 'sign out');
     }
   }
 }
