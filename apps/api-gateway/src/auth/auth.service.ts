@@ -111,7 +111,7 @@ export class AuthService implements OnModuleInit {
 
       res.json(response);
     } catch (error) {
-      this.handleError(error as GrpcError, 'refresh');
+      this.handleError(error as GrpcError, 'refresh token');
     }
   }
 }
