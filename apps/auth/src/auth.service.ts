@@ -70,7 +70,7 @@ export class AuthService {
   private handleError(error: Error, action: string) {
     this.logger.error(`Failed to ${action}`, error.stack);
 
-    throw new RpcException(error);
+    throw new RpcException(JSON.stringify(error));
   }
 
   async signUp(signUpRequest: SignUpRequest) {
