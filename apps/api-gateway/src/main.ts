@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import {
   DocumentBuilder,
   SwaggerDocumentOptions,
@@ -9,6 +10,18 @@ import { ApiGatewayModule } from './api-gateway.module';
 
 const bootstrap = async () => {
   const app = await NestFactory.create(ApiGatewayModule);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
+
   const config = new DocumentBuilder()
     .setTitle('API Gateway')
     .setDescription('API Gateway for REEN backend')
