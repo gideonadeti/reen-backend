@@ -5,7 +5,15 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/api-gateway/tsconfig.app.json"
+    "tsConfigPath": "apps/api-gateway/tsconfig.app.json",
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "introspectComments": true
+        }
+      }
+    ]
   },
   "monorepo": true,
   "root": "apps/api-gateway",
@@ -44,9 +52,7 @@
       "sourceRoot": "libs/protos/src",
       "compilerOptions": {
         "tsConfigPath": "libs/protos/tsconfig.lib.json",
-        "assets": [
-          "**/*.proto"
-        ],
+        "assets": ["**/*.proto"],
         "watchAssets": true
       }
     }
