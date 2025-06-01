@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 
 import { SignUpDto } from './dtos/sign-up.dto';
-import { MicroserviceError } from '@app/interfaces';
 import {
   AUTH_PACKAGE_NAME,
   AUTH_SERVICE_NAME,
@@ -19,6 +18,7 @@ import {
   User,
   UserRole,
 } from '@app/protos';
+import { GrpcError, MicroserviceError } from '@app/interfaces';
 
 const REFRESH_COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
@@ -40,14 +40,16 @@ export class AuthService implements OnModuleInit {
       this.authClient.getService<AuthServiceClient>(AUTH_SERVICE_NAME);
   }
 
-  private handleError(error: MicroserviceError, action: string) {
-    this.logger.error(`Failed to ${action}`, error);
+  private handleError(error: GrpcError, action: string) {
+    this.logger.error(`Failed to ${action}`, error.stack);
+
+    const microserviceError = JSON.parse(error.details) as MicroserviceError;
 
     if (
-      error.name === 'PrismaClientKnownRequestError' &&
-      error.code === 'P2002'
+      microserviceError.name === 'PrismaClientKnownRequestError' &&
+      microserviceError.code === 'P2002'
     ) {
-      throw new ConflictException('Email is already in use');
+      throw new ConflictException('Email already exists');
     }
 
     throw new InternalServerErrorException(`Failed to ${action}`);
@@ -67,7 +69,7 @@ export class AuthService implements OnModuleInit {
         },
       });
     } catch (error) {
-      this.handleError(error as MicroserviceError, 'sign up');
+      this.handleError(error as GrpcError, 'sign up');
     }
   }
 }
