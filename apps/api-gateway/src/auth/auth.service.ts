@@ -96,20 +96,18 @@ export class AuthService implements OnModuleInit {
     }
   }
 
-  async refreshToken(req: Request, res: Response) {
+  async refreshToken(req: Request) {
     const user = req.user as User;
     const refreshTokenFromCookie = (req.cookies as { refreshToken: string })
       .refreshToken;
 
     try {
-      const response = await firstValueFrom(
+      return await firstValueFrom(
         this.authService.refreshToken({
           user,
           refreshToken: refreshTokenFromCookie,
         }),
       );
-
-      res.json(response);
     } catch (error) {
       this.handleError(error as GrpcError, 'refresh token');
     }
