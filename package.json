@@ -19,7 +19,11 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/reen-backend/test/jest-e2e.json",
     "gen:protos": "ts-node gen-protos.ts",
-    "start:dev:all": "concurrently -n api-gateway,auth -c cyan,blue \"npm run start:dev\" \"npm run start:dev auth\""
+    "start:dev:all": "concurrently -n api-gateway,auth -c cyan,blue \"npm run start:dev\" \"npm run start:dev auth\"",
+    "watch:protos": "tsc -p libs/protos/tsconfig.lib.json --watch",
+    "watch:interfaces": "tsc -p libs/interfaces/tsconfig.lib.json --watch",
+    "watch:interceptors": "tsc -p libs/interceptors/tsconfig.lib.json --watch",
+    "watch:libs": "concurrently -n protos,interfaces,interceptors -c cyan,blue,magenta \"npm run watch:protos\" \"npm run watch:interfaces\" \"npm run watch:interceptors\""
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.13.4",
