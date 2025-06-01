@@ -44,6 +44,15 @@ export interface ValidateUserRequest {
   pass: string;
 }
 
+export interface RefreshTokenRequest {
+  user: User | undefined;
+  refreshToken: string;
+}
+
+export interface RefreshTokenResponse {
+  accessToken: string;
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -61,6 +70,8 @@ export interface AuthServiceClient {
   validateUser(request: ValidateUserRequest): Observable<User>;
 
   signIn(request: User): Observable<SignUpResponse>;
+
+  refreshToken(request: RefreshTokenRequest): Observable<RefreshTokenResponse>;
 }
 
 export interface AuthServiceController {
@@ -69,11 +80,15 @@ export interface AuthServiceController {
   validateUser(request: ValidateUserRequest): Promise<User> | Observable<User> | User;
 
   signIn(request: User): Promise<SignUpResponse> | Observable<SignUpResponse> | SignUpResponse;
+
+  refreshToken(
+    request: RefreshTokenRequest,
+  ): Promise<RefreshTokenResponse> | Observable<RefreshTokenResponse> | RefreshTokenResponse;
 }
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["signUp", "validateUser", "signIn"];
+    const grpcMethods: string[] = ["signUp", "validateUser", "signIn", "refreshToken"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);

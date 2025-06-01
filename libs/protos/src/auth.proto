@@ -6,6 +6,7 @@ service AuthService {
   rpc SignUp(SignUpRequest) returns (SignUpResponse) {}
   rpc ValidateUser(ValidateUserRequest) returns (User) {}
   rpc SignIn(User) returns (SignUpResponse) {}
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
 }
 
 message SignUpRequest {
@@ -38,3 +39,10 @@ message ValidateUserRequest {
   string email = 1;
   string pass = 2;
 }
+
+message RefreshTokenRequest {
+  User user = 1;
+  string refreshToken = 2;
+}
+
+message RefreshTokenResponse { string accessToken = 1; }
