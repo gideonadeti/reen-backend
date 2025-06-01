@@ -30,6 +30,12 @@
       "@app/interfaces/*": [
         "libs/interfaces/src/*"
       ],
+      "@app/middlewares": [
+        "libs/middlewares/src"
+      ],
+      "@app/middlewares/*": [
+        "libs/middlewares/src/*"
+      ],
       "@app/protos": [
         "libs/protos/src"
       ],

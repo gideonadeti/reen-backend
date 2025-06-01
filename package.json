@@ -23,7 +23,8 @@
     "watch:protos": "tsc -p libs/protos/tsconfig.lib.json --watch",
     "watch:interfaces": "tsc -p libs/interfaces/tsconfig.lib.json --watch",
     "watch:interceptors": "tsc -p libs/interceptors/tsconfig.lib.json --watch",
-    "watch:libs": "concurrently -n protos,interfaces,interceptors -c cyan,blue,magenta \"npm run watch:protos\" \"npm run watch:interfaces\" \"npm run watch:interceptors\""
+    "watch:middlewares": "tsc -p libs/middlewares/tsconfig.lib.json --watch",
+    "watch:libs": "concurrently -n protos,interfaces,interceptors,middlewares -c cyan,blue,magenta,yellow \"npm run watch:protos\" \"npm run watch:interfaces\" \"npm run watch:interceptors\" \"npm run watch:middlewares\""
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.13.4",
@@ -96,6 +97,7 @@
     "moduleNameMapper": {
       "^@app/interceptors(|/.*)$": "<rootDir>/libs/interceptors/src/$1",
       "^@app/interfaces(|/.*)$": "<rootDir>/libs/interfaces/src/$1",
+      "^@app/middlewares(|/.*)$": "<rootDir>/libs/middlewares/src/$1",
       "^@app/protos(|/.*)$": "<rootDir>/libs/protos/src/$1"
     }
   }
