@@ -20,4 +20,4 @@ const bootstrap = async () => {
   await app.listen();
 };
 
-bootstrap();
+void bootstrap();
