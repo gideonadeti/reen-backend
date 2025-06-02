@@ -1,4 +1,6 @@
+import * as cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import {
   DocumentBuilder,
   SwaggerDocumentOptions,
@@ -9,10 +11,24 @@ import { ApiGatewayModule } from './api-gateway.module';
 
 const bootstrap = async () => {
   const app = await NestFactory.create(ApiGatewayModule);
+
+  app.use(cookieParser());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
+
   const config = new DocumentBuilder()
     .setTitle('API Gateway')
     .setDescription('API Gateway for REEN backend')
     .setVersion('1.0.0')
+    .addBearerAuth()
     .build();
   const options: SwaggerDocumentOptions = {
     operationIdFactory: (_controllerKey: string, methodKey: string) =>
