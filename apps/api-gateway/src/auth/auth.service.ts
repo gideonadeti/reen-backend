@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 
 import { SignUpDto } from './dtos/sign-up.dto';
+import { GrpcError, MicroserviceError } from '@app/interfaces';
 import {
   AUTH_PACKAGE_NAME,
   AUTH_SERVICE_NAME,
@@ -18,12 +19,11 @@ import {
   User,
   UserRole,
 } from '@app/protos';
-import { GrpcError, MicroserviceError } from '@app/interfaces';
 
 const REFRESH_COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict' as const,
+  sameSite: 'strict',
   path: '/auth/refresh-token',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
