@@ -74,8 +74,8 @@ export class AuthService {
     });
   }
 
-  private handleError(error: Error, action: string) {
-    this.logger.error(`Failed to ${action}`, error.stack);
+  private handleError(error: any, action: string) {
+    this.logger.error(`Failed to ${action}`, (error as Error).stack);
 
     throw new RpcException(JSON.stringify(error));
   }
@@ -98,7 +98,7 @@ export class AuthService {
         role: UserRole[rest.role],
       });
     } catch (error) {
-      this.handleError(error as Error, 'sign up');
+      this.handleError(error, 'sign up');
     }
   }
 
@@ -120,7 +120,7 @@ export class AuthService {
 
       return rest;
     } catch (error) {
-      this.handleError(error as Error, 'validate user');
+      this.handleError(error, 'validate user');
     }
   }
 
@@ -128,7 +128,7 @@ export class AuthService {
     try {
       return await this.handleSuccessfulAuth(user);
     } catch (error) {
-      this.handleError(error as Error, 'sign in');
+      this.handleError(error, 'sign in');
     }
   }
 
@@ -157,7 +157,7 @@ export class AuthService {
 
       return { accessToken };
     } catch (error) {
-      this.handleError(error as Error, 'refresh token');
+      this.handleError(error, 'refresh token');
     }
   }
 
@@ -167,7 +167,7 @@ export class AuthService {
         where: { userId },
       });
     } catch (error) {
-      this.handleError(error as Error, 'sign out');
+      this.handleError(error, 'sign out');
     }
   }
 }
