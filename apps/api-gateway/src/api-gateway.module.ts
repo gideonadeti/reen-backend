@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { AuthModule } from './auth/auth.module';
 import { LoggingMiddleware } from './logging/logging.middleware';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { LoggingMiddleware } from './logging/logging.middleware';
       isGlobal: true,
       envFilePath: 'apps/api-gateway/.env',
     }),
+    ProductsModule,
   ],
   controllers: [],
   providers: [],
