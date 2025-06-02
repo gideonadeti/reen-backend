@@ -12,6 +12,8 @@ const command = [
   '--ts_proto_opt=nestJs=true,useDate=true',
   `--proto_path=${inputDir}`,
   `${inputDir}/*.proto`,
+  `&&`,
+  `nest build protos`,
 ].join(' ');
 
 try {
