@@ -18,7 +18,7 @@ import {
   AuthServiceClient,
   User,
   UserRole,
-} from '@app/protos';
+} from '@app/protos/generated/auth';
 
 const REFRESH_COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,

@@ -9,7 +9,7 @@ import {
   SignUpRequest,
   User,
   ValidateUserRequest,
-} from '@app/protos';
+} from '@app/protos/generated/auth';
 
 @Controller()
 export class AuthController {

@@ -3,7 +3,7 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 
 import { AuthModule } from './auth.module';
-import { AUTH_PACKAGE_NAME } from '@app/protos';
+import { AUTH_PACKAGE_NAME } from '@app/protos/generated/auth';
 
 const bootstrap = async () => {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(

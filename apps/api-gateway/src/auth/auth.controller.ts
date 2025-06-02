@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 import { SignUpDto } from './dtos/sign-up.dto';
 import { SignInDto } from './dtos/sign-in.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { User } from '@app/protos';
+import { User } from '@app/protos/generated/auth';
 import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
