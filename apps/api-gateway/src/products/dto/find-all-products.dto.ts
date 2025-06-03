@@ -1,5 +1,6 @@
 import {
   IsIn,
+  IsInt,
   IsNumber,
   IsOptional,
   IsPositive,
@@ -35,7 +36,7 @@ export class FindAllProductsDto {
    * @example 2
    */
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   @Min(0)
   minQuantity?: number;
 
@@ -43,7 +44,7 @@ export class FindAllProductsDto {
    * @example 10
    */
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   @Min(0)
   maxQuantity?: number;
 
@@ -59,13 +60,13 @@ export class FindAllProductsDto {
 
   /** Results per page */
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   @IsPositive()
   limit?: number;
 
   /** Page number */
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   @IsPositive()
   page?: number;
 }
