@@ -78,8 +78,12 @@ export class ProductsService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: string) {
+    try {
+      return await firstValueFrom(this.productsService.findOne({ id }));
+    } catch (error) {
+      this.handleError(error, `fetch product with id ${id}`);
+    }
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
