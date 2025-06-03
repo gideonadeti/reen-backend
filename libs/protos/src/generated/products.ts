@@ -61,6 +61,10 @@ export interface FindAllResponse {
   meta: Meta | undefined;
 }
 
+export interface FindOneRequest {
+  id: string;
+}
+
 export const PRODUCTS_PACKAGE_NAME = "products";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -76,17 +80,21 @@ export interface ProductsServiceClient {
   create(request: CreateRequest): Observable<CreateResponse>;
 
   findAll(request: FindAllRequest): Observable<FindAllResponse>;
+
+  findOne(request: FindOneRequest): Observable<Product>;
 }
 
 export interface ProductsServiceController {
   create(request: CreateRequest): Promise<CreateResponse> | Observable<CreateResponse> | CreateResponse;
 
   findAll(request: FindAllRequest): Promise<FindAllResponse> | Observable<FindAllResponse> | FindAllResponse;
+
+  findOne(request: FindOneRequest): Promise<Product> | Observable<Product> | Product;
 }
 
 export function ProductsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["create", "findAll"];
+    const grpcMethods: string[] = ["create", "findAll", "findOne"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("ProductsService", method)(constructor.prototype[method], method, descriptor);
