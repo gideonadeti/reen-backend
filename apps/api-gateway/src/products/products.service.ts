@@ -69,7 +69,7 @@ export class ProductsService {
       );
 
       if (!query.page && !query.limit) {
-        return response.products || []; // Else gRPC returns undefined when there are no products
+        return response.products || []; // [] Else gRPC returns undefined when there are no products
       }
 
       return response;
