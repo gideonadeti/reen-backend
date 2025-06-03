@@ -1,8 +1,24 @@
 import { NestFactory } from '@nestjs/core';
-import { ProductsModule } from './products.module';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { join } from 'path';
 
-async function bootstrap() {
-  const app = await NestFactory.create(ProductsModule);
-  await app.listen(process.env.port ?? 3000);
-}
-bootstrap();
+import { ProductsModule } from './products.module';
+import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
+
+const bootstrap = async () => {
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    ProductsModule,
+    {
+      transport: Transport.GRPC,
+      options: {
+        package: PRODUCTS_PACKAGE_NAME,
+        protoPath: join(__dirname, '../../libs/protos/products.proto'),
+        url: 'localhost:50051',
+      },
+    },
+  );
+
+  await app.listen();
+};
+
+void bootstrap();
