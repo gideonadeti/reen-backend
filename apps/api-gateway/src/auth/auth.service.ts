@@ -36,8 +36,7 @@ export class AuthService implements OnModuleInit {
   private logger = new Logger(AuthService.name);
 
   onModuleInit() {
-    this.authService =
-      this.authClient.getService<AuthServiceClient>(AUTH_SERVICE_NAME);
+    this.authService = this.authClient.getService(AUTH_SERVICE_NAME);
   }
 
   private handleError(error: any, action: string) {
