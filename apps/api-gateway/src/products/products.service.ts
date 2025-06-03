@@ -10,6 +10,7 @@ import {
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { GrpcError } from '@app/interfaces';
+import { FindAllProductsDto } from './dto/find-all-products.dto';
 import {
   PRODUCTS_PACKAGE_NAME,
   PRODUCTS_SERVICE_NAME,
@@ -50,8 +51,31 @@ export class ProductsService {
     }
   }
 
-  findAll() {
-    return `This action returns all products`;
+  async findAll(query: FindAllProductsDto) {
+    try {
+      const response = await firstValueFrom(
+        this.productsService.findAll({
+          ...query,
+          name: query.name as string,
+          minPrice: query.minPrice as number,
+          maxPrice: query.maxPrice as number,
+          minQuantity: query.minQuantity as number,
+          maxQuantity: query.maxQuantity as number,
+          sortBy: query.sortBy as string,
+          order: query.order as string,
+          limit: query.limit as number,
+          page: query.page as number,
+        }),
+      );
+
+      if (query.limit && query.page) {
+        return response;
+      }
+
+      return response.products;
+    } catch (error) {
+      this.handleError(error, 'fetch products');
+    }
   }
 
   findOne(id: number) {
