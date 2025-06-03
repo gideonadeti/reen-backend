@@ -15,6 +15,7 @@ export interface CreateRequest {
   name: string;
   price: number;
   quantity: number;
+  adminId: string;
 }
 
 export interface CreateResponse {
