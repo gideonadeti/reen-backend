@@ -46,7 +46,7 @@ export class ProductsService {
         }),
       );
     } catch (error) {
-      this.handleError(error as GrpcError, 'create product');
+      this.handleError(error, 'create product');
     }
   }
 
