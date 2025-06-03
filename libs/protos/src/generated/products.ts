@@ -27,6 +27,40 @@ export interface CreateResponse {
   updatedAt: Date | undefined;
 }
 
+export interface FindAllRequest {
+  name: string;
+  minPrice: number | undefined;
+  maxPrice: number | undefined;
+  minQuantity: number | undefined;
+  maxQuantity: number | undefined;
+  sortBy: string;
+  order: string;
+  limit: number | undefined;
+  page: number | undefined;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
+}
+
+export interface Meta {
+  total: number;
+  page: number;
+  lastPage: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export interface FindAllResponse {
+  products: Product[];
+  meta: Meta | undefined;
+}
+
 export const PRODUCTS_PACKAGE_NAME = "products";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -40,15 +74,19 @@ wrappers[".google.protobuf.Timestamp"] = {
 
 export interface ProductsServiceClient {
   create(request: CreateRequest): Observable<CreateResponse>;
+
+  findAll(request: FindAllRequest): Observable<FindAllResponse>;
 }
 
 export interface ProductsServiceController {
   create(request: CreateRequest): Promise<CreateResponse> | Observable<CreateResponse> | CreateResponse;
+
+  findAll(request: FindAllRequest): Promise<FindAllResponse> | Observable<FindAllResponse> | FindAllResponse;
 }
 
 export function ProductsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["create"];
+    const grpcMethods: string[] = ["create", "findAll"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("ProductsService", method)(constructor.prototype[method], method, descriptor);
