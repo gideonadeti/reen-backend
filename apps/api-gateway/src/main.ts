@@ -39,7 +39,7 @@ const bootstrap = async () => {
 
   SwaggerModule.setup('/api-gateway/documentation', app, documentFactory);
 
-  await app.listen(process.env.port ?? 3000);
+  await app.listen(process.env.PORT ?? 3000);
 };
 
 void bootstrap();
