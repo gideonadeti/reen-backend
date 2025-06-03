@@ -5,6 +5,7 @@ import { ProductsService } from './products.service';
 import {
   CreateRequest,
   FindAllRequest,
+  FindOneRequest,
   PRODUCTS_SERVICE_NAME,
 } from '@app/protos/generated/products';
 
@@ -20,5 +21,10 @@ export class ProductsController {
   @GrpcMethod(PRODUCTS_SERVICE_NAME)
   findAll(data: FindAllRequest) {
     return this.productsService.findAll(data);
+  }
+
+  @GrpcMethod(PRODUCTS_SERVICE_NAME)
+  findOne(data: FindOneRequest) {
+    return this.productsService.findOne(data.id);
   }
 }

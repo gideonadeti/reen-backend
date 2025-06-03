@@ -96,4 +96,12 @@ export class ProductsService {
       this.handleError(error, 'fetch products');
     }
   }
+
+  async findOne(id: string) {
+    try {
+      return await this.prismaService.product.findUnique({ where: { id } });
+    } catch (error) {
+      this.handleError(error, `fetch product with id ${id}`);
+    }
+  }
 }
