@@ -11,7 +11,7 @@ message CreateRequest {
   string name = 1;
   double price = 2;
   int32 quantity = 3;
-  string adminId = 4;
+  string admin_id = 4;
 }
 
 message CreateResponse {
