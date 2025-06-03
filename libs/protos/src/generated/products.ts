@@ -29,14 +29,14 @@ export interface CreateResponse {
 
 export interface FindAllRequest {
   name: string;
-  minPrice: number | undefined;
-  maxPrice: number | undefined;
-  minQuantity: number | undefined;
-  maxQuantity: number | undefined;
+  minPrice: number;
+  maxPrice: number;
+  minQuantity: number;
+  maxQuantity: number;
   sortBy: string;
   order: string;
-  limit: number | undefined;
-  page: number | undefined;
+  limit: number;
+  page: number;
 }
 
 export interface Product {

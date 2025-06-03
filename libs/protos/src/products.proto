@@ -3,7 +3,6 @@ syntax = "proto3";
 package products;
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/wrappers.proto";
 
 service ProductsService {
   rpc Create(CreateRequest) returns (CreateResponse) {}
@@ -28,14 +27,14 @@ message CreateResponse {
 
 message FindAllRequest {
   string name = 1;
-  google.protobuf.DoubleValue minPrice = 2;
-  google.protobuf.DoubleValue maxPrice = 3;
-  google.protobuf.Int32Value minQuantity = 4;
-  google.protobuf.Int32Value maxQuantity = 5;
-  string sortBy = 6;
+  double min_price = 2;
+  double max_price = 3;
+  int32 min_quantity = 4;
+  int32 max_quantity = 5;
+  string sort_by = 6;
   string order = 7;
-  google.protobuf.Int32Value limit = 8;
-  google.protobuf.Int32Value page = 9;
+  int32 limit = 8;
+  int32 page = 9;
 }
 
 message Product {
@@ -50,9 +49,9 @@ message Product {
 message Meta {
   int32 total = 1;
   int32 page = 2;
-  int32 lastPage = 3;
-  bool hasNextPage = 4;
-  bool hasPreviousPage = 5;
+  int32 last_page = 3;
+  bool has_next_page = 4;
+  bool has_previous_page = 5;
 }
 
 message FindAllResponse {
