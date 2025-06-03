@@ -37,10 +37,13 @@ export class ProductsService {
     throw new InternalServerErrorException(`Failed to ${action}`);
   }
 
-  async create(createProductDto: CreateProductDto) {
+  async create(userId: string, createProductDto: CreateProductDto) {
     try {
       return await firstValueFrom(
-        this.productsService.create(createProductDto),
+        this.productsService.create({
+          ...createProductDto,
+          adminId: userId,
+        }),
       );
     } catch (error) {
       this.handleError(error as GrpcError, 'create product');
