@@ -61,7 +61,10 @@ export class ProductsService {
         return response.products || []; // [] Else gRPC returns undefined when there are no products
       }
 
-      return response;
+      return {
+        ...response,
+        products: response.products || [],
+      };
     } catch (error) {
       this.handleError(error, 'fetch products');
     }
