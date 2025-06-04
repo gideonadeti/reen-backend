@@ -5,12 +5,13 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
   OnModuleInit,
 } from '@nestjs/common';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { GrpcError } from '@app/interfaces';
+import { GrpcError, MicroserviceError } from '@app/interfaces';
 import { FindAllProductsDto } from './dto/find-all-products.dto';
 import {
   PRODUCTS_PACKAGE_NAME,
@@ -35,6 +36,14 @@ export class ProductsService implements OnModuleInit {
 
   private handleError(error: any, action: string) {
     this.logger.error(`Failed to ${action}`, (error as GrpcError).stack);
+
+    const microserviceError = JSON.parse(
+      (error as GrpcError).details,
+    ) as MicroserviceError;
+
+    if (microserviceError.name === 'NotFoundException') {
+      throw new NotFoundException(microserviceError.message);
+    }
 
     throw new InternalServerErrorException(`Failed to ${action}`);
   }
