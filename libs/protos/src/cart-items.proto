@@ -8,6 +8,7 @@ service CartItemsService {
   rpc Create(CreateRequest) returns (CartItem) {}
   rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
   rpc FindOne(FindOneRequest) returns (CartItem) {}
+  rpc Update(UpdateRequest) returns (CartItem) {}
 }
 
 message CreateRequest {
@@ -36,3 +37,11 @@ message FindOneRequest {
   string id = 1;
   string user_id = 2;
 }
+
+message UpdateRequest {
+  string id = 1;
+  UpdateCartItemDto updateCartItemDto = 2;
+  string user_id = 3;
+}
+
+message UpdateCartItemDto { optional int32 quantity = 1; }
