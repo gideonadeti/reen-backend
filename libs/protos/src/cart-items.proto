@@ -45,6 +45,6 @@ message UpdateRequest {
 }
 
 message UpdateCartItemDto {
-  optional string product_id = 1;
-  optional int32 quantity = 2;
+  string product_id = 1;
+  int32 quantity = 2;
 }

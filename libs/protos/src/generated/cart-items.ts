@@ -49,8 +49,8 @@ export interface UpdateRequest {
 }
 
 export interface UpdateCartItemDto {
-  productId?: string | undefined;
-  quantity?: number | undefined;
+  productId: string;
+  quantity: number;
 }
 
 export const CART_ITEMS_PACKAGE_NAME = "cart_items";
