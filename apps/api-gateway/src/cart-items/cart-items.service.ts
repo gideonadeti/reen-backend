@@ -39,7 +39,7 @@ export class CartItemsService implements OnModuleInit {
     this.logger.error(`Failed to ${action}`, (error as GrpcError).stack);
 
     const microserviceError = JSON.parse(
-      (error as GrpcError).details,
+      (error as GrpcError).details || '{}',
     ) as MicroserviceError;
 
     if (
