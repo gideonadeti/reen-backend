@@ -4,7 +4,7 @@ import { join } from 'path';
 
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { AUTH_PACKAGE_NAME } from '@app/protos';
+import { AUTH_PACKAGE_NAME } from '@app/protos/generated/auth';
 import { LocalStrategy } from './strategies/local.strategy';
 import { RefreshJwtStrategy } from './strategies/refresh-jwt.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';

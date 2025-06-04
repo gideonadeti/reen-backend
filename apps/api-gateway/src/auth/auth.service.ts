@@ -18,7 +18,7 @@ import {
   AuthServiceClient,
   User,
   UserRole,
-} from '@app/protos';
+} from '@app/protos/generated/auth';
 
 const REFRESH_COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
@@ -36,14 +36,15 @@ export class AuthService implements OnModuleInit {
   private logger = new Logger(AuthService.name);
 
   onModuleInit() {
-    this.authService =
-      this.authClient.getService<AuthServiceClient>(AUTH_SERVICE_NAME);
+    this.authService = this.authClient.getService(AUTH_SERVICE_NAME);
   }
 
-  private handleError(error: GrpcError, action: string) {
-    this.logger.error(`Failed to ${action}`, error.stack);
+  private handleError(error: any, action: string) {
+    this.logger.error(`Failed to ${action}`, (error as GrpcError).stack);
 
-    const microserviceError = JSON.parse(error.details) as MicroserviceError;
+    const microserviceError = JSON.parse(
+      (error as GrpcError).details,
+    ) as MicroserviceError;
 
     if (
       microserviceError.name === 'PrismaClientKnownRequestError' &&
@@ -69,7 +70,7 @@ export class AuthService implements OnModuleInit {
         },
       });
     } catch (error) {
-      this.handleError(error as GrpcError, 'sign up');
+      this.handleError(error, 'sign up');
     }
   }
 
@@ -92,7 +93,7 @@ export class AuthService implements OnModuleInit {
         },
       });
     } catch (error) {
-      this.handleError(error as GrpcError, 'sign in');
+      this.handleError(error, 'sign in');
     }
   }
 
@@ -109,7 +110,7 @@ export class AuthService implements OnModuleInit {
         }),
       );
     } catch (error) {
-      this.handleError(error as GrpcError, 'refresh token');
+      this.handleError(error, 'refresh token');
     }
   }
 
@@ -120,7 +121,7 @@ export class AuthService implements OnModuleInit {
       res.clearCookie('refreshToken', REFRESH_COOKIE_OPTIONS);
       res.sendStatus(200);
     } catch (error) {
-      this.handleError(error as GrpcError, 'sign out');
+      this.handleError(error, 'sign out');
     }
   }
 }

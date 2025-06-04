@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package products;
+
+import "google/protobuf/timestamp.proto";
+
+service ProductsService {
+  rpc Create(CreateRequest) returns (Product) {}
+  rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
+  rpc FindOne(FindOneRequest) returns (Product) {}
+  rpc Update(UpdateRequest) returns (Product) {}
+  rpc Remove(RemoveRequest) returns (Product) {}
+}
+
+message CreateProductDto {
+  string name = 1;
+  double price = 2;
+  int32 quantity = 3;
+}
+
+message CreateRequest {
+  CreateProductDto createProductDto = 1;
+  string admin_id = 2;
+}
+
+message FindAllRequest {
+  optional string name = 1;
+  optional double min_price = 2;
+  optional double max_price = 3;
+  optional int32 min_quantity = 4;
+  optional int32 max_quantity = 5;
+  optional string sort_by = 6;
+  optional string order = 7;
+  optional int32 limit = 8;
+  optional int32 page = 9;
+}
+
+message Product {
+  string id = 1;
+  string name = 2;
+  double price = 3;
+  int32 quantity = 4;
+  google.protobuf.Timestamp createdAt = 5;
+  google.protobuf.Timestamp updatedAt = 6;
+}
+
+message Meta {
+  int32 total = 1;
+  int32 page = 2;
+  int32 last_page = 3;
+  bool has_next_page = 4;
+  bool has_previous_page = 5;
+}
+
+message FindAllResponse {
+  repeated Product products = 1;
+  Meta meta = 2;
+}
+
+message FindOneRequest { string id = 1; }
+
+message UpdateProductDto {
+  optional string name = 1;
+  optional double price = 2;
+  optional int32 quantity = 3;
+}
+
+message UpdateRequest {
+  string id = 1;
+  UpdateProductDto updateProductDto = 2;
+  string admin_id = 3;
+}
+
+message RemoveRequest {
+  string id = 1;
+  string admin_id = 2;
+}

@@ -63,6 +63,15 @@
         "tsConfigPath": "libs/middlewares/tsconfig.lib.json"
       }
     },
+    "products": {
+      "type": "application",
+      "root": "apps/products",
+      "entryFile": "main",
+      "sourceRoot": "apps/products/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/products/tsconfig.app.json"
+      }
+    },
     "protos": {
       "type": "library",
       "root": "libs/protos",

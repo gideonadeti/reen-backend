@@ -14,7 +14,7 @@ import {
   User,
   UserRole,
   ValidateUserRequest,
-} from '@app/protos';
+} from '@app/protos/generated/auth';
 
 @Injectable()
 export class AuthService {
