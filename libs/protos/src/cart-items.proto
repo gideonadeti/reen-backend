@@ -7,6 +7,7 @@ import "google/protobuf/timestamp.proto";
 service CartItemsService {
   rpc Create(CreateRequest) returns (CartItem) {}
   rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
+  rpc FindOne(FindOneRequest) returns (CartItem) {}
 }
 
 message CreateRequest {
@@ -30,3 +31,8 @@ message CartItem {
 message FindAllRequest { string user_id = 1; }
 
 message FindAllResponse { repeated CartItem cartItems = 1; }
+
+message FindOneRequest {
+  string id = 1;
+  string user_id = 2;
+}
