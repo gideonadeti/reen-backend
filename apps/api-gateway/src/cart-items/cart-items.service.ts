@@ -85,8 +85,14 @@ export class CartItemsService implements OnModuleInit {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cartItem`;
+  async findOne(userId: string, id: string) {
+    try {
+      return await firstValueFrom(
+        this.cartItemsService.findOne({ userId, id }),
+      );
+    } catch (error) {
+      this.handleError(error, `fetch cart item with id ${id}`);
+    }
   }
 
   update(id: number, updateCartItemDto: UpdateCartItemDto) {

@@ -36,8 +36,8 @@ export class CartItemsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartItemsService.findOne(+id);
+  findOne(@UserId() userId: string, @Param('id') id: string) {
+    return this.cartItemsService.findOne(userId, id);
   }
 
   @Patch(':id')
