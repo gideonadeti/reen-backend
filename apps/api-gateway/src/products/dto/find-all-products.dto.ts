@@ -10,7 +10,7 @@ import {
 
 export class FindAllProductsDto {
   /** Optional search term (partial match on product name)
-   * @example 'shoe'
+   * @example shoe
    */
   @IsOptional()
   @IsString()
@@ -48,12 +48,16 @@ export class FindAllProductsDto {
   @Min(0)
   maxQuantity?: number;
 
-  /** Sort by this field */
+  /** Sort by this field
+   * @example name
+   */
   @IsOptional()
   @IsIn(['name', 'price', 'quantity', 'createdAt', 'updatedAt'])
   sortBy?: 'name' | 'price' | 'quantity' | 'createdAt' | 'updatedAt';
 
-  /** Sort order: ascending or descending */
+  /** Sort order: ascending or descending
+   * @example desc
+   */
   @IsOptional()
   @IsIn(['asc', 'desc'])
   order?: 'asc' | 'desc';
