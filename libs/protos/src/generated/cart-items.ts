@@ -49,6 +49,7 @@ export interface UpdateRequest {
 }
 
 export interface UpdateCartItemDto {
+  productId?: string | undefined;
   quantity?: number | undefined;
 }
 
