@@ -17,7 +17,6 @@ import {
   ProductsServiceClient,
 } from '@app/protos/generated/products';
 import {
-  CreateCartItemDto,
   CreateRequest,
   FindOneRequest,
   UpdateRequest,
@@ -55,19 +54,21 @@ export class CartItemsService implements OnModuleInit {
   }
 
   async create({ userId, createCartItemDto }: CreateRequest) {
+    if (!createCartItemDto) return;
+
     try {
       const product = await firstValueFrom(
-        this.productsService.findOne({ id: createCartItemDto!.productId }),
+        this.productsService.findOne({ id: createCartItemDto.productId }),
       );
 
-      if (product.quantity < createCartItemDto!.quantity) {
+      if (product.quantity < createCartItemDto.quantity) {
         throw new BadRequestException(
-          `Product with id ${createCartItemDto!.productId} has insufficient quantity`,
+          `Product with id ${createCartItemDto.productId} has insufficient quantity`,
         );
       }
 
       return await this.prismaService.cartItem.create({
-        data: { ...(createCartItemDto as CreateCartItemDto), userId },
+        data: { ...createCartItemDto, userId },
       });
     } catch (error) {
       this.handleError(error, 'create cart item');
