@@ -19,6 +19,7 @@ import {
 import {
   CreateCartItemDto,
   CreateRequest,
+  FindOneRequest,
 } from '@app/protos/generated/cart-items';
 
 @Injectable()
@@ -83,6 +84,22 @@ export class CartItemsService implements OnModuleInit {
       };
     } catch (error) {
       this.handleError(error, `fetch cart items for user with id ${userId}`);
+    }
+  }
+
+  async findOne({ userId, id }: FindOneRequest) {
+    try {
+      const cartItem = await this.prismaService.cartItem.findUnique({
+        where: { id, userId },
+      });
+
+      if (!cartItem) {
+        throw new NotFoundException(`Cart item with id ${id} not found`);
+      }
+
+      return cartItem;
+    } catch (error) {
+      this.handleError(error, `fetch cart item with id ${id}`);
     }
   }
 }

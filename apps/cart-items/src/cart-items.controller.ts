@@ -6,6 +6,7 @@ import {
   CART_ITEMS_SERVICE_NAME,
   CreateRequest,
   FindAllRequest,
+  FindOneRequest,
 } from '@app/protos/generated/cart-items';
 
 @Controller()
@@ -20,5 +21,10 @@ export class CartItemsController {
   @GrpcMethod(CART_ITEMS_SERVICE_NAME)
   findAll(data: FindAllRequest) {
     return this.cartItemsService.findAll(data.userId);
+  }
+
+  @GrpcMethod(CART_ITEMS_SERVICE_NAME)
+  findOne(data: FindOneRequest) {
+    return this.cartItemsService.findOne(data);
   }
 }
