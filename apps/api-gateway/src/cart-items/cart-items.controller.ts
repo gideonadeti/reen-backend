@@ -14,6 +14,7 @@ import { CartItemsService } from './cart-items.service';
 import { CreateCartItemDto } from './dto/create-cart-item.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UserId } from '../auth/decorators/user-id.decorator';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -22,8 +23,11 @@ export class CartItemsController {
   constructor(private readonly cartItemsService: CartItemsService) {}
 
   @Post()
-  create(@Body() createCartItemDto: CreateCartItemDto) {
-    return this.cartItemsService.create(createCartItemDto);
+  create(
+    @UserId() userId: string,
+    @Body() createCartItemDto: CreateCartItemDto,
+  ) {
+    return this.cartItemsService.create(userId, createCartItemDto);
   }
 
   @Get()

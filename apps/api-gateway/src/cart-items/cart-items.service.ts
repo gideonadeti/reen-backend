@@ -1,4 +1,5 @@
 import { ClientGrpc } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 import {
   Inject,
   Injectable,
@@ -8,12 +9,12 @@ import {
 
 import { CreateCartItemDto } from './dto/create-cart-item.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
+import { GrpcError } from '@app/interfaces';
 import {
   CART_ITEMS_PACKAGE_NAME,
   CART_ITEMS_SERVICE_NAME,
   CartItemsServiceClient,
 } from '@app/protos/generated/cart-items';
-import { GrpcError } from '@app/interfaces';
 
 @Injectable()
 export class CartItemsService {
@@ -36,8 +37,17 @@ export class CartItemsService {
     throw new InternalServerErrorException(`Failed to ${action}`);
   }
 
-  create(createCartItemDto: CreateCartItemDto) {
-    return 'This action adds a new cartItem';
+  async create(userId: string, createCartItemDto: CreateCartItemDto) {
+    try {
+      return await firstValueFrom(
+        this.cartItemsService.create({
+          userId,
+          createCartItemDto,
+        }),
+      );
+    } catch (error) {
+      this.handleError(error, 'create cart item');
+    }
   }
 
   findAll() {
