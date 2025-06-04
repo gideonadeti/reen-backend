@@ -6,6 +6,7 @@ import "google/protobuf/timestamp.proto";
 
 service CartItemsService {
   rpc Create(CreateRequest) returns (CartItem) {}
+  rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
 }
 
 message CreateRequest {
@@ -25,3 +26,7 @@ message CartItem {
   google.protobuf.Timestamp createdAt = 4;
   google.protobuf.Timestamp updatedAt = 5;
 }
+
+message FindAllRequest { string user_id = 1; }
+
+message FindAllResponse { repeated CartItem cartItems = 1; }

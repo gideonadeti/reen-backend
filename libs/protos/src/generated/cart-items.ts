@@ -29,6 +29,14 @@ export interface CartItem {
   updatedAt: Date | undefined;
 }
 
+export interface FindAllRequest {
+  userId: string;
+}
+
+export interface FindAllResponse {
+  cartItems: CartItem[];
+}
+
 export const CART_ITEMS_PACKAGE_NAME = "cart_items";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -42,15 +50,19 @@ wrappers[".google.protobuf.Timestamp"] = {
 
 export interface CartItemsServiceClient {
   create(request: CreateRequest): Observable<CartItem>;
+
+  findAll(request: FindAllRequest): Observable<FindAllResponse>;
 }
 
 export interface CartItemsServiceController {
   create(request: CreateRequest): Promise<CartItem> | Observable<CartItem> | CartItem;
+
+  findAll(request: FindAllRequest): Promise<FindAllResponse> | Observable<FindAllResponse> | FindAllResponse;
 }
 
 export function CartItemsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["create"];
+    const grpcMethods: string[] = ["create", "findAll"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("CartItemsService", method)(constructor.prototype[method], method, descriptor);
