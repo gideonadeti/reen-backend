@@ -50,7 +50,7 @@ export class CartItemsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartItemsService.remove(+id);
+  remove(@UserId() userId: string, @Param('id') id: string) {
+    return this.cartItemsService.remove(userId, id);
   }
 }

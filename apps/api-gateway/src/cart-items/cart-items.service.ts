@@ -113,7 +113,11 @@ export class CartItemsService implements OnModuleInit {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cartItem`;
+  async remove(userId: string, id: string) {
+    try {
+      return await firstValueFrom(this.cartItemsService.remove({ userId, id }));
+    } catch (error) {
+      this.handleError(error, `delete cart item with id ${id}`);
+    }
   }
 }

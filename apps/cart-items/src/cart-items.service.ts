@@ -19,6 +19,7 @@ import {
 import {
   CreateRequest,
   FindOneRequest,
+  RemoveRequest,
   UpdateRequest,
 } from '@app/protos/generated/cart-items';
 
@@ -127,6 +128,16 @@ export class CartItemsService implements OnModuleInit {
       });
     } catch (error) {
       this.handleError(error, `update cart item with id ${id}`);
+    }
+  }
+
+  async remove({ userId, id }: RemoveRequest) {
+    try {
+      return await this.prismaService.cartItem.delete({
+        where: { id, userId },
+      });
+    } catch (error) {
+      this.handleError(error, `delete cart item with id ${id}`);
     }
   }
 }
