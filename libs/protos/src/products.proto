@@ -5,7 +5,7 @@ package products;
 import "google/protobuf/timestamp.proto";
 
 service ProductsService {
-  rpc Create(CreateRequest) returns (CreateResponse) {}
+  rpc Create(CreateRequest) returns (Product) {}
   rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
   rpc FindOne(FindOneRequest) returns (Product) {}
   rpc Update(UpdateRequest) returns (Product) {}
@@ -21,15 +21,6 @@ message CreateProductDto {
 message CreateRequest {
   CreateProductDto createProductDto = 1;
   string admin_id = 2;
-}
-
-message CreateResponse {
-  string id = 1;
-  string name = 2;
-  double price = 3;
-  int32 quantity = 4;
-  google.protobuf.Timestamp createdAt = 5;
-  google.protobuf.Timestamp updatedAt = 6;
 }
 
 message FindAllRequest {

@@ -22,15 +22,6 @@ export interface CreateRequest {
   adminId: string;
 }
 
-export interface CreateResponse {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  createdAt: Date | undefined;
-  updatedAt: Date | undefined;
-}
-
 export interface FindAllRequest {
   name: string;
   minPrice: number;
@@ -98,7 +89,7 @@ wrappers[".google.protobuf.Timestamp"] = {
 } as any;
 
 export interface ProductsServiceClient {
-  create(request: CreateRequest): Observable<CreateResponse>;
+  create(request: CreateRequest): Observable<Product>;
 
   findAll(request: FindAllRequest): Observable<FindAllResponse>;
 
@@ -110,7 +101,7 @@ export interface ProductsServiceClient {
 }
 
 export interface ProductsServiceController {
-  create(request: CreateRequest): Promise<CreateResponse> | Observable<CreateResponse> | CreateResponse;
+  create(request: CreateRequest): Promise<Product> | Observable<Product> | Product;
 
   findAll(request: FindAllRequest): Promise<FindAllResponse> | Observable<FindAllResponse> | FindAllResponse;
 
