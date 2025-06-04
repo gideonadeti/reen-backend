@@ -5,6 +5,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  OnModuleInit,
 } from '@nestjs/common';
 
 import { CreateCartItemDto } from './dto/create-cart-item.dto';
@@ -17,7 +18,7 @@ import {
 } from '@app/protos/generated/cart-items';
 
 @Injectable()
-export class CartItemsService {
+export class CartItemsService implements OnModuleInit {
   constructor(
     @Inject(CART_ITEMS_PACKAGE_NAME) private cartItemsClient: ClientGrpc,
   ) {}
