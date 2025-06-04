@@ -6,20 +6,51 @@
 
 /* eslint-disable */
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
+import { wrappers } from "protobufjs";
+import { Observable } from "rxjs";
 
 export const protobufPackage = "cart_items";
 
+export interface CreateRequest {
+  createCartItemDto: CreateCartItemDto | undefined;
+  userId: string;
+}
+
+export interface CreateCartItemDto {
+  productId: string;
+  quantity: number;
+}
+
+export interface CartItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
+}
+
 export const CART_ITEMS_PACKAGE_NAME = "cart_items";
 
+wrappers[".google.protobuf.Timestamp"] = {
+  fromObject(value: Date) {
+    return { seconds: value.getTime() / 1000, nanos: (value.getTime() % 1000) * 1e6 };
+  },
+  toObject(message: { seconds: number; nanos: number }) {
+    return new Date(message.seconds * 1000 + message.nanos / 1e6);
+  },
+} as any;
+
 export interface CartItemsServiceClient {
+  create(request: CreateRequest): Observable<CartItem>;
 }
 
 export interface CartItemsServiceController {
+  create(request: CreateRequest): Promise<CartItem> | Observable<CartItem> | CartItem;
 }
 
 export function CartItemsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = [];
+    const grpcMethods: string[] = ["create"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("CartItemsService", method)(constructor.prototype[method], method, descriptor);
