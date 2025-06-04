@@ -81,7 +81,7 @@ export interface UpdateRequest {
   adminId: string;
 }
 
-export interface DeleteRequest {
+export interface RemoveRequest {
   id: string;
   adminId: string;
 }
@@ -106,7 +106,7 @@ export interface ProductsServiceClient {
 
   update(request: UpdateRequest): Observable<Product>;
 
-  delete(request: DeleteRequest): Observable<Product>;
+  remove(request: RemoveRequest): Observable<Product>;
 }
 
 export interface ProductsServiceController {
@@ -118,12 +118,12 @@ export interface ProductsServiceController {
 
   update(request: UpdateRequest): Promise<Product> | Observable<Product> | Product;
 
-  delete(request: DeleteRequest): Promise<Product> | Observable<Product> | Product;
+  remove(request: RemoveRequest): Promise<Product> | Observable<Product> | Product;
 }
 
 export function ProductsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["create", "findAll", "findOne", "update", "delete"];
+    const grpcMethods: string[] = ["create", "findAll", "findOne", "update", "remove"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("ProductsService", method)(constructor.prototype[method], method, descriptor);
