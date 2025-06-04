@@ -42,8 +42,8 @@ export class ProductsService {
     try {
       return await firstValueFrom(
         this.productsService.create({
-          ...createProductDto,
           adminId: userId,
+          createProductDto,
         }),
       );
     } catch (error) {

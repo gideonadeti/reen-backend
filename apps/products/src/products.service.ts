@@ -2,8 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 
 import { PrismaService } from './prisma/prisma.service';
-import { CreateRequest, FindAllRequest } from '@app/protos/generated/products';
 import { Prisma } from '../generated/prisma';
+import {
+  CreateProductDto,
+  CreateRequest,
+  FindAllRequest,
+} from '@app/protos/generated/products';
 
 @Injectable()
 export class ProductsService {
@@ -17,10 +21,10 @@ export class ProductsService {
     throw new RpcException(JSON.stringify(error));
   }
 
-  async create({ adminId, ...createProductDto }: CreateRequest) {
+  async create({ adminId, createProductDto }: CreateRequest) {
     try {
       return await this.prismaService.product.create({
-        data: { ...createProductDto, adminId },
+        data: { ...(createProductDto as CreateProductDto), adminId },
       });
     } catch (error) {
       this.handleError(error, 'create product');

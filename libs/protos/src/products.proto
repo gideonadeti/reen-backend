@@ -10,11 +10,15 @@ service ProductsService {
   rpc FindOne(FindOneRequest) returns (Product) {}
 }
 
-message CreateRequest {
+message CreateProductDto {
   string name = 1;
   double price = 2;
   int32 quantity = 3;
-  string admin_id = 4;
+}
+
+message CreateRequest {
+  CreateProductDto createProductDto = 1;
+  string admin_id = 2;
 }
 
 message CreateResponse {

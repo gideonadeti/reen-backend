@@ -11,10 +11,14 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "products";
 
-export interface CreateRequest {
+export interface CreateProductDto {
   name: string;
   price: number;
   quantity: number;
+}
+
+export interface CreateRequest {
+  createProductDto: CreateProductDto | undefined;
   adminId: string;
 }
 
