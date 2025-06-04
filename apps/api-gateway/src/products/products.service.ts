@@ -54,18 +54,7 @@ export class ProductsService {
   async findAll(query: FindAllProductsDto) {
     try {
       const response = await firstValueFrom(
-        this.productsService.findAll({
-          ...query,
-          name: query.name as string,
-          minPrice: query.minPrice as number,
-          maxPrice: query.maxPrice as number,
-          minQuantity: query.minQuantity as number,
-          maxQuantity: query.maxQuantity as number,
-          sortBy: query.sortBy as string,
-          order: query.order as string,
-          limit: query.limit as number,
-          page: query.page as number,
-        }),
+        this.productsService.findAll(query),
       );
 
       if (!query.page && !query.limit) {

@@ -23,15 +23,15 @@ export interface CreateRequest {
 }
 
 export interface FindAllRequest {
-  name: string;
-  minPrice: number;
-  maxPrice: number;
-  minQuantity: number;
-  maxQuantity: number;
-  sortBy: string;
-  order: string;
-  limit: number;
-  page: number;
+  name?: string | undefined;
+  minPrice?: number | undefined;
+  maxPrice?: number | undefined;
+  minQuantity?: number | undefined;
+  maxQuantity?: number | undefined;
+  sortBy?: string | undefined;
+  order?: string | undefined;
+  limit?: number | undefined;
+  page?: number | undefined;
 }
 
 export interface Product {
