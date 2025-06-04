@@ -1,12 +1,25 @@
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc, RpcException } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 
 import { PrismaService } from './prisma/prisma.service';
+import { GrpcError, MicroserviceError } from '@app/interfaces';
 import {
   PRODUCTS_PACKAGE_NAME,
+  PRODUCTS_SERVICE_NAME,
   ProductsServiceClient,
 } from '@app/protos/generated/products';
-import { CART_ITEMS_SERVICE_NAME } from '@app/protos/generated/cart-items';
+import {
+  CreateCartItemDto,
+  CreateRequest,
+} from '@app/protos/generated/cart-items';
 
 @Injectable()
 export class CartItemsService implements OnModuleInit {
@@ -20,13 +33,48 @@ export class CartItemsService implements OnModuleInit {
 
   onModuleInit() {
     this.productsService = this.productsClient.getService(
-      CART_ITEMS_SERVICE_NAME,
+      PRODUCTS_SERVICE_NAME,
     );
   }
 
   private handleError(error: any, action: string) {
     this.logger.error(`Failed to ${action}`, (error as Error).stack);
 
+    // Check if error is a gRPC error and throw it else api-gateway wouldn't parse correctly
+    const microserviceError = JSON.parse(
+      (error as GrpcError).details || '{}',
+    ) as MicroserviceError;
+
+    if (Object.keys(microserviceError).length !== 0) {
+      throw new RpcException(JSON.stringify(microserviceError));
+    }
+
     throw new RpcException(JSON.stringify(error));
+  }
+
+  async create({ userId, createCartItemDto }: CreateRequest) {
+    try {
+      const product = await firstValueFrom(
+        this.productsService.findOne({ id: createCartItemDto!.productId }),
+      );
+
+      if (!product) {
+        throw new NotFoundException(
+          `Product with id ${createCartItemDto!.productId} not found`,
+        );
+      }
+
+      if (product.quantity < createCartItemDto!.quantity) {
+        throw new BadRequestException(
+          `Product with id ${createCartItemDto!.productId} has insufficient quantity`,
+        );
+      }
+
+      return await this.prismaService.cartItem.create({
+        data: { ...(createCartItemDto as CreateCartItemDto), userId },
+      });
+    } catch (error) {
+      this.handleError(error, 'create cart item');
+    }
   }
 }
