@@ -23,7 +23,7 @@ import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
         options: {
           package: PRODUCTS_PACKAGE_NAME,
           protoPath: join(__dirname, '../../libs/protos/products.proto'),
-          url: 'localhost:5002',
+          url: 'localhost:5001',
         },
       },
     ]),
