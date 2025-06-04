@@ -58,13 +58,17 @@ export class FindAllProductsDto {
   @IsIn(['asc', 'desc'])
   order?: 'asc' | 'desc';
 
-  /** Results per page */
+  /** Results per page
+   * @example 10
+   */
   @IsOptional()
   @IsInt()
   @IsPositive()
   limit?: number;
 
-  /** Page number */
+  /** Page number
+   * @example 1
+   */
   @IsOptional()
   @IsInt()
   @IsPositive()
