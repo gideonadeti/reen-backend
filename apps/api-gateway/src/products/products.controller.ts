@@ -55,8 +55,11 @@ export class ProductsController {
     return this.productsService.update(userId, id, updateProductDto);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productsService.remove(+id);
+  remove(@UserId() userId: string, @Param('id') id: string) {
+    return this.productsService.remove(userId, id);
   }
 }

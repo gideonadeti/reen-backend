@@ -7,6 +7,7 @@ import {
   CreateProductDto,
   CreateRequest,
   FindAllRequest,
+  RemoveRequest,
   UpdateProductDto,
   UpdateRequest,
 } from '@app/protos/generated/products';
@@ -119,6 +120,16 @@ export class ProductsService {
       });
     } catch (error) {
       this.handleError(error, `update product with id ${id}`);
+    }
+  }
+
+  async remove({ adminId, id }: RemoveRequest) {
+    try {
+      return await this.prismaService.product.delete({
+        where: { adminId, id },
+      });
+    } catch (error) {
+      this.handleError(error, `delete product with id ${id}`);
     }
   }
 }
