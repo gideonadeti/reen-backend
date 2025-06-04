@@ -1,16 +1,19 @@
 import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import {
+  BadRequestException,
+  ConflictException,
   Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
   OnModuleInit,
 } from '@nestjs/common';
 
 import { CreateCartItemDto } from './dto/create-cart-item.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
-import { GrpcError } from '@app/interfaces';
+import { GrpcError, MicroserviceError } from '@app/interfaces';
 import {
   CART_ITEMS_PACKAGE_NAME,
   CART_ITEMS_SERVICE_NAME,
@@ -34,6 +37,25 @@ export class CartItemsService implements OnModuleInit {
 
   private handleError(error: any, action: string) {
     this.logger.error(`Failed to ${action}`, (error as GrpcError).stack);
+
+    const microserviceError = JSON.parse(
+      (error as GrpcError).details,
+    ) as MicroserviceError;
+
+    if (
+      microserviceError.name === 'PrismaClientKnownRequestError' &&
+      microserviceError.code === 'P2002'
+    ) {
+      throw new ConflictException('Cart item already exists');
+    }
+
+    if (microserviceError.name === 'NotFoundException') {
+      throw new NotFoundException(microserviceError.message);
+    }
+
+    if (microserviceError.name === 'BadRequestException') {
+      throw new BadRequestException(microserviceError.message);
+    }
 
     throw new InternalServerErrorException(`Failed to ${action}`);
   }
