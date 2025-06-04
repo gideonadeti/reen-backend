@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 
 import { PrismaService } from './prisma/prisma.service';
@@ -106,7 +106,15 @@ export class ProductsService {
 
   async findOne(id: string) {
     try {
-      return await this.prismaService.product.findUnique({ where: { id } });
+      const product = await this.prismaService.product.findUnique({
+        where: { id },
+      });
+
+      if (!product) {
+        throw new NotFoundException(`Product with id ${id} not found`);
+      }
+
+      return product;
     } catch (error) {
       this.handleError(error, `fetch product with id ${id}`);
     }
