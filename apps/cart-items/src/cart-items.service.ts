@@ -58,12 +58,6 @@ export class CartItemsService implements OnModuleInit {
         this.productsService.findOne({ id: createCartItemDto!.productId }),
       );
 
-      if (!product) {
-        throw new NotFoundException(
-          `Product with id ${createCartItemDto!.productId} not found`,
-        );
-      }
-
       if (product.quantity < createCartItemDto!.quantity) {
         throw new BadRequestException(
           `Product with id ${createCartItemDto!.productId} has insufficient quantity`,
