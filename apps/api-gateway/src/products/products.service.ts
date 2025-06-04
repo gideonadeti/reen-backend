@@ -86,8 +86,18 @@ export class ProductsService {
     }
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(userId: string, id: string, updateProductDto: UpdateProductDto) {
+    try {
+      return await firstValueFrom(
+        this.productsService.update({
+          adminId: userId,
+          id,
+          updateProductDto,
+        }),
+      );
+    } catch (error) {
+      this.handleError(error, `update product with id ${id}`);
+    }
   }
 
   remove(id: number) {

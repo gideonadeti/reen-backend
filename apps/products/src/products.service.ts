@@ -7,6 +7,8 @@ import {
   CreateProductDto,
   CreateRequest,
   FindAllRequest,
+  UpdateProductDto,
+  UpdateRequest,
 } from '@app/protos/generated/products';
 
 @Injectable()
@@ -106,6 +108,17 @@ export class ProductsService {
       return await this.prismaService.product.findUnique({ where: { id } });
     } catch (error) {
       this.handleError(error, `fetch product with id ${id}`);
+    }
+  }
+
+  async update({ adminId, id, updateProductDto }: UpdateRequest) {
+    try {
+      return await this.prismaService.product.update({
+        where: { adminId, id },
+        data: updateProductDto as UpdateProductDto,
+      });
+    } catch (error) {
+      this.handleError(error, `update product with id ${id}`);
     }
   }
 }
