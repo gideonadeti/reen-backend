@@ -77,4 +77,18 @@ export class CartItemsService implements OnModuleInit {
       this.handleError(error, 'create cart item');
     }
   }
+
+  async findAll(userId: string) {
+    try {
+      const cartItems = await this.prismaService.cartItem.findMany({
+        where: { userId },
+      });
+
+      return {
+        cartItems,
+      };
+    } catch (error) {
+      this.handleError(error, `fetch cart items for user with id ${userId}`);
+    }
+  }
 }

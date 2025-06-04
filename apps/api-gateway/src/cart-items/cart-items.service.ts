@@ -73,8 +73,16 @@ export class CartItemsService implements OnModuleInit {
     }
   }
 
-  findAll() {
-    return `This action returns all cartItems`;
+  async findAll(userId: string) {
+    try {
+      const response = await firstValueFrom(
+        this.cartItemsService.findAll({ userId }),
+      );
+
+      return response.cartItems || [];
+    } catch (error) {
+      this.handleError(error, 'fetch cart items');
+    }
   }
 
   findOne(id: number) {

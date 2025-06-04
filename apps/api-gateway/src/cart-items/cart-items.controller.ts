@@ -31,8 +31,8 @@ export class CartItemsController {
   }
 
   @Get()
-  findAll() {
-    return this.cartItemsService.findAll();
+  findAll(@UserId() userId: string) {
+    return this.cartItemsService.findAll(userId);
   }
 
   @Get(':id')

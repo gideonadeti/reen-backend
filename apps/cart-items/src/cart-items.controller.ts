@@ -5,6 +5,7 @@ import { CartItemsService } from './cart-items.service';
 import {
   CART_ITEMS_SERVICE_NAME,
   CreateRequest,
+  FindAllRequest,
 } from '@app/protos/generated/cart-items';
 
 @Controller()
@@ -14,5 +15,10 @@ export class CartItemsController {
   @GrpcMethod(CART_ITEMS_SERVICE_NAME)
   create(data: CreateRequest) {
     return this.cartItemsService.create(data);
+  }
+
+  @GrpcMethod(CART_ITEMS_SERVICE_NAME)
+  findAll(data: FindAllRequest) {
+    return this.cartItemsService.findAll(data.userId);
   }
 }
