@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { CartItemsController } from './cart-items.controller';
 import { CartItemsService } from './cart-items.service';
+import { PrismaService } from './prisma/prisma.service';
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { CartItemsService } from './cart-items.service';
     }),
   ],
   controllers: [CartItemsController],
-  providers: [CartItemsService],
+  providers: [CartItemsService, PrismaService],
 })
 export class CartItemsModule {}
