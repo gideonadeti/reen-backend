@@ -81,6 +81,11 @@ export interface UpdateRequest {
   adminId: string;
 }
 
+export interface DeleteRequest {
+  id: string;
+  adminId: string;
+}
+
 export const PRODUCTS_PACKAGE_NAME = "products";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -100,6 +105,8 @@ export interface ProductsServiceClient {
   findOne(request: FindOneRequest): Observable<Product>;
 
   update(request: UpdateRequest): Observable<Product>;
+
+  delete(request: DeleteRequest): Observable<Product>;
 }
 
 export interface ProductsServiceController {
@@ -110,11 +117,13 @@ export interface ProductsServiceController {
   findOne(request: FindOneRequest): Promise<Product> | Observable<Product> | Product;
 
   update(request: UpdateRequest): Promise<Product> | Observable<Product> | Product;
+
+  delete(request: DeleteRequest): Promise<Product> | Observable<Product> | Product;
 }
 
 export function ProductsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["create", "findAll", "findOne", "update"];
+    const grpcMethods: string[] = ["create", "findAll", "findOne", "update", "delete"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("ProductsService", method)(constructor.prototype[method], method, descriptor);

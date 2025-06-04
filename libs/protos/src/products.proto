@@ -9,6 +9,7 @@ service ProductsService {
   rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
   rpc FindOne(FindOneRequest) returns (Product) {}
   rpc Update(UpdateRequest) returns (Product) {}
+  rpc Delete(DeleteRequest) returns (Product) {}
 }
 
 message CreateProductDto {
@@ -77,4 +78,9 @@ message UpdateRequest {
   string id = 1;
   UpdateProductDto updateProductDto = 2;
   string admin_id = 3;
+}
+
+message DeleteRequest {
+  string id = 1;
+  string admin_id = 2;
 }
