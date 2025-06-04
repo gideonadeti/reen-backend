@@ -42,10 +42,11 @@ export class CartItemsController {
 
   @Patch(':id')
   update(
+    @UserId() userId: string,
     @Param('id') id: string,
     @Body() updateCartItemDto: UpdateCartItemDto,
   ) {
-    return this.cartItemsService.update(+id, updateCartItemDto);
+    return this.cartItemsService.update(userId, id, updateCartItemDto);
   }
 
   @Delete(':id')

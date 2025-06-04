@@ -95,8 +95,22 @@ export class CartItemsService implements OnModuleInit {
     }
   }
 
-  update(id: number, updateCartItemDto: UpdateCartItemDto) {
-    return `This action updates a #${id} cartItem`;
+  async update(
+    userId: string,
+    id: string,
+    updateCartItemDto: UpdateCartItemDto,
+  ) {
+    try {
+      return await firstValueFrom(
+        this.cartItemsService.update({
+          userId,
+          id,
+          updateCartItemDto,
+        }),
+      );
+    } catch (error) {
+      this.handleError(error, `update cart item with id ${id}`);
+    }
   }
 
   remove(id: number) {

@@ -20,6 +20,7 @@ import {
   CreateCartItemDto,
   CreateRequest,
   FindOneRequest,
+  UpdateRequest,
 } from '@app/protos/generated/cart-items';
 
 @Injectable()
@@ -100,6 +101,31 @@ export class CartItemsService implements OnModuleInit {
       return cartItem;
     } catch (error) {
       this.handleError(error, `fetch cart item with id ${id}`);
+    }
+  }
+
+  async update({ userId, id, updateCartItemDto }: UpdateRequest) {
+    if (!updateCartItemDto) return;
+
+    try {
+      const product = await firstValueFrom(
+        this.productsService.findOne({
+          id: updateCartItemDto.productId,
+        }),
+      );
+
+      if (product.quantity < updateCartItemDto.quantity) {
+        throw new BadRequestException(
+          `Product with id ${updateCartItemDto.productId} has insufficient quantity`,
+        );
+      }
+
+      return await this.prismaService.cartItem.update({
+        where: { id, userId },
+        data: updateCartItemDto,
+      });
+    } catch (error) {
+      this.handleError(error, `update cart item with id ${id}`);
     }
   }
 }
