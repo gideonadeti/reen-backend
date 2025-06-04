@@ -8,6 +8,7 @@ service ProductsService {
   rpc Create(CreateRequest) returns (CreateResponse) {}
   rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
   rpc FindOne(FindOneRequest) returns (Product) {}
+  rpc Update(UpdateRequest) returns (Product) {}
 }
 
 message CreateProductDto {
@@ -65,3 +66,15 @@ message FindAllResponse {
 }
 
 message FindOneRequest { string id = 1; }
+
+message UpdateProductDto {
+  optional string name = 1;
+  optional double price = 2;
+  optional int32 quantity = 3;
+}
+
+message UpdateRequest {
+  string id = 1;
+  UpdateProductDto updateProductDto = 2;
+  string admin_id = 3;
+}
