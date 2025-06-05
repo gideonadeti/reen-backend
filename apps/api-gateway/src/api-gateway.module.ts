@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { LoggingMiddleware } from './logging/logging.middleware';
 import { ProductsModule } from './products/products.module';
 import { CartItemsModule } from './cart-items/cart-items.module';
+import { CheckoutModule } from './checkout/checkout.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { CartItemsModule } from './cart-items/cart-items.module';
     }),
     ProductsModule,
     CartItemsModule,
+    CheckoutModule,
   ],
   controllers: [],
   providers: [],
