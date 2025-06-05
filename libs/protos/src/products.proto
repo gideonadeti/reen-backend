@@ -11,6 +11,8 @@ service ProductsService {
   rpc FindByIds(FindByIdsRequest) returns (FindByIdsResponse) {}
   rpc Update(UpdateRequest) returns (Product) {}
   rpc Remove(RemoveRequest) returns (Product) {}
+  rpc DecrementQuantities(DecrementQuantitiesRequest)
+      returns (DecrementQuantitiesResponse) {}
 }
 
 message CreateProductDto {
@@ -80,3 +82,15 @@ message RemoveRequest {
 message FindByIdsRequest { repeated string ids = 1; }
 
 message FindByIdsResponse { repeated Product products = 1; }
+
+message DecrementQuantitiesRequest { repeated CartItem cart_items = 1; }
+
+message CartItem {
+  string id = 1;
+  string product_id = 2;
+  int32 quantity = 3;
+  google.protobuf.Timestamp createdAt = 4;
+  google.protobuf.Timestamp updatedAt = 5;
+}
+
+message DecrementQuantitiesResponse {}

@@ -85,6 +85,21 @@ export interface FindByIdsResponse {
   products: Product[];
 }
 
+export interface DecrementQuantitiesRequest {
+  cartItems: CartItem[];
+}
+
+export interface CartItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
+}
+
+export interface DecrementQuantitiesResponse {
+}
+
 export const PRODUCTS_PACKAGE_NAME = "products";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -108,6 +123,8 @@ export interface ProductsServiceClient {
   update(request: UpdateRequest): Observable<Product>;
 
   remove(request: RemoveRequest): Observable<Product>;
+
+  decrementQuantities(request: DecrementQuantitiesRequest): Observable<DecrementQuantitiesResponse>;
 }
 
 export interface ProductsServiceController {
@@ -122,11 +139,23 @@ export interface ProductsServiceController {
   update(request: UpdateRequest): Promise<Product> | Observable<Product> | Product;
 
   remove(request: RemoveRequest): Promise<Product> | Observable<Product> | Product;
+
+  decrementQuantities(
+    request: DecrementQuantitiesRequest,
+  ): Promise<DecrementQuantitiesResponse> | Observable<DecrementQuantitiesResponse> | DecrementQuantitiesResponse;
 }
 
 export function ProductsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["create", "findAll", "findOne", "findByIds", "update", "remove"];
+    const grpcMethods: string[] = [
+      "create",
+      "findAll",
+      "findOne",
+      "findByIds",
+      "update",
+      "remove",
+      "decrementQuantities",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("ProductsService", method)(constructor.prototype[method], method, descriptor);
