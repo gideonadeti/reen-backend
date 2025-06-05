@@ -12,4 +12,9 @@ export class EventsHandlerController {
   handleCheckoutSessionCompleted(@Payload() data: Stripe.Checkout.Session) {
     return this.eventsHandlerService.handleCheckoutSessionCompleted(data);
   }
+
+  @EventPattern('send-order-confirmation')
+  handleSendOrderConfirmation(@Payload() data: string) {
+    return this.eventsHandlerService.handleSendOrderConfirmation(data);
+  }
 }

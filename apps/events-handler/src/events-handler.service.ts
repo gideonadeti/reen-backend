@@ -4,6 +4,7 @@ import { ClientGrpc, ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 import { GrpcError, MicroserviceError } from '@app/interfaces';
+import { ResendService } from './resend/resend.service';
 import {
   CART_ITEMS_PACKAGE_NAME,
   CART_ITEMS_SERVICE_NAME,
@@ -34,6 +35,7 @@ export class EventsHandlerService implements OnModuleInit {
     @Inject(ORDERS_PACKAGE_NAME) private ordersClient: ClientGrpc,
     @Inject('EVENTS_HANDLER_SERVICE') private eventsHandlerClient: ClientProxy,
     @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
+    private readonly resendService: ResendService,
   ) {}
 
   private cartItemsService: CartItemsServiceClient;
@@ -135,6 +137,24 @@ export class EventsHandlerService implements OnModuleInit {
       }
     } catch (error) {
       this.handleError(error, 'undo operations');
+    }
+  }
+
+  async handleSendOrderConfirmation(userId: string) {
+    try {
+      const user = await firstValueFrom(
+        this.authService.findUser({ id: userId }),
+      );
+
+      await this.resendService.sendOrderConfirmation(
+        user.email,
+        user.name.split(' ')[0],
+      );
+    } catch (error) {
+      this.logger.error(
+        'Failed to send order confirmation',
+        (error as Error).stack,
+      );
     }
   }
 }
