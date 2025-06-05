@@ -58,6 +58,13 @@ export interface RemoveRequest {
   userId: string;
 }
 
+export interface RemoveAllRequest {
+  userId: string;
+}
+
+export interface RemoveAllResponse {
+}
+
 export const CART_ITEMS_PACKAGE_NAME = "cart_items";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -79,6 +86,8 @@ export interface CartItemsServiceClient {
   update(request: UpdateRequest): Observable<CartItem>;
 
   remove(request: RemoveRequest): Observable<CartItem>;
+
+  removeAll(request: RemoveAllRequest): Observable<RemoveAllResponse>;
 }
 
 export interface CartItemsServiceController {
@@ -91,11 +100,13 @@ export interface CartItemsServiceController {
   update(request: UpdateRequest): Promise<CartItem> | Observable<CartItem> | CartItem;
 
   remove(request: RemoveRequest): Promise<CartItem> | Observable<CartItem> | CartItem;
+
+  removeAll(request: RemoveAllRequest): Promise<RemoveAllResponse> | Observable<RemoveAllResponse> | RemoveAllResponse;
 }
 
 export function CartItemsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["create", "findAll", "findOne", "update", "remove"];
+    const grpcMethods: string[] = ["create", "findAll", "findOne", "update", "remove", "removeAll"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("CartItemsService", method)(constructor.prototype[method], method, descriptor);
