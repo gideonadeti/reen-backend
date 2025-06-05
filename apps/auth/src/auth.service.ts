@@ -170,4 +170,12 @@ export class AuthService {
       this.handleError(error, 'sign out');
     }
   }
+
+  async findUser(id: string) {
+    try {
+      return await this.prismaService.user.findUnique({ where: { id } });
+    } catch (error) {
+      this.handleError(error, `find user with id ${id}`);
+    }
+  }
 }
