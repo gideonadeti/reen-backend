@@ -11,6 +11,7 @@ import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
 import { ORDERS_PACKAGE_NAME } from '@app/protos/generated/orders';
 import { RmqLoggingInterceptor } from './rmq-logging/rmq-logging.middleware';
 import { AUTH_PACKAGE_NAME } from '@app/protos/generated/auth';
+import { ResendService } from './resend/resend.service';
 
 @Module({
   imports: [
@@ -83,6 +84,7 @@ import { AUTH_PACKAGE_NAME } from '@app/protos/generated/auth';
       provide: APP_INTERCEPTOR,
       useClass: RmqLoggingInterceptor,
     },
+    ResendService,
   ],
 })
 export class EventsHandlerModule {}
