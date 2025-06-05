@@ -158,7 +158,7 @@ export class ProductsService {
 
   async decrementQuantities(cartItems: CartItem[]) {
     try {
-      return await this.prismaService.$transaction(
+      await this.prismaService.$transaction(
         cartItems.map((cartItem) =>
           this.prismaService.product.update({
             where: {
@@ -175,6 +175,8 @@ export class ProductsService {
           }),
         ),
       );
+
+      return {}; // To match expected response proto
     } catch (error) {
       this.handleError(error, 'decrement quantities');
     }
@@ -182,7 +184,7 @@ export class ProductsService {
 
   async incrementQuantities(cartItems: CartItem[]) {
     try {
-      return await this.prismaService.$transaction(
+      await this.prismaService.$transaction(
         cartItems.map((cartItem) =>
           this.prismaService.product.update({
             where: { id: cartItem.productId },
@@ -194,6 +196,8 @@ export class ProductsService {
           }),
         ),
       );
+
+      return {};
     } catch (error) {
       this.handleError(error, 'increment quantities');
     }
