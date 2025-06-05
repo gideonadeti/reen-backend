@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 
@@ -46,6 +46,20 @@ import { ORDERS_PACKAGE_NAME } from '@app/protos/generated/orders';
           protoPath: join(__dirname, '../../libs/protos/orders.proto'),
           url: 'localhost:5003',
         },
+      },
+    ]),
+    ClientsModule.registerAsync([
+      {
+        imports: [ConfigModule],
+        name: 'EVENTS_HANDLER_SERVICE',
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.get('MESSAGE_BROKER_URL') as string],
+            queue: 'events-handler',
+          },
+        }),
+        inject: [ConfigService],
       },
     ]),
   ],

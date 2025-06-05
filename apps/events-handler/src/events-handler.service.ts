@@ -1,5 +1,5 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ClientGrpc } from '@nestjs/microservices';
+import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 
 import {
   CART_ITEMS_PACKAGE_NAME,
@@ -23,6 +23,7 @@ export class EventsHandlerService implements OnModuleInit {
     @Inject(CART_ITEMS_PACKAGE_NAME) private cartItemsClient: ClientGrpc,
     @Inject(PRODUCTS_PACKAGE_NAME) private productsClient: ClientGrpc,
     @Inject(ORDERS_PACKAGE_NAME) private ordersClient: ClientGrpc,
+    @Inject('EVENTS_HANDLER_SERVICE') private eventsHandlerClient: ClientProxy,
   ) {}
 
   private cartItemsService: CartItemsServiceClient;
