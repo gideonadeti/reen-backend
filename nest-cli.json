@@ -45,6 +45,15 @@
         "tsConfigPath": "apps/cart-items/tsconfig.app.json"
       }
     },
+    "events-handler": {
+      "type": "application",
+      "root": "apps/events-handler",
+      "entryFile": "main",
+      "sourceRoot": "apps/events-handler/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/events-handler/tsconfig.app.json"
+      }
+    },
     "interceptors": {
       "type": "library",
       "root": "libs/interceptors",
@@ -88,7 +97,9 @@
       "sourceRoot": "libs/protos/src",
       "compilerOptions": {
         "tsConfigPath": "libs/protos/tsconfig.lib.json",
-        "assets": ["**/*.proto"],
+        "assets": [
+          "**/*.proto"
+        ],
         "watchAssets": true
       }
     }
