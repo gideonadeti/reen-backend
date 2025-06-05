@@ -81,6 +81,10 @@ export interface FindByIdsRequest {
   ids: string[];
 }
 
+export interface FindByIdsResponse {
+  products: Product[];
+}
+
 export const PRODUCTS_PACKAGE_NAME = "products";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -99,7 +103,7 @@ export interface ProductsServiceClient {
 
   findOne(request: FindOneRequest): Observable<Product>;
 
-  findByIds(request: FindByIdsRequest): Observable<FindAllResponse>;
+  findByIds(request: FindByIdsRequest): Observable<FindByIdsResponse>;
 
   update(request: UpdateRequest): Observable<Product>;
 
@@ -113,7 +117,7 @@ export interface ProductsServiceController {
 
   findOne(request: FindOneRequest): Promise<Product> | Observable<Product> | Product;
 
-  findByIds(request: FindByIdsRequest): Promise<FindAllResponse> | Observable<FindAllResponse> | FindAllResponse;
+  findByIds(request: FindByIdsRequest): Promise<FindByIdsResponse> | Observable<FindByIdsResponse> | FindByIdsResponse;
 
   update(request: UpdateRequest): Promise<Product> | Observable<Product> | Product;
 

@@ -8,7 +8,7 @@ service ProductsService {
   rpc Create(CreateRequest) returns (Product) {}
   rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
   rpc FindOne(FindOneRequest) returns (Product) {}
-  rpc FindByIds(FindByIdsRequest) returns (FindAllResponse) {}
+  rpc FindByIds(FindByIdsRequest) returns (FindByIdsResponse) {}
   rpc Update(UpdateRequest) returns (Product) {}
   rpc Remove(RemoveRequest) returns (Product) {}
 }
@@ -78,3 +78,5 @@ message RemoveRequest {
 }
 
 message FindByIdsRequest { repeated string ids = 1; }
+
+message FindByIdsResponse { repeated Product products = 1; }

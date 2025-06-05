@@ -122,9 +122,13 @@ export class ProductsService {
 
   async findByIds(ids: string[]) {
     try {
-      return await this.prismaService.product.findMany({
+      const products = await this.prismaService.product.findMany({
         where: { id: { in: ids } },
       });
+
+      return {
+        products,
+      };
     } catch (error) {
       this.handleError(error, `fetch products with ids ${ids.join(', ')}`);
     }

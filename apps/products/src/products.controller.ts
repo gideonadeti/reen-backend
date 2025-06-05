@@ -5,6 +5,7 @@ import { ProductsService } from './products.service';
 import {
   CreateRequest,
   FindAllRequest,
+  FindByIdsRequest,
   FindOneRequest,
   PRODUCTS_SERVICE_NAME,
   RemoveRequest,
@@ -28,6 +29,11 @@ export class ProductsController {
   @GrpcMethod(PRODUCTS_SERVICE_NAME)
   findOne(data: FindOneRequest) {
     return this.productsService.findOne(data.id);
+  }
+
+  @GrpcMethod(PRODUCTS_SERVICE_NAME)
+  findByIds(data: FindByIdsRequest) {
+    return this.productsService.findByIds(data.ids);
   }
 
   @GrpcMethod(PRODUCTS_SERVICE_NAME)
