@@ -7,6 +7,7 @@ import {
   CreateRequest,
   FindAllRequest,
   FindOneRequest,
+  RemoveAllRequest,
   RemoveRequest,
   UpdateRequest,
 } from '@app/protos/generated/cart-items';
@@ -38,5 +39,10 @@ export class CartItemsController {
   @GrpcMethod(CART_ITEMS_SERVICE_NAME)
   remove(data: RemoveRequest) {
     return this.cartItemsService.remove(data);
+  }
+
+  @GrpcMethod(CART_ITEMS_SERVICE_NAME)
+  removeAll(data: RemoveAllRequest) {
+    return this.cartItemsService.removeAll(data.userId);
   }
 }
