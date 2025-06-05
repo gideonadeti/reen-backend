@@ -4,7 +4,10 @@ package orders;
 
 import "google/protobuf/timestamp.proto";
 
-service OrdersService { rpc Create(CreateRequest) returns (Order); }
+service OrdersService {
+  rpc Create(CreateRequest) returns (Order);
+  rpc Remove(RemoveRequest) returns (Order);
+}
 
 message CreateRequest {
   string user_id = 1;
@@ -26,3 +29,5 @@ message Order {
   google.protobuf.Timestamp createdAt = 5;
   google.protobuf.Timestamp updatedAt = 6;
 }
+
+message RemoveRequest { string id = 1; }

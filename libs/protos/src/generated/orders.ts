@@ -32,6 +32,10 @@ export interface Order {
   updatedAt: Date | undefined;
 }
 
+export interface RemoveRequest {
+  id: string;
+}
+
 export const ORDERS_PACKAGE_NAME = "orders";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -45,15 +49,19 @@ wrappers[".google.protobuf.Timestamp"] = {
 
 export interface OrdersServiceClient {
   create(request: CreateRequest): Observable<Order>;
+
+  remove(request: RemoveRequest): Observable<Order>;
 }
 
 export interface OrdersServiceController {
   create(request: CreateRequest): Promise<Order> | Observable<Order> | Order;
+
+  remove(request: RemoveRequest): Promise<Order> | Observable<Order> | Order;
 }
 
 export function OrdersServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["create"];
+    const grpcMethods: string[] = ["create", "remove"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("OrdersService", method)(constructor.prototype[method], method, descriptor);
