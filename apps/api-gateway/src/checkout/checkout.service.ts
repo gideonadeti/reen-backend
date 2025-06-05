@@ -1,3 +1,5 @@
+import { ClientGrpc } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 import {
   BadRequestException,
   Inject,
@@ -13,7 +15,6 @@ import {
   CART_ITEMS_SERVICE_NAME,
   CartItemsServiceClient,
 } from '@app/protos/generated/cart-items';
-import { ClientGrpc } from '@nestjs/microservices';
 import {
   PRODUCTS_PACKAGE_NAME,
   PRODUCTS_SERVICE_NAME,
@@ -25,6 +26,7 @@ export class CheckoutService implements OnModuleInit {
   constructor(
     @Inject(CART_ITEMS_PACKAGE_NAME) private cartItemsClient: ClientGrpc,
     @Inject(PRODUCTS_PACKAGE_NAME) private productsClient: ClientGrpc,
+    private configService: ConfigService,
   ) {}
 
   private logger = new Logger(CheckoutService.name);
