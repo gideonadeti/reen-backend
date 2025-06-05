@@ -6,6 +6,7 @@ import { LoggingMiddleware } from './logging/logging.middleware';
 import { ProductsModule } from './products/products.module';
 import { CartItemsModule } from './cart-items/cart-items.module';
 import { CheckoutModule } from './checkout/checkout.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CheckoutModule } from './checkout/checkout.module';
     ProductsModule,
     CartItemsModule,
     CheckoutModule,
+    WebhooksModule,
   ],
   controllers: [],
   providers: [],
