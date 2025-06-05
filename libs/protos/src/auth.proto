@@ -9,6 +9,7 @@ service AuthService {
   rpc SignIn(User) returns (SignUpInResponse) {}
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
   rpc SignOut(SignOutRequest) returns (SignOutResponse) {}
+  rpc FindUser(FindUserRequest) returns (User) {}
 }
 
 message SignUpRequest {
@@ -58,3 +59,5 @@ message SignOutResponse {
   google.protobuf.Timestamp createdAt = 4;
   google.protobuf.Timestamp updatedAt = 5;
 }
+
+message FindUserRequest { string id = 1; }
