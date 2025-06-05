@@ -72,15 +72,6 @@
         "tsConfigPath": "libs/middlewares/tsconfig.lib.json"
       }
     },
-    "payment": {
-      "type": "application",
-      "root": "apps/payment",
-      "entryFile": "main",
-      "sourceRoot": "apps/payment/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/payment/tsconfig.app.json"
-      }
-    },
     "products": {
       "type": "application",
       "root": "apps/products",
@@ -97,9 +88,7 @@
       "sourceRoot": "libs/protos/src",
       "compilerOptions": {
         "tsConfigPath": "libs/protos/tsconfig.lib.json",
-        "assets": [
-          "**/*.proto"
-        ],
+        "assets": ["**/*.proto"],
         "watchAssets": true
       }
     }
