@@ -10,6 +10,7 @@ import { CART_ITEMS_PACKAGE_NAME } from '@app/protos/generated/cart-items';
 import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
 import { ORDERS_PACKAGE_NAME } from '@app/protos/generated/orders';
 import { RmqLoggingInterceptor } from './rmq-logging/rmq-logging.middleware';
+import { AUTH_PACKAGE_NAME } from '@app/protos/generated/auth';
 
 @Module({
   imports: [
@@ -62,6 +63,16 @@ import { RmqLoggingInterceptor } from './rmq-logging/rmq-logging.middleware';
           },
         }),
         inject: [ConfigService],
+      },
+    ]),
+    ClientsModule.register([
+      {
+        name: AUTH_PACKAGE_NAME,
+        transport: Transport.GRPC,
+        options: {
+          package: AUTH_PACKAGE_NAME,
+          protoPath: join(__dirname, '../../libs/protos/auth.proto'),
+        },
       },
     ]),
   ],

@@ -20,6 +20,11 @@ import {
   ORDERS_SERVICE_NAME,
   OrdersServiceClient,
 } from '@app/protos/generated/orders';
+import {
+  AUTH_PACKAGE_NAME,
+  AUTH_SERVICE_NAME,
+  AuthServiceClient,
+} from '@app/protos/generated/auth';
 
 @Injectable()
 export class EventsHandlerService implements OnModuleInit {
@@ -28,11 +33,13 @@ export class EventsHandlerService implements OnModuleInit {
     @Inject(PRODUCTS_PACKAGE_NAME) private productsClient: ClientGrpc,
     @Inject(ORDERS_PACKAGE_NAME) private ordersClient: ClientGrpc,
     @Inject('EVENTS_HANDLER_SERVICE') private eventsHandlerClient: ClientProxy,
+    @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
   ) {}
 
   private cartItemsService: CartItemsServiceClient;
   private productsService: ProductsServiceClient;
   private ordersService: OrdersServiceClient;
+  private authService: AuthServiceClient;
   private logger = new Logger(EventsHandlerService.name);
 
   onModuleInit() {
@@ -43,6 +50,7 @@ export class EventsHandlerService implements OnModuleInit {
       PRODUCTS_SERVICE_NAME,
     );
     this.ordersService = this.ordersClient.getService(ORDERS_SERVICE_NAME);
+    this.authService = this.authClient.getService(AUTH_SERVICE_NAME);
   }
 
   private handleError(error: any, action: string) {
