@@ -8,6 +8,7 @@ service ProductsService {
   rpc Create(CreateRequest) returns (Product) {}
   rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
   rpc FindOne(FindOneRequest) returns (Product) {}
+  rpc FindByIds(FindByIdsRequest) returns (FindAllResponse) {}
   rpc Update(UpdateRequest) returns (Product) {}
   rpc Remove(RemoveRequest) returns (Product) {}
 }
@@ -75,3 +76,5 @@ message RemoveRequest {
   string id = 1;
   string admin_id = 2;
 }
+
+message FindByIdsRequest { repeated string ids = 1; }

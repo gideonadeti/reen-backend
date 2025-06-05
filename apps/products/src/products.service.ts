@@ -120,6 +120,16 @@ export class ProductsService {
     }
   }
 
+  async findByIds(ids: string[]) {
+    try {
+      return await this.prismaService.product.findMany({
+        where: { id: { in: ids } },
+      });
+    } catch (error) {
+      this.handleError(error, `fetch products with ids ${ids.join(', ')}`);
+    }
+  }
+
   async update({ adminId, id, updateProductDto }: UpdateRequest) {
     try {
       return await this.prismaService.product.update({

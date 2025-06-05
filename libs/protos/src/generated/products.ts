@@ -77,6 +77,10 @@ export interface RemoveRequest {
   adminId: string;
 }
 
+export interface FindByIdsRequest {
+  ids: string[];
+}
+
 export const PRODUCTS_PACKAGE_NAME = "products";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -95,6 +99,8 @@ export interface ProductsServiceClient {
 
   findOne(request: FindOneRequest): Observable<Product>;
 
+  findByIds(request: FindByIdsRequest): Observable<FindAllResponse>;
+
   update(request: UpdateRequest): Observable<Product>;
 
   remove(request: RemoveRequest): Observable<Product>;
@@ -107,6 +113,8 @@ export interface ProductsServiceController {
 
   findOne(request: FindOneRequest): Promise<Product> | Observable<Product> | Product;
 
+  findByIds(request: FindByIdsRequest): Promise<FindAllResponse> | Observable<FindAllResponse> | FindAllResponse;
+
   update(request: UpdateRequest): Promise<Product> | Observable<Product> | Product;
 
   remove(request: RemoveRequest): Promise<Product> | Observable<Product> | Product;
@@ -114,7 +122,7 @@ export interface ProductsServiceController {
 
 export function ProductsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["create", "findAll", "findOne", "update", "remove"];
+    const grpcMethods: string[] = ["create", "findAll", "findOne", "findByIds", "update", "remove"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("ProductsService", method)(constructor.prototype[method], method, descriptor);
