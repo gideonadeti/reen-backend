@@ -13,6 +13,8 @@ service ProductsService {
   rpc Remove(RemoveRequest) returns (Product) {}
   rpc DecrementQuantities(DecrementQuantitiesRequest)
       returns (DecrementQuantitiesResponse) {}
+  rpc IncrementQuantities(IncrementQuantitiesRequest)
+      returns (IncrementQuantitiesResponse) {}
 }
 
 message CreateProductDto {
@@ -94,3 +96,7 @@ message CartItem {
 }
 
 message DecrementQuantitiesResponse {}
+
+message IncrementQuantitiesRequest { repeated CartItem cart_items = 1; }
+
+message IncrementQuantitiesResponse {}

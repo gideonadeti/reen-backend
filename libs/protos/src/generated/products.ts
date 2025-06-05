@@ -100,6 +100,13 @@ export interface CartItem {
 export interface DecrementQuantitiesResponse {
 }
 
+export interface IncrementQuantitiesRequest {
+  cartItems: CartItem[];
+}
+
+export interface IncrementQuantitiesResponse {
+}
+
 export const PRODUCTS_PACKAGE_NAME = "products";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -125,6 +132,8 @@ export interface ProductsServiceClient {
   remove(request: RemoveRequest): Observable<Product>;
 
   decrementQuantities(request: DecrementQuantitiesRequest): Observable<DecrementQuantitiesResponse>;
+
+  incrementQuantities(request: IncrementQuantitiesRequest): Observable<IncrementQuantitiesResponse>;
 }
 
 export interface ProductsServiceController {
@@ -143,6 +152,10 @@ export interface ProductsServiceController {
   decrementQuantities(
     request: DecrementQuantitiesRequest,
   ): Promise<DecrementQuantitiesResponse> | Observable<DecrementQuantitiesResponse> | DecrementQuantitiesResponse;
+
+  incrementQuantities(
+    request: IncrementQuantitiesRequest,
+  ): Promise<IncrementQuantitiesResponse> | Observable<IncrementQuantitiesResponse> | IncrementQuantitiesResponse;
 }
 
 export function ProductsServiceControllerMethods() {
@@ -155,6 +168,7 @@ export function ProductsServiceControllerMethods() {
       "update",
       "remove",
       "decrementQuantities",
+      "incrementQuantities",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
