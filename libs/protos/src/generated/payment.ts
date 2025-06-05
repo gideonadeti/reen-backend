@@ -6,20 +6,31 @@
 
 /* eslint-disable */
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
+import { Observable } from "rxjs";
 
 export const protobufPackage = "payment";
+
+export interface CheckoutRequest {
+  userId: string;
+}
+
+export interface CheckoutResponse {
+  stripeSessionUrl: string;
+}
 
 export const PAYMENT_PACKAGE_NAME = "payment";
 
 export interface PaymentServiceClient {
+  checkout(request: CheckoutRequest): Observable<CheckoutResponse>;
 }
 
 export interface PaymentServiceController {
+  checkout(request: CheckoutRequest): Promise<CheckoutResponse> | Observable<CheckoutResponse> | CheckoutResponse;
 }
 
 export function PaymentServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = [];
+    const grpcMethods: string[] = ["checkout"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("PaymentService", method)(constructor.prototype[method], method, descriptor);
