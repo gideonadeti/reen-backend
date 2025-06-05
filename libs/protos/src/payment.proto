@@ -4,8 +4,21 @@ package payment;
 
 service PaymentService {
   rpc Checkout(CheckoutRequest) returns (CheckoutResponse);
+  rpc HandleSuccessfulCheckout(HandleSuccessfulCheckoutRequest)
+      returns (HandleSuccessfulCheckoutResponse);
 }
 
 message CheckoutRequest { string user_id = 1; }
 
 message CheckoutResponse { string stripe_session_url = 1; }
+
+message HandleSuccessfulCheckoutRequest { Session session = 1; }
+
+message Session {
+  Metadata metadata = 1;
+  double amount_total = 2;
+}
+
+message Metadata { string userId = 1; }
+
+message HandleSuccessfulCheckoutResponse {}

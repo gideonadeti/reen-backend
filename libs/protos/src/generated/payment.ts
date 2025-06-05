@@ -18,19 +18,44 @@ export interface CheckoutResponse {
   stripeSessionUrl: string;
 }
 
+export interface HandleSuccessfulCheckoutRequest {
+  session: Session | undefined;
+}
+
+export interface Session {
+  metadata: Metadata | undefined;
+  amountTotal: number;
+}
+
+export interface Metadata {
+  userId: string;
+}
+
+export interface HandleSuccessfulCheckoutResponse {
+}
+
 export const PAYMENT_PACKAGE_NAME = "payment";
 
 export interface PaymentServiceClient {
   checkout(request: CheckoutRequest): Observable<CheckoutResponse>;
+
+  handleSuccessfulCheckout(request: HandleSuccessfulCheckoutRequest): Observable<HandleSuccessfulCheckoutResponse>;
 }
 
 export interface PaymentServiceController {
   checkout(request: CheckoutRequest): Promise<CheckoutResponse> | Observable<CheckoutResponse> | CheckoutResponse;
+
+  handleSuccessfulCheckout(
+    request: HandleSuccessfulCheckoutRequest,
+  ):
+    | Promise<HandleSuccessfulCheckoutResponse>
+    | Observable<HandleSuccessfulCheckoutResponse>
+    | HandleSuccessfulCheckoutResponse;
 }
 
 export function PaymentServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["checkout"];
+    const grpcMethods: string[] = ["checkout", "handleSuccessfulCheckout"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("PaymentService", method)(constructor.prototype[method], method, descriptor);
