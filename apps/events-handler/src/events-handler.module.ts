@@ -2,12 +2,14 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 import { EventsHandlerController } from './events-handler.controller';
 import { EventsHandlerService } from './events-handler.service';
 import { CART_ITEMS_PACKAGE_NAME } from '@app/protos/generated/cart-items';
 import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
 import { ORDERS_PACKAGE_NAME } from '@app/protos/generated/orders';
+import { RmqLoggingInterceptor } from './rmq-logging/rmq-logging.middleware';
 
 @Module({
   imports: [
@@ -64,6 +66,12 @@ import { ORDERS_PACKAGE_NAME } from '@app/protos/generated/orders';
     ]),
   ],
   controllers: [EventsHandlerController],
-  providers: [EventsHandlerService],
+  providers: [
+    EventsHandlerService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RmqLoggingInterceptor,
+    },
+  ],
 })
 export class EventsHandlerModule {}
