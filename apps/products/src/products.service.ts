@@ -4,6 +4,7 @@ import { RpcException } from '@nestjs/microservices';
 import { PrismaService } from './prisma/prisma.service';
 import { Prisma } from '../generated/prisma';
 import {
+  CartItem,
   CreateProductDto,
   CreateRequest,
   FindAllRequest,
@@ -152,6 +153,30 @@ export class ProductsService {
       });
     } catch (error) {
       this.handleError(error, `delete product with id ${id}`);
+    }
+  }
+
+  async decrementQuantities(cartItems: CartItem[]) {
+    try {
+      return await this.prismaService.$transaction(
+        cartItems.map((cartItem) =>
+          this.prismaService.product.update({
+            where: {
+              id: cartItem.productId,
+              quantity: {
+                gte: cartItem.quantity,
+              },
+            },
+            data: {
+              quantity: {
+                decrement: cartItem.quantity,
+              },
+            },
+          }),
+        ),
+      );
+    } catch (error) {
+      this.handleError(error, 'decrement quantities');
     }
   }
 }

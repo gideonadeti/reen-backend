@@ -4,6 +4,7 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { ProductsService } from './products.service';
 import {
   CreateRequest,
+  DecrementQuantitiesRequest,
   FindAllRequest,
   FindByIdsRequest,
   FindOneRequest,
@@ -44,5 +45,10 @@ export class ProductsController {
   @GrpcMethod(PRODUCTS_SERVICE_NAME)
   remove(data: RemoveRequest) {
     return this.productsService.remove(data);
+  }
+
+  @GrpcMethod(PRODUCTS_SERVICE_NAME)
+  decrementQuantities(data: DecrementQuantitiesRequest) {
+    return this.productsService.decrementQuantities(data.cartItems);
   }
 }
