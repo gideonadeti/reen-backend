@@ -51,4 +51,9 @@ export class ProductsController {
   decrementQuantities(data: DecrementQuantitiesRequest) {
     return this.productsService.decrementQuantities(data.cartItems);
   }
+
+  @GrpcMethod(PRODUCTS_SERVICE_NAME)
+  incrementQuantities(data: DecrementQuantitiesRequest) {
+    return this.productsService.incrementQuantities(data.cartItems);
+  }
 }
