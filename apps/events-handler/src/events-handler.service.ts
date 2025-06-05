@@ -1,12 +1,16 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
+import Stripe from 'stripe';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { ClientGrpc, ClientProxy, RpcException } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
+import { GrpcError, MicroserviceError } from '@app/interfaces';
 import {
   CART_ITEMS_PACKAGE_NAME,
   CART_ITEMS_SERVICE_NAME,
   CartItemsServiceClient,
 } from '@app/protos/generated/cart-items';
 import {
+  CartItem,
   PRODUCTS_PACKAGE_NAME,
   PRODUCTS_SERVICE_NAME,
   ProductsServiceClient,
@@ -29,6 +33,7 @@ export class EventsHandlerService implements OnModuleInit {
   private cartItemsService: CartItemsServiceClient;
   private productsService: ProductsServiceClient;
   private ordersService: OrdersServiceClient;
+  private logger = new Logger(EventsHandlerService.name);
 
   onModuleInit() {
     this.cartItemsService = this.cartItemsClient.getService(
@@ -38,5 +43,90 @@ export class EventsHandlerService implements OnModuleInit {
       PRODUCTS_SERVICE_NAME,
     );
     this.ordersService = this.ordersClient.getService(ORDERS_SERVICE_NAME);
+  }
+
+  private handleError(error: any, action: string) {
+    this.logger.error(`Failed to ${action}`, (error as Error).stack);
+
+    // Check if error is a gRPC error and throw it else api-gateway wouldn't parse correctly
+    const microserviceError = JSON.parse(
+      (error as GrpcError).details || '{}',
+    ) as MicroserviceError;
+
+    if (Object.keys(microserviceError).length !== 0) {
+      throw new RpcException(JSON.stringify(microserviceError));
+    }
+
+    throw new RpcException(JSON.stringify(error));
+  }
+
+  async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+    const userId = session.metadata!.userId;
+    let cartItems: CartItem[] = [];
+    let didDecrementProducts = false;
+    let orderId: string | null = null;
+
+    try {
+      const findAllResponse = await firstValueFrom(
+        this.cartItemsService.findAll({ userId }),
+      );
+
+      cartItems = findAllResponse.cartItems || [];
+
+      await firstValueFrom(
+        this.productsService.decrementQuantities({ cartItems }),
+      );
+
+      didDecrementProducts = true;
+
+      const productIds = cartItems.map((cartItem) => cartItem.productId);
+      const findByIdsResponse = await firstValueFrom(
+        this.productsService.findByIds({ ids: productIds }),
+      );
+      const products = findByIdsResponse.products || [];
+      const productMap = new Map(products.map((p) => [p.id, p]));
+      const orderItems = cartItems.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: Number(productMap.get(item.productId)?.price),
+      }));
+      const order = await firstValueFrom(
+        this.ordersService.create({
+          userId,
+          total: session.amount_total! / 100,
+          orderItems,
+        }),
+      );
+
+      orderId = order.id;
+
+      await firstValueFrom(this.cartItemsService.removeAll({ userId }));
+
+      this.eventsHandlerClient.emit('send-order-confirmation', userId);
+    } catch (error) {
+      await this.undoOperations(cartItems, didDecrementProducts, orderId);
+
+      this.handleError(error, 'handle successful checkout');
+    }
+  }
+
+  async undoOperations(
+    cartItems: CartItem[],
+    didDecrementProducts: boolean,
+    orderId: string | null,
+  ) {
+    try {
+      if (didDecrementProducts) {
+        await firstValueFrom(
+          this.productsService.incrementQuantities({ cartItems }),
+        );
+      }
+
+      if (orderId) {
+        await firstValueFrom(this.ordersService.remove({ id: orderId }));
+      }
+    } catch (error) {
+      this.handleError(error, 'undo operations');
+    }
   }
 }
