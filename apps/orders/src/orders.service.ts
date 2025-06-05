@@ -36,4 +36,16 @@ export class OrdersService {
       this.handleError(error, 'create order');
     }
   }
+
+  async remove(id: string) {
+    try {
+      return await this.prismaService.order.delete({
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      this.handleError(error, 'delete order');
+    }
+  }
 }
