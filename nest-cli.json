@@ -36,6 +36,15 @@
         "tsConfigPath": "apps/auth/tsconfig.app.json"
       }
     },
+    "cart-items": {
+      "type": "application",
+      "root": "apps/cart-items",
+      "entryFile": "main",
+      "sourceRoot": "apps/cart-items/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/cart-items/tsconfig.app.json"
+      }
+    },
     "interceptors": {
       "type": "library",
       "root": "libs/interceptors",

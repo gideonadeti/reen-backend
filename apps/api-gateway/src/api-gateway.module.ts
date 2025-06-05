@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { LoggingMiddleware } from './logging/logging.middleware';
 import { ProductsModule } from './products/products.module';
+import { CartItemsModule } from './cart-items/cart-items.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ProductsModule } from './products/products.module';
       envFilePath: 'apps/api-gateway/.env',
     }),
     ProductsModule,
+    CartItemsModule,
   ],
   controllers: [],
   providers: [],
