@@ -6,6 +6,7 @@ import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
 import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
 import { CART_ITEMS_PACKAGE_NAME } from '@app/protos/generated/cart-items';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -31,6 +32,10 @@ import { CART_ITEMS_PACKAGE_NAME } from '@app/protos/generated/cart-items';
         },
       },
     ]),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: 'apps/payment/.env',
+    }),
   ],
   controllers: [PaymentController],
   providers: [PaymentService],
