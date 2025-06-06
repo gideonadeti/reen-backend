@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
+import { ConfigModule } from '@nestjs/config';
 
 import { CheckoutController } from './checkout.controller';
 import { CheckoutService } from './checkout.service';
@@ -31,6 +32,10 @@ import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
         },
       },
     ]),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: 'apps/checkout/.env',
+    }),
   ],
   controllers: [CheckoutController],
   providers: [CheckoutService],

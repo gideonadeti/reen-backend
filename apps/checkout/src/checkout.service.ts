@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 
 import {
   CART_ITEMS_PACKAGE_NAME,
@@ -17,6 +18,7 @@ export class CheckoutService {
   constructor(
     @Inject(CART_ITEMS_PACKAGE_NAME) private cartItemsClient: ClientGrpc,
     @Inject(PRODUCTS_PACKAGE_NAME) private productsClient: ClientGrpc,
+    private configService: ConfigService,
   ) {}
 
   private cartItemsService: CartItemsServiceClient;
