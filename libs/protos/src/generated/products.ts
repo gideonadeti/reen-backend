@@ -85,10 +85,6 @@ export interface FindByIdsResponse {
   products: Product[];
 }
 
-export interface DecrementQuantitiesRequest {
-  cartItems: CartItem[];
-}
-
 export interface CartItem {
   id: string;
   productId: string;
@@ -97,14 +93,12 @@ export interface CartItem {
   updatedAt: Date | undefined;
 }
 
-export interface DecrementQuantitiesResponse {
-}
-
-export interface IncrementQuantitiesRequest {
+export interface UpdateQuantitiesRequest {
   cartItems: CartItem[];
+  increment: boolean;
 }
 
-export interface IncrementQuantitiesResponse {
+export interface UpdateQuantitiesResponse {
 }
 
 export const PRODUCTS_PACKAGE_NAME = "products";
@@ -131,9 +125,7 @@ export interface ProductsServiceClient {
 
   remove(request: RemoveRequest): Observable<Product>;
 
-  decrementQuantities(request: DecrementQuantitiesRequest): Observable<DecrementQuantitiesResponse>;
-
-  incrementQuantities(request: IncrementQuantitiesRequest): Observable<IncrementQuantitiesResponse>;
+  updateQuantities(request: UpdateQuantitiesRequest): Observable<UpdateQuantitiesResponse>;
 }
 
 export interface ProductsServiceController {
@@ -149,27 +141,14 @@ export interface ProductsServiceController {
 
   remove(request: RemoveRequest): Promise<Product> | Observable<Product> | Product;
 
-  decrementQuantities(
-    request: DecrementQuantitiesRequest,
-  ): Promise<DecrementQuantitiesResponse> | Observable<DecrementQuantitiesResponse> | DecrementQuantitiesResponse;
-
-  incrementQuantities(
-    request: IncrementQuantitiesRequest,
-  ): Promise<IncrementQuantitiesResponse> | Observable<IncrementQuantitiesResponse> | IncrementQuantitiesResponse;
+  updateQuantities(
+    request: UpdateQuantitiesRequest,
+  ): Promise<UpdateQuantitiesResponse> | Observable<UpdateQuantitiesResponse> | UpdateQuantitiesResponse;
 }
 
 export function ProductsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = [
-      "create",
-      "findAll",
-      "findOne",
-      "findByIds",
-      "update",
-      "remove",
-      "decrementQuantities",
-      "incrementQuantities",
-    ];
+    const grpcMethods: string[] = ["create", "findAll", "findOne", "findByIds", "update", "remove", "updateQuantities"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("ProductsService", method)(constructor.prototype[method], method, descriptor);

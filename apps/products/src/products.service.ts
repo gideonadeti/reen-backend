@@ -10,6 +10,7 @@ import {
   FindAllRequest,
   RemoveRequest,
   UpdateProductDto,
+  UpdateQuantitiesRequest,
   UpdateRequest,
 } from '@app/protos/generated/products';
 
@@ -153,6 +154,18 @@ export class ProductsService {
       });
     } catch (error) {
       this.handleError(error, `delete product with id ${id}`);
+    }
+  }
+
+  async updateQuantities({ cartItems, increment }: UpdateQuantitiesRequest) {
+    try {
+      if (increment) {
+        return await this.incrementQuantities(cartItems);
+      } else {
+        return await this.decrementQuantities(cartItems);
+      }
+    } catch (error) {
+      this.handleError(error, 'update quantities');
     }
   }
 

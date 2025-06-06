@@ -4,12 +4,12 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { ProductsService } from './products.service';
 import {
   CreateRequest,
-  DecrementQuantitiesRequest,
   FindAllRequest,
   FindByIdsRequest,
   FindOneRequest,
   PRODUCTS_SERVICE_NAME,
   RemoveRequest,
+  UpdateQuantitiesRequest,
   UpdateRequest,
 } from '@app/protos/generated/products';
 
@@ -48,12 +48,7 @@ export class ProductsController {
   }
 
   @GrpcMethod(PRODUCTS_SERVICE_NAME)
-  decrementQuantities(data: DecrementQuantitiesRequest) {
-    return this.productsService.decrementQuantities(data.cartItems);
-  }
-
-  @GrpcMethod(PRODUCTS_SERVICE_NAME)
-  incrementQuantities(data: DecrementQuantitiesRequest) {
-    return this.productsService.incrementQuantities(data.cartItems);
+  updateQuantities(data: UpdateQuantitiesRequest) {
+    return this.productsService.updateQuantities(data);
   }
 }

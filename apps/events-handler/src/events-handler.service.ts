@@ -84,7 +84,7 @@ export class EventsHandlerService implements OnModuleInit {
       cartItems = findAllResponse.cartItems || [];
 
       await firstValueFrom(
-        this.productsService.decrementQuantities({ cartItems }),
+        this.productsService.updateQuantities({ cartItems, increment: false }),
       );
 
       didDecrementProducts = true;
@@ -128,7 +128,7 @@ export class EventsHandlerService implements OnModuleInit {
     try {
       if (didDecrementProducts) {
         await firstValueFrom(
-          this.productsService.incrementQuantities({ cartItems }),
+          this.productsService.updateQuantities({ cartItems, increment: true }),
         );
       }
 
