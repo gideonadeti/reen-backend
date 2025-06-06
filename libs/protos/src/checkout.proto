@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package checkout;
+
+service CheckoutService {
+  rpc Checkout(CheckoutRequest) returns (CheckoutResponse);
+}
+
+message CheckoutRequest { string user_id = 1; }
+
+message CheckoutResponse { string stripe_session_url = 1; }
