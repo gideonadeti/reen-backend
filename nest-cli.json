@@ -45,6 +45,15 @@
         "tsConfigPath": "apps/cart-items/tsconfig.app.json"
       }
     },
+    "checkout": {
+      "type": "application",
+      "root": "apps/checkout",
+      "entryFile": "main",
+      "sourceRoot": "apps/checkout/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/checkout/tsconfig.app.json"
+      }
+    },
     "events-handler": {
       "type": "application",
       "root": "apps/events-handler",
