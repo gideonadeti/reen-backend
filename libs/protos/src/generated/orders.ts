@@ -36,6 +36,18 @@ export interface RemoveRequest {
   id: string;
 }
 
+export interface FindAllRequest {
+  userId: string;
+}
+
+export interface FindAllResponse {
+  orders: Order[];
+}
+
+export interface FindOneRequest {
+  id: string;
+}
+
 export const ORDERS_PACKAGE_NAME = "orders";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -51,17 +63,25 @@ export interface OrdersServiceClient {
   create(request: CreateRequest): Observable<Order>;
 
   remove(request: RemoveRequest): Observable<Order>;
+
+  findAll(request: FindAllRequest): Observable<FindAllResponse>;
+
+  findOne(request: FindOneRequest): Observable<Order>;
 }
 
 export interface OrdersServiceController {
   create(request: CreateRequest): Promise<Order> | Observable<Order> | Order;
 
   remove(request: RemoveRequest): Promise<Order> | Observable<Order> | Order;
+
+  findAll(request: FindAllRequest): Promise<FindAllResponse> | Observable<FindAllResponse> | FindAllResponse;
+
+  findOne(request: FindOneRequest): Promise<Order> | Observable<Order> | Order;
 }
 
 export function OrdersServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["create", "remove"];
+    const grpcMethods: string[] = ["create", "remove", "findAll", "findOne"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("OrdersService", method)(constructor.prototype[method], method, descriptor);
