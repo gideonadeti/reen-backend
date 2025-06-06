@@ -7,6 +7,7 @@ import { ProductsModule } from './products/products.module';
 import { CartItemsModule } from './cart-items/cart-items.module';
 import { CheckoutModule } from './checkout/checkout.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     CartItemsModule,
     CheckoutModule,
     WebhooksModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [],

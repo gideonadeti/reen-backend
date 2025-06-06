@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 
 import { CreateRequest } from '@app/protos/generated/orders';
@@ -46,6 +46,46 @@ export class OrdersService {
       });
     } catch (error) {
       this.handleError(error, 'delete order');
+    }
+  }
+
+  async findAll(userId: string) {
+    try {
+      const orders = await this.prismaService.order.findMany({
+        where: {
+          userId,
+        },
+        include: {
+          orderItems: true,
+        },
+      });
+
+      return {
+        orders,
+      };
+    } catch (error) {
+      this.handleError(error, 'fetch orders');
+    }
+  }
+
+  async findOne(id: string) {
+    try {
+      const order = await this.prismaService.order.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          orderItems: true,
+        },
+      });
+
+      if (!order) {
+        throw new NotFoundException(`Order with id ${id} not found`);
+      }
+
+      return order;
+    } catch (error) {
+      this.handleError(error, `fetch order with id ${id}`);
     }
   }
 }

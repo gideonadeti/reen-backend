@@ -7,6 +7,8 @@ import "google/protobuf/timestamp.proto";
 service OrdersService {
   rpc Create(CreateRequest) returns (Order);
   rpc Remove(RemoveRequest) returns (Order);
+  rpc FindAll(FindAllRequest) returns (FindAllResponse);
+  rpc FindOne(FindOneRequest) returns (Order);
 }
 
 message CreateRequest {
@@ -31,3 +33,9 @@ message Order {
 }
 
 message RemoveRequest { string id = 1; }
+
+message FindAllRequest { string user_id = 1; }
+
+message FindAllResponse { repeated Order orders = 1; }
+
+message FindOneRequest { string id = 1; }
