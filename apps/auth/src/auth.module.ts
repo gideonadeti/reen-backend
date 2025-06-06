@@ -17,7 +17,7 @@ import { GrpcLoggingInterceptor } from '@app/interceptors';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_ACCESS_SECRET'),
+        secret: configService.get('JWT_ACCESS_SECRET'),
         signOptions: { expiresIn: '15m' },
       }),
       inject: [ConfigService],
