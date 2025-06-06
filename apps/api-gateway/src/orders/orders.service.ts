@@ -1,6 +1,15 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 
+import { GrpcError, MicroserviceError } from '@app/interfaces';
 import {
   ORDERS_PACKAGE_NAME,
   ORDERS_SERVICE_NAME,
@@ -14,16 +23,45 @@ export class OrdersService implements OnModuleInit {
   ) {}
 
   private ordersService: OrdersServiceClient;
+  private logger = new Logger(OrdersService.name);
 
   onModuleInit() {
     this.ordersService = this.productsClient.getService(ORDERS_SERVICE_NAME);
   }
 
-  findAll() {
-    return `This action returns all orders`;
+  private handleError(error: any, action: string) {
+    this.logger.error(`Failed to ${action}`, (error as GrpcError).stack);
+
+    const microserviceError = JSON.parse(
+      (error as GrpcError).details || '{}',
+    ) as MicroserviceError;
+
+    if (microserviceError.name === 'NotFoundException') {
+      throw new NotFoundException(microserviceError.message);
+    }
+
+    throw new InternalServerErrorException(`Failed to ${action}`);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findAll(userId: string) {
+    try {
+      const findAllResponse = await firstValueFrom(
+        this.ordersService.findAll({
+          userId,
+        }),
+      );
+
+      return findAllResponse.orders || [];
+    } catch (error) {
+      this.handleError(error, 'fetch orders');
+    }
+  }
+
+  async findOne(id: string) {
+    try {
+      return await firstValueFrom(this.ordersService.findOne({ id }));
+    } catch (error) {
+      this.handleError(error, `fetch order with id ${id}`);
+    }
   }
 }
