@@ -12,7 +12,7 @@ export class CheckoutController {
   constructor(private readonly checkoutService: CheckoutService) {}
 
   @GrpcMethod(CHECKOUT_SERVICE_NAME)
-  create(data: CheckoutRequest) {
+  checkout(data: CheckoutRequest) {
     return this.checkoutService.checkout(data.userId);
   }
 }
