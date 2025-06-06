@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 
 import { CreateRequest } from '@app/protos/generated/orders';
@@ -70,7 +70,7 @@ export class OrdersService {
 
   async findOne(id: string) {
     try {
-      return await this.prismaService.order.findUnique({
+      const order = await this.prismaService.order.findUnique({
         where: {
           id,
         },
@@ -78,6 +78,12 @@ export class OrdersService {
           orderItems: true,
         },
       });
+
+      if (!order) {
+        throw new NotFoundException(`Order with id ${id} not found`);
+      }
+
+      return order;
     } catch (error) {
       this.handleError(error, `fetch order with id ${id}`);
     }
