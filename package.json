@@ -19,7 +19,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/reen-backend/test/jest-e2e.json",
     "gen:protos": "ts-node gen-protos.ts",
-    "start:dev:all": "concurrently -n api-gateway,auth,products,cart-items,events-handler,orders -c cyan,blue,magenta,green,yellow,red \"npm run start:dev\" \"npm run start:dev auth\" \"npm run start:dev products\" \"npm run start:dev cart-items\" \"npm run start:dev events-handler\" \"npm run start:dev orders\"",
+    "start:dev:all": "concurrently -n api-gateway,auth,products,cart-items,events-handler,orders,checkout -c cyan,blue,magenta,green,yellow,red,purple \"npm run start:dev\" \"npm run start:dev auth\" \"npm run start:dev products\" \"npm run start:dev cart-items\" \"npm run start:dev events-handler\" \"npm run start:dev orders\" \"npm run start:dev checkout\"",
     "build:libs": "concurrently -n protos,interfaces,interceptors -c cyan,blue,magenta \"nest build protos\" \"nest build interfaces\" \"nest build interceptors\""
   },
   "dependencies": {
