@@ -48,4 +48,38 @@ export class OrdersService {
       this.handleError(error, 'delete order');
     }
   }
+
+  async findAll(userId: string) {
+    try {
+      const orders = await this.prismaService.order.findMany({
+        where: {
+          userId,
+        },
+        include: {
+          orderItems: true,
+        },
+      });
+
+      return {
+        orders,
+      };
+    } catch (error) {
+      this.handleError(error, 'fetch orders');
+    }
+  }
+
+  async findOne(id: string) {
+    try {
+      return await this.prismaService.order.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          orderItems: true,
+        },
+      });
+    } catch (error) {
+      this.handleError(error, `fetch order with id ${id}`);
+    }
+  }
 }
