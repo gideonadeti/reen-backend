@@ -1,9 +1,8 @@
 import Stripe from 'stripe';
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { ClientGrpc, ClientProxy, RpcException } from '@nestjs/microservices';
+import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
-import { GrpcError, MicroserviceError } from '@app/interfaces';
 import { ResendService } from './resend/resend.service';
 import {
   CART_ITEMS_PACKAGE_NAME,
@@ -55,19 +54,9 @@ export class EventsHandlerService implements OnModuleInit {
     this.authService = this.authClient.getService(AUTH_SERVICE_NAME);
   }
 
+  // No point throw errors here
   private handleError(error: any, action: string) {
     this.logger.error(`Failed to ${action}`, (error as Error).stack);
-
-    // Check if error is a gRPC error and throw it else api-gateway wouldn't parse correctly
-    const microserviceError = JSON.parse(
-      (error as GrpcError).details || '{}',
-    ) as MicroserviceError;
-
-    if (Object.keys(microserviceError).length !== 0) {
-      throw new RpcException(JSON.stringify(microserviceError));
-    }
-
-    throw new RpcException(JSON.stringify(error));
   }
 
   async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
