@@ -77,6 +77,30 @@ export interface RemoveRequest {
   adminId: string;
 }
 
+export interface FindByIdsRequest {
+  ids: string[];
+}
+
+export interface FindByIdsResponse {
+  products: Product[];
+}
+
+export interface CartItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
+}
+
+export interface UpdateQuantitiesRequest {
+  cartItems: CartItem[];
+  increment: boolean;
+}
+
+export interface UpdateQuantitiesResponse {
+}
+
 export const PRODUCTS_PACKAGE_NAME = "products";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -95,9 +119,13 @@ export interface ProductsServiceClient {
 
   findOne(request: FindOneRequest): Observable<Product>;
 
+  findByIds(request: FindByIdsRequest): Observable<FindByIdsResponse>;
+
   update(request: UpdateRequest): Observable<Product>;
 
   remove(request: RemoveRequest): Observable<Product>;
+
+  updateQuantities(request: UpdateQuantitiesRequest): Observable<UpdateQuantitiesResponse>;
 }
 
 export interface ProductsServiceController {
@@ -107,14 +135,20 @@ export interface ProductsServiceController {
 
   findOne(request: FindOneRequest): Promise<Product> | Observable<Product> | Product;
 
+  findByIds(request: FindByIdsRequest): Promise<FindByIdsResponse> | Observable<FindByIdsResponse> | FindByIdsResponse;
+
   update(request: UpdateRequest): Promise<Product> | Observable<Product> | Product;
 
   remove(request: RemoveRequest): Promise<Product> | Observable<Product> | Product;
+
+  updateQuantities(
+    request: UpdateQuantitiesRequest,
+  ): Promise<UpdateQuantitiesResponse> | Observable<UpdateQuantitiesResponse> | UpdateQuantitiesResponse;
 }
 
 export function ProductsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["create", "findAll", "findOne", "update", "remove"];
+    const grpcMethods: string[] = ["create", "findAll", "findOne", "findByIds", "update", "remove", "updateQuantities"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("ProductsService", method)(constructor.prototype[method], method, descriptor);

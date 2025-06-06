@@ -19,7 +19,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/reen-backend/test/jest-e2e.json",
     "gen:protos": "ts-node gen-protos.ts",
-    "start:dev:all": "concurrently -n api-gateway,auth,products,cart-items -c cyan,blue,magenta,green \"npm run start:dev\" \"npm run start:dev auth\" \"npm run start:dev products\" \"npm run start:dev cart-items\"",
+    "start:dev:all": "concurrently -n api-gateway,auth,products,cart-items,events-handler,orders -c cyan,blue,magenta,green,yellow,red \"npm run start:dev\" \"npm run start:dev auth\" \"npm run start:dev products\" \"npm run start:dev cart-items\" \"npm run start:dev events-handler\" \"npm run start:dev orders\"",
     "build:libs": "concurrently -n protos,interfaces,interceptors -c cyan,blue,magenta \"nest build protos\" \"nest build interfaces\" \"nest build interceptors\""
   },
   "dependencies": {
@@ -34,6 +34,8 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.0",
     "@prisma/client": "^6.8.2",
+    "amqp-connection-manager": "^4.1.14",
+    "amqplib": "^0.10.8",
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
@@ -41,7 +43,9 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.2.2",
+    "resend": "^4.5.2",
     "rxjs": "^7.8.1",
+    "stripe": "^18.2.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

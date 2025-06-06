@@ -10,7 +10,7 @@ import {
 import { ApiGatewayModule } from './api-gateway.module';
 
 const bootstrap = async () => {
-  const app = await NestFactory.create(ApiGatewayModule);
+  const app = await NestFactory.create(ApiGatewayModule, { rawBody: true });
 
   app.use(cookieParser());
   app.useGlobalPipes(

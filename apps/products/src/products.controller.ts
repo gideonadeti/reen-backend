@@ -5,9 +5,11 @@ import { ProductsService } from './products.service';
 import {
   CreateRequest,
   FindAllRequest,
+  FindByIdsRequest,
   FindOneRequest,
   PRODUCTS_SERVICE_NAME,
   RemoveRequest,
+  UpdateQuantitiesRequest,
   UpdateRequest,
 } from '@app/protos/generated/products';
 
@@ -31,6 +33,11 @@ export class ProductsController {
   }
 
   @GrpcMethod(PRODUCTS_SERVICE_NAME)
+  findByIds(data: FindByIdsRequest) {
+    return this.productsService.findByIds(data.ids);
+  }
+
+  @GrpcMethod(PRODUCTS_SERVICE_NAME)
   update(data: UpdateRequest) {
     return this.productsService.update(data);
   }
@@ -38,5 +45,10 @@ export class ProductsController {
   @GrpcMethod(PRODUCTS_SERVICE_NAME)
   remove(data: RemoveRequest) {
     return this.productsService.remove(data);
+  }
+
+  @GrpcMethod(PRODUCTS_SERVICE_NAME)
+  updateQuantities(data: UpdateQuantitiesRequest) {
+    return this.productsService.updateQuantities(data);
   }
 }

@@ -45,6 +45,15 @@
         "tsConfigPath": "apps/cart-items/tsconfig.app.json"
       }
     },
+    "events-handler": {
+      "type": "application",
+      "root": "apps/events-handler",
+      "entryFile": "main",
+      "sourceRoot": "apps/events-handler/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/events-handler/tsconfig.app.json"
+      }
+    },
     "interceptors": {
       "type": "library",
       "root": "libs/interceptors",
@@ -70,6 +79,15 @@
       "sourceRoot": "libs/middlewares/src",
       "compilerOptions": {
         "tsConfigPath": "libs/middlewares/tsconfig.lib.json"
+      }
+    },
+    "orders": {
+      "type": "application",
+      "root": "apps/orders",
+      "entryFile": "main",
+      "sourceRoot": "apps/orders/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/orders/tsconfig.app.json"
       }
     },
     "products": {

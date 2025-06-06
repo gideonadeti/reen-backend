@@ -10,6 +10,7 @@ service CartItemsService {
   rpc FindOne(FindOneRequest) returns (CartItem) {}
   rpc Update(UpdateRequest) returns (CartItem) {}
   rpc Remove(RemoveRequest) returns (CartItem) {}
+  rpc RemoveAll(RemoveAllRequest) returns (RemoveAllResponse) {}
 }
 
 message CreateRequest {
@@ -54,3 +55,7 @@ message RemoveRequest {
   string id = 1;
   string user_id = 2;
 }
+
+message RemoveAllRequest { string user_id = 1; }
+
+message RemoveAllResponse {}

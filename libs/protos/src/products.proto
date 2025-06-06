@@ -8,8 +8,11 @@ service ProductsService {
   rpc Create(CreateRequest) returns (Product) {}
   rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
   rpc FindOne(FindOneRequest) returns (Product) {}
+  rpc FindByIds(FindByIdsRequest) returns (FindByIdsResponse) {}
   rpc Update(UpdateRequest) returns (Product) {}
   rpc Remove(RemoveRequest) returns (Product) {}
+  rpc UpdateQuantities(UpdateQuantitiesRequest)
+      returns (UpdateQuantitiesResponse) {}
 }
 
 message CreateProductDto {
@@ -75,3 +78,22 @@ message RemoveRequest {
   string id = 1;
   string admin_id = 2;
 }
+
+message FindByIdsRequest { repeated string ids = 1; }
+
+message FindByIdsResponse { repeated Product products = 1; }
+
+message CartItem {
+  string id = 1;
+  string product_id = 2;
+  int32 quantity = 3;
+  google.protobuf.Timestamp createdAt = 4;
+  google.protobuf.Timestamp updatedAt = 5;
+}
+
+message UpdateQuantitiesRequest {
+  repeated CartItem cart_items = 1;
+  bool increment = 2;
+}
+
+message UpdateQuantitiesResponse {}

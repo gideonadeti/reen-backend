@@ -4,11 +4,13 @@ import { RpcException } from '@nestjs/microservices';
 import { PrismaService } from './prisma/prisma.service';
 import { Prisma } from '../generated/prisma';
 import {
+  CartItem,
   CreateProductDto,
   CreateRequest,
   FindAllRequest,
   RemoveRequest,
   UpdateProductDto,
+  UpdateQuantitiesRequest,
   UpdateRequest,
 } from '@app/protos/generated/products';
 
@@ -120,6 +122,20 @@ export class ProductsService {
     }
   }
 
+  async findByIds(ids: string[]) {
+    try {
+      const products = await this.prismaService.product.findMany({
+        where: { id: { in: ids } },
+      });
+
+      return {
+        products,
+      };
+    } catch (error) {
+      this.handleError(error, `fetch products with ids ${ids.join(', ')}`);
+    }
+  }
+
   async update({ adminId, id, updateProductDto }: UpdateRequest) {
     try {
       return await this.prismaService.product.update({
@@ -138,6 +154,65 @@ export class ProductsService {
       });
     } catch (error) {
       this.handleError(error, `delete product with id ${id}`);
+    }
+  }
+
+  async updateQuantities({ cartItems, increment }: UpdateQuantitiesRequest) {
+    try {
+      if (increment) {
+        return await this.incrementQuantities(cartItems);
+      } else {
+        return await this.decrementQuantities(cartItems);
+      }
+    } catch (error) {
+      this.handleError(error, 'update quantities');
+    }
+  }
+
+  async decrementQuantities(cartItems: CartItem[]) {
+    try {
+      await this.prismaService.$transaction(
+        cartItems.map((cartItem) =>
+          this.prismaService.product.update({
+            where: {
+              id: cartItem.productId,
+              quantity: {
+                gte: cartItem.quantity,
+              },
+            },
+            data: {
+              quantity: {
+                decrement: cartItem.quantity,
+              },
+            },
+          }),
+        ),
+      );
+
+      return {}; // To match expected response proto
+    } catch (error) {
+      this.handleError(error, 'decrement quantities');
+    }
+  }
+
+  async incrementQuantities(cartItems: CartItem[]) {
+    try {
+      await this.prismaService.$transaction(
+        cartItems.map((cartItem) =>
+          this.prismaService.product.update({
+            where: { id: cartItem.productId },
+            data: {
+              quantity: {
+                increment: cartItem.quantity,
+              },
+            },
+          }),
+        ),
+      );
+
+      return {};
+    } catch (error) {
+      this.handleError(error, 'increment quantities');
     }
   }
 }
