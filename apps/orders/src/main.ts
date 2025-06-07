@@ -13,7 +13,7 @@ const bootstrap = async () => {
       options: {
         package: ORDERS_PACKAGE_NAME,
         protoPath: join(__dirname, '../../libs/protos/orders.proto'),
-        url: 'localhost:5003',
+        url: '0.0.0.0:5003',
       },
     },
   );
