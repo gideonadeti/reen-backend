@@ -6,3 +6,8 @@ services:
       dockerfile: apps/api-gateway/Dockerfile
     ports:
       - '3000:3000'
+  auth:
+    container_name: auth
+    build:
+      context: .
+      dockerfile: apps/auth/Dockerfile
