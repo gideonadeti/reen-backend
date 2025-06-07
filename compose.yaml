@@ -16,3 +16,8 @@ services:
     build:
       context: .
       dockerfile: apps/products/Dockerfile
+  cart-items:
+    container_name: cart-items
+    build:
+      context: .
+      dockerfile: apps/cart-items/Dockerfile
