@@ -11,3 +11,8 @@ services:
     build:
       context: .
       dockerfile: apps/auth/Dockerfile
+  products:
+    container_name: products
+    build:
+      context: .
+      dockerfile: apps/products/Dockerfile
