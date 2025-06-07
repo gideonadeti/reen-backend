@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { join } from 'path';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { OrdersService } from './orders.service';
 import { OrdersController } from './orders.controller';
@@ -8,15 +9,19 @@ import { ORDERS_PACKAGE_NAME } from '@app/protos/generated/orders';
 
 @Module({
   imports: [
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
+        imports: [ConfigModule],
         name: ORDERS_PACKAGE_NAME,
-        transport: Transport.GRPC,
-        options: {
-          package: ORDERS_PACKAGE_NAME,
-          protoPath: join(__dirname, '../../libs/protos/orders.proto'),
-          url: 'localhost:5003',
-        },
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: ORDERS_PACKAGE_NAME,
+            protoPath: join(__dirname, '../../libs/protos/orders.proto'),
+            url: configService.get('ORDERS_SERVICE_URL') as string,
+          },
+        }),
+        inject: [ConfigService],
       },
     ]),
   ],

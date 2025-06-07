@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { CheckoutController } from './checkout.controller';
 import { CheckoutService } from './checkout.service';
@@ -10,26 +10,34 @@ import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
 
 @Module({
   imports: [
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
+        imports: [ConfigModule],
         name: CART_ITEMS_PACKAGE_NAME,
-        transport: Transport.GRPC,
-        options: {
-          package: CART_ITEMS_PACKAGE_NAME,
-          protoPath: join(__dirname, '../../libs/protos/cart-items.proto'),
-          url: 'localhost:5002',
-        },
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: CART_ITEMS_PACKAGE_NAME,
+            protoPath: join(__dirname, '../../libs/protos/cart-items.proto'),
+            url: configService.get('CART_ITEMS_SERVICE_URL') as string,
+          },
+        }),
+        inject: [ConfigService],
       },
     ]),
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
+        imports: [ConfigModule],
         name: PRODUCTS_PACKAGE_NAME,
-        transport: Transport.GRPC,
-        options: {
-          package: PRODUCTS_PACKAGE_NAME,
-          protoPath: join(__dirname, '../../libs/protos/products.proto'),
-          url: 'localhost:5001',
-        },
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: PRODUCTS_PACKAGE_NAME,
+            protoPath: join(__dirname, '../../libs/protos/products.proto'),
+            url: configService.get('PRODUCTS_SERVICE_URL') as string,
+          },
+        }),
+        inject: [ConfigService],
       },
     ]),
     ConfigModule.forRoot({
