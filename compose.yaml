@@ -26,3 +26,8 @@ services:
     build:
       context: .
       dockerfile: apps/checkout/Dockerfile
+  events-handler:
+    container_name: events-handler
+    build:
+      context: .
+      dockerfile: apps/events-handler/Dockerfile
