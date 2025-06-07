@@ -31,3 +31,8 @@ services:
     build:
       context: .
       dockerfile: apps/events-handler/Dockerfile
+  orders:
+    container_name: orders
+    build:
+      context: .
+      dockerfile: apps/orders/Dockerfile
