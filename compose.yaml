@@ -21,3 +21,8 @@ services:
     build:
       context: .
       dockerfile: apps/cart-items/Dockerfile
+  checkout:
+    container_name: checkout
+    build:
+      context: .
+      dockerfile: apps/checkout/Dockerfile
