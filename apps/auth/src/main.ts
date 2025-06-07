@@ -13,6 +13,7 @@ const bootstrap = async () => {
       options: {
         package: AUTH_PACKAGE_NAME,
         protoPath: join(__dirname, '../../libs/protos/auth.proto'),
+        url: '0.0.0.0:5000',
       },
     },
   );
