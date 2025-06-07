@@ -35,7 +35,7 @@ ENV NODE_ENV=${NODE_ENV}
 COPY --from=build /app/dist dist
 
 # Copy .proto files
-COPY --from=build /app/libs/protos/src dist/libs/protos
+COPY --from=build /app/libs/protos/src/*.proto dist/libs/protos/
 
 # Copy .env file
 COPY --from=build /app/apps/api-gateway/.env apps/api-gateway/.env
