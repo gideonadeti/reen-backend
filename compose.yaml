@@ -1,11 +1,14 @@
 services:
-  api-gateway:
-    container_name: api-gateway
+  api-gateway-1:
+    container_name: api-gateway-1
     build:
       context: .
       dockerfile: apps/api-gateway/Dockerfile
-    ports:
-      - '3000:3000'
+  api-gateway-2:
+    container_name: api-gateway-2
+    build:
+      context: .
+      dockerfile: apps/api-gateway/Dockerfile
   auth:
     container_name: auth
     build:
@@ -36,3 +39,13 @@ services:
     build:
       context: .
       dockerfile: apps/orders/Dockerfile
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: apps/nginx/Dockerfile
+    ports:
+      - '80:80'
+    depends_on:
+      - api-gateway-1
+      - api-gateway-2
