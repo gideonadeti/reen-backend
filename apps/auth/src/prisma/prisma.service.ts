@@ -10,7 +10,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       errorFormat: 'minimal',
       datasources: {
         db: {
-          url: configService.get('DATABASE_URL'),
+          url: configService.get('AUTH_DATABASE_URL'),
         },
       },
     });
