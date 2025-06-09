@@ -14,6 +14,9 @@ RUN npm ci
 # Copy the full source code
 COPY . .
 
+# Move .env file to apps/products directory
+RUN mv .env apps/products/.env
+
 # Change to the apps/products directory to run prisma
 WORKDIR /app/apps/products
 
@@ -47,7 +50,7 @@ COPY --from=build /app/dist dist
 COPY --from=build /app/libs/protos/src/*.proto dist/libs/protos/
 
 # Copy .env file
-COPY --from=build /app/.env apps/products/.env
+COPY --from=build /app/apps/products/.env apps/products/.env
 
 # Copy Prisma client
 COPY --from=build /app/apps/products/generated apps/products/generated

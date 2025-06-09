@@ -14,6 +14,9 @@ RUN npm ci
 # Copy the full source code
 COPY . .
 
+# Move .env file to apps/auth directory
+RUN mv .env apps/auth/.env
+
 # Change to the apps/auth directory to run prisma
 WORKDIR /app/apps/auth
 
@@ -47,7 +50,7 @@ COPY --from=build /app/dist dist
 COPY --from=build /app/libs/protos/src/*.proto dist/libs/protos/
 
 # Copy .env file
-COPY --from=build /app/.env apps/auth/.env
+COPY --from=build /app/apps/auth/.env apps/auth/.env
 
 # Copy Prisma client
 COPY --from=build /app/apps/auth/generated apps/auth/generated
