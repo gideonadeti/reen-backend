@@ -38,7 +38,7 @@ COPY --from=build /app/dist dist
 COPY --from=build /app/libs/protos/src/*.proto dist/libs/protos/
 
 # Copy .env file
-COPY --from=build /app/apps/checkout/.env apps/checkout/.env
+COPY --from=build /app/.env apps/checkout/.env
 
 # Copy package metadata to install only prod dependencies
 COPY --from=build /app/package*.json .

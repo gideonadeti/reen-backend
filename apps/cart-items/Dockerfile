@@ -47,7 +47,7 @@ COPY --from=build /app/dist dist
 COPY --from=build /app/libs/protos/src/*.proto dist/libs/protos/
 
 # Copy .env file
-COPY --from=build /app/apps/cart-items/.env apps/cart-items/.env
+COPY --from=build /app/.env apps/cart-items/.env
 
 # Copy Prisma client
 COPY --from=build /app/apps/cart-items/generated apps/cart-items/generated

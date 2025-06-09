@@ -38,7 +38,7 @@ COPY --from=build /app/dist dist
 COPY --from=build /app/libs/protos/src/*.proto dist/libs/protos/
 
 # Copy .env file
-COPY --from=build /app/apps/api-gateway/.env apps/api-gateway/.env
+COPY --from=build /app/.env apps/api-gateway/.env
 
 # Copy package metadata to install only prod dependencies
 COPY --from=build /app/package*.json .
