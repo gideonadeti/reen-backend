@@ -14,6 +14,9 @@ RUN npm ci
 # Copy the full source code
 COPY . .
 
+# Copy .env file to apps/auth for prisma to use for generate
+COPY .env apps/auth/.env
+
 # Change to the apps/auth directory to run prisma
 WORKDIR /app/apps/auth
 
@@ -27,7 +30,7 @@ WORKDIR /app
 RUN npm run build auth
 
 # Clean up unnecessary files from the build stage
-RUN rm -rf node_modules
+RUN rm -rf node_modules apps/auth/.env
 
 # ------------------------------
 # Production Stage

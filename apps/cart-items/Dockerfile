@@ -14,6 +14,9 @@ RUN npm ci
 # Copy the full source code
 COPY . .
 
+# Copy .env file to apps/cart-items for prisma to use for generate
+COPY .env apps/cart-items/.env
+
 # Change to the apps/cart-items directory to run prisma
 WORKDIR /app/apps/cart-items
 
@@ -27,7 +30,7 @@ WORKDIR /app
 RUN npm run build cart-items
 
 # Clean up unnecessary files from the build stage
-RUN rm -rf node_modules
+RUN rm -rf node_modules apps/cart-items/.env
 
 # ------------------------------
 # Production Stage

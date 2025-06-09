@@ -14,6 +14,9 @@ RUN npm ci
 # Copy the full source code
 COPY . .
 
+# Copy .env file to apps/products for prisma to use for generate
+COPY .env apps/products/.env
+
 # Change to the apps/products directory to run prisma
 WORKDIR /app/apps/products
 
@@ -27,7 +30,7 @@ WORKDIR /app
 RUN npm run build products
 
 # Clean up unnecessary files from the build stage
-RUN rm -rf node_modules
+RUN rm -rf node_modules apps/products/.env
 
 # ------------------------------
 # Production Stage
