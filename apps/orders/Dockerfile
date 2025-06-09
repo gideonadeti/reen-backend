@@ -14,9 +14,6 @@ RUN npm ci
 # Copy the full source code
 COPY . .
 
-# Copy .env file to apps/orders for prisma to use for generate
-COPY .env apps/orders/.env
-
 # Change to the apps/orders directory to run prisma
 WORKDIR /app/apps/orders
 
@@ -30,7 +27,7 @@ WORKDIR /app
 RUN npm run build orders
 
 # Clean up unnecessary files from the build stage
-RUN rm -rf node_modules apps/orders/.env
+RUN rm -rf node_modules
 
 # ------------------------------
 # Production Stage
