@@ -9,16 +9,6 @@ services:
     build:
       context: .
       dockerfile: apps/api-gateway/Dockerfile
-  checkout:
-    container_name: checkout
-    build:
-      context: .
-      dockerfile: apps/checkout/Dockerfile
-  events-handler:
-    container_name: events-handler
-    build:
-      context: .
-      dockerfile: apps/events-handler/Dockerfile
   nginx:
     container_name: nginx
     build:
