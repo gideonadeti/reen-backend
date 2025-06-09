@@ -9,36 +9,6 @@ services:
     build:
       context: .
       dockerfile: apps/api-gateway/Dockerfile
-  auth:
-    container_name: auth
-    build:
-      context: .
-      dockerfile: apps/auth/Dockerfile
-  products:
-    container_name: products
-    build:
-      context: .
-      dockerfile: apps/products/Dockerfile
-  cart-items:
-    container_name: cart-items
-    build:
-      context: .
-      dockerfile: apps/cart-items/Dockerfile
-  checkout:
-    container_name: checkout
-    build:
-      context: .
-      dockerfile: apps/checkout/Dockerfile
-  events-handler:
-    container_name: events-handler
-    build:
-      context: .
-      dockerfile: apps/events-handler/Dockerfile
-  orders:
-    container_name: orders
-    build:
-      context: .
-      dockerfile: apps/orders/Dockerfile
   nginx:
     container_name: nginx
     build:
