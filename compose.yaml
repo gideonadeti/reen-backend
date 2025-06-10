@@ -20,3 +20,8 @@ services:
     depends_on:
       - api-gateway-1
       - api-gateway-2
+  auth:
+    container_name: auth
+    image: ghcr.io/gideonadeti/reen-backend-auth:latest
+    volumes:
+      - ./.env:/app/apps/auth/.env
