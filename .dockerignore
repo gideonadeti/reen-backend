@@ -9,3 +9,4 @@ eslint.config.mjs
 gen-protos.ts
 LICENSE
 README.md
+.env.*
