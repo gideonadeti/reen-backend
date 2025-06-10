@@ -31,3 +31,23 @@ services:
     image: ghcr.io/gideonadeti/reen-backend-products:latest
     volumes:
       - ./.env:/app/apps/products/.env
+  cart-items:
+    container_name: cart-items
+    image: ghcr.io/gideonadeti/reen-backend-cart-items:latest
+    volumes:
+      - ./.env:/app/apps/cart-items/.env
+  checkout:
+    container_name: checkout
+    image: ghcr.io/gideonadeti/reen-backend-checkout:latest
+    volumes:
+      - ./.env:/app/apps/checkout/.env
+  events-handler:
+    container_name: events-handler
+    image: ghcr.io/gideonadeti/reen-backend-events-handler:latest
+    volumes:
+      - ./.env:/app/apps/events-handler/.env
+  orders:
+    container_name: orders
+    image: ghcr.io/gideonadeti/reen-backend-orders:latest
+    volumes:
+      - ./.env:/app/apps/orders/.env
