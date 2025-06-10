@@ -1,21 +1,12 @@
 # ------------------------------
 # Build Stage
 # ------------------------------
-FROM node:22 AS build
+FROM ghcr.io/gideonadeti/reen-backend-build-base-image:latest as build
 
 WORKDIR /app
 
-# Copy lockfile and package metadata
-COPY package*.json .
-
-# Install exact dependencies
-RUN npm ci
-
 # Copy the full source code
 COPY . .
-
-# Move .env file to apps/cart-items directory
-RUN mv .env apps/cart-items/.env
 
 # Change to the apps/cart-items directory to run prisma
 WORKDIR /app/apps/cart-items
@@ -35,7 +26,7 @@ RUN rm -rf node_modules
 # ------------------------------
 # Production Stage
 # ------------------------------
-FROM node:22
+FROM ghcr.io/gideonadeti/reen-backend-prod-base-image:latest
 
 WORKDIR /app
 
@@ -49,20 +40,8 @@ COPY --from=build /app/dist dist
 # Copy .proto files
 COPY --from=build /app/libs/protos/src/*.proto dist/libs/protos/
 
-# Copy .env file
-COPY --from=build /app/apps/cart-items/.env apps/cart-items/.env
-
 # Copy Prisma client
 COPY --from=build /app/apps/cart-items/generated apps/cart-items/generated
-
-# Copy package metadata to install only prod dependencies
-COPY --from=build /app/package*.json .
-
-# Install production dependencies only
-RUN npm ci --omit=dev
-
-# Remove leftover metadata files for smaller, safer image
-RUN rm package*.json
 
 # Expose app port
 EXPOSE 5002
