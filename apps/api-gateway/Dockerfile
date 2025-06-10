@@ -1,15 +1,9 @@
 # ------------------------------
 # Build Stage
 # ------------------------------
-FROM node:22 AS build
+FROM ghcr.io/gideonadeti/reen-backend-base-image:latest as build
 
 WORKDIR /app
-
-# Copy lockfile and package metadata
-COPY package*.json .
-
-# Install exact dependencies
-RUN npm ci
 
 # Copy the full source code
 COPY . .
@@ -36,9 +30,6 @@ COPY --from=build /app/dist dist
 
 # Copy .proto files
 COPY --from=build /app/libs/protos/src/*.proto dist/libs/protos/
-
-# Copy .env file
-COPY --from=build /app/.env apps/api-gateway/.env
 
 # Copy package metadata to install only prod dependencies
 COPY --from=build /app/package*.json .
