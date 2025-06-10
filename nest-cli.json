@@ -5,7 +5,15 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/api-gateway/tsconfig.app.json"
+    "tsConfigPath": "apps/api-gateway/tsconfig.app.json",
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "introspectComments": true
+        }
+      }
+    ]
   },
   "monorepo": true,
   "root": "apps/api-gateway",
@@ -17,6 +25,100 @@
       "sourceRoot": "apps/api-gateway/src",
       "compilerOptions": {
         "tsConfigPath": "apps/api-gateway/tsconfig.app.json"
+      }
+    },
+    "auth": {
+      "type": "application",
+      "root": "apps/auth",
+      "entryFile": "main",
+      "sourceRoot": "apps/auth/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/auth/tsconfig.app.json"
+      }
+    },
+    "cart-items": {
+      "type": "application",
+      "root": "apps/cart-items",
+      "entryFile": "main",
+      "sourceRoot": "apps/cart-items/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/cart-items/tsconfig.app.json"
+      }
+    },
+    "checkout": {
+      "type": "application",
+      "root": "apps/checkout",
+      "entryFile": "main",
+      "sourceRoot": "apps/checkout/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/checkout/tsconfig.app.json"
+      }
+    },
+    "events-handler": {
+      "type": "application",
+      "root": "apps/events-handler",
+      "entryFile": "main",
+      "sourceRoot": "apps/events-handler/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/events-handler/tsconfig.app.json"
+      }
+    },
+    "interceptors": {
+      "type": "library",
+      "root": "libs/interceptors",
+      "entryFile": "index",
+      "sourceRoot": "libs/interceptors/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/interceptors/tsconfig.lib.json"
+      }
+    },
+    "interfaces": {
+      "type": "library",
+      "root": "libs/interfaces",
+      "entryFile": "index",
+      "sourceRoot": "libs/interfaces/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/interfaces/tsconfig.lib.json"
+      }
+    },
+    "middlewares": {
+      "type": "library",
+      "root": "libs/middlewares",
+      "entryFile": "index",
+      "sourceRoot": "libs/middlewares/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/middlewares/tsconfig.lib.json"
+      }
+    },
+    "orders": {
+      "type": "application",
+      "root": "apps/orders",
+      "entryFile": "main",
+      "sourceRoot": "apps/orders/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/orders/tsconfig.app.json"
+      }
+    },
+    "products": {
+      "type": "application",
+      "root": "apps/products",
+      "entryFile": "main",
+      "sourceRoot": "apps/products/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/products/tsconfig.app.json"
+      }
+    },
+    "protos": {
+      "type": "library",
+      "root": "libs/protos",
+      "entryFile": "index",
+      "sourceRoot": "libs/protos/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/protos/tsconfig.lib.json",
+        "assets": [
+          "**/*.proto"
+        ],
+        "watchAssets": true
       }
     }
   }

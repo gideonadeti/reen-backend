@@ -17,6 +17,31 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {}
+    "paths": {
+      "@app/interceptors": [
+        "libs/interceptors/src"
+      ],
+      "@app/interceptors/*": [
+        "libs/interceptors/src/*"
+      ],
+      "@app/interfaces": [
+        "libs/interfaces/src"
+      ],
+      "@app/interfaces/*": [
+        "libs/interfaces/src/*"
+      ],
+      "@app/middlewares": [
+        "libs/middlewares/src"
+      ],
+      "@app/middlewares/*": [
+        "libs/middlewares/src/*"
+      ],
+      "@app/protos": [
+        "libs/protos/src"
+      ],
+      "@app/protos/*": [
+        "libs/protos/src/*"
+      ]
+    }
   }
 }
