@@ -1,21 +1,12 @@
 # ------------------------------
 # Build Stage
 # ------------------------------
-FROM node:22 AS build
+FROM ghcr.io/gideonadeti/reen-backend-base-image:latest as build
 
 WORKDIR /app
 
-# Copy lockfile and package metadata
-COPY package*.json .
-
-# Install exact dependencies
-RUN npm ci
-
 # Copy the full source code
 COPY . .
-
-# Move .env file to apps/products directory
-RUN mv .env apps/products/.env
 
 # Change to the apps/products directory to run prisma
 WORKDIR /app/apps/products
@@ -35,7 +26,7 @@ RUN rm -rf node_modules
 # ------------------------------
 # Production Stage
 # ------------------------------
-FROM node:22
+FROM ghcr.io/gideonadeti/reen-backend-base-image:latest
 
 WORKDIR /app
 
@@ -48,9 +39,6 @@ COPY --from=build /app/dist dist
 
 # Copy .proto files
 COPY --from=build /app/libs/protos/src/*.proto dist/libs/protos/
-
-# Copy .env file
-COPY --from=build /app/apps/products/.env apps/products/.env
 
 # Copy Prisma client
 COPY --from=build /app/apps/products/generated apps/products/generated

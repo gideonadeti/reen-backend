@@ -26,3 +26,8 @@ services:
     image: ghcr.io/gideonadeti/reen-backend-auth:latest
     volumes:
       - ./.env:/app/apps/auth/.env
+  products:
+    container_name: products
+    image: ghcr.io/gideonadeti/reen-backend-products:latest
+    volumes:
+      - ./.env:/app/apps/products/.env
