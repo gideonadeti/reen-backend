@@ -10,5 +10,3 @@ gen-protos.ts
 LICENSE
 README.md
 .env.*
-*.key
-*.crt
