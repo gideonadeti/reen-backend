@@ -1,7 +1,7 @@
 # ------------------------------
 # Build Stage
 # ------------------------------
-FROM ghcr.io/gideonadeti/reen-backend-base-image:latest as build
+FROM ghcr.io/gideonadeti/reen-backend-build-base-image:latest as build
 
 WORKDIR /app
 
@@ -26,7 +26,7 @@ RUN rm -rf node_modules
 # ------------------------------
 # Production Stage
 # ------------------------------
-FROM ghcr.io/gideonadeti/reen-backend-base-image:latest
+FROM ghcr.io/gideonadeti/reen-backend-prod-base-image:latest
 
 WORKDIR /app
 
@@ -42,15 +42,6 @@ COPY --from=build /app/libs/protos/src/*.proto dist/libs/protos/
 
 # Copy Prisma client
 COPY --from=build /app/apps/products/generated apps/products/generated
-
-# Copy package metadata to install only prod dependencies
-COPY --from=build /app/package*.json .
-
-# Install production dependencies only
-RUN npm ci --omit=dev
-
-# Remove leftover metadata files for smaller, safer image
-RUN rm package*.json
 
 # Expose app port
 EXPOSE 5001
