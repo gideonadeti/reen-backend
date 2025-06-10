@@ -11,15 +11,16 @@ services:
       - ./.env:/app/apps/api-gateway/.env
   nginx:
     container_name: nginx
-    build:
-      context: .
-      dockerfile: apps/nginx/Dockerfile
+    image: ghcr.io/gideonadeti/reen-backend-nginx:latest
     ports:
       - '80:80'
       - '443:443'
     depends_on:
       - api-gateway-1
       - api-gateway-2
+    volumes:
+      - ./cert.crt:/etc/nginx/certs/cert.crt
+      - ./key.key:/etc/nginx/certs/key.key
   auth:
     container_name: auth
     image: ghcr.io/gideonadeti/reen-backend-auth:latest
