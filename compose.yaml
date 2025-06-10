@@ -1,16 +1,14 @@
 services:
   api-gateway-1:
     container_name: api-gateway-1
-    build:
-      context: .
-      dockerfile: apps/api-gateway/Dockerfile
+    image: ghcr.io/gideonadeti/reen-backend-api-gateway-1:latest
+    volumes:
+      - ./.env:/app/apps/api-gateway/.env
   api-gateway-2:
     container_name: api-gateway-2
-    build:
-      context: .
-      dockerfile: apps/api-gateway/Dockerfile
-    depends_on:
-      - api-gateway-1
+    image: ghcr.io/gideonadeti/reen-backend-api-gateway-2:latest
+    volumes:
+      - ./.env:/app/apps/api-gateway/.env
   nginx:
     container_name: nginx
     build:
@@ -20,46 +18,5 @@ services:
       - '80:80'
       - '443:443'
     depends_on:
+      - api-gateway-1
       - api-gateway-2
-  auth:
-    container_name: auth
-    build:
-      context: .
-      dockerfile: apps/auth/Dockerfile
-    depends_on:
-      - nginx
-  products:
-    container_name: products
-    build:
-      context: .
-      dockerfile: apps/products/Dockerfile
-    depends_on:
-      - auth
-  cart-items:
-    container_name: cart-items
-    build:
-      context: .
-      dockerfile: apps/cart-items/Dockerfile
-    depends_on:
-      - products
-  checkout:
-    container_name: checkout
-    build:
-      context: .
-      dockerfile: apps/checkout/Dockerfile
-    depends_on:
-      - cart-items
-  events-handler:
-    container_name: events-handler
-    build:
-      context: .
-      dockerfile: apps/events-handler/Dockerfile
-    depends_on:
-      - checkout
-  orders:
-    container_name: orders
-    build:
-      context: .
-      dockerfile: apps/orders/Dockerfile
-    depends_on:
-      - events-handler
