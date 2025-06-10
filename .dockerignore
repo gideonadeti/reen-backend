@@ -1,0 +1,14 @@
+dist
+node_modules
+.dockerignore
+.git
+.gitignore
+.prettierrc
+compose.yaml
+eslint.config.mjs
+gen-protos.ts
+LICENSE
+README.md
+.env.*
+*.key
+*.crt

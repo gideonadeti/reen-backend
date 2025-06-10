@@ -1,5 +1,11 @@
 import Stripe from 'stripe';
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  OnApplicationBootstrap,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
@@ -27,7 +33,9 @@ import {
 } from '@app/protos/generated/auth';
 
 @Injectable()
-export class EventsHandlerService implements OnModuleInit {
+export class EventsHandlerService
+  implements OnModuleInit, OnApplicationBootstrap
+{
   constructor(
     @Inject(CART_ITEMS_PACKAGE_NAME) private cartItemsClient: ClientGrpc,
     @Inject(PRODUCTS_PACKAGE_NAME) private productsClient: ClientGrpc,
@@ -52,6 +60,10 @@ export class EventsHandlerService implements OnModuleInit {
     );
     this.ordersService = this.ordersClient.getService(ORDERS_SERVICE_NAME);
     this.authService = this.authClient.getService(AUTH_SERVICE_NAME);
+  }
+
+  async onApplicationBootstrap() {
+    await this.eventsHandlerClient.connect();
   }
 
   // No point throw errors here

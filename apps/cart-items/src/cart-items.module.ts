@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
@@ -16,15 +16,19 @@ import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
       isGlobal: true,
       envFilePath: 'apps/cart-items/.env',
     }),
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
+        imports: [ConfigModule],
         name: PRODUCTS_PACKAGE_NAME,
-        transport: Transport.GRPC,
-        options: {
-          package: PRODUCTS_PACKAGE_NAME,
-          protoPath: join(__dirname, '../../libs/protos/products.proto'),
-          url: 'localhost:5001',
-        },
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: PRODUCTS_PACKAGE_NAME,
+            protoPath: join(__dirname, '../../libs/protos/products.proto'),
+            url: configService.get('PRODUCTS_SERVICE_URL') as string,
+          },
+        }),
+        inject: [ConfigService],
       },
     ]),
   ],
