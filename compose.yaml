@@ -1,12 +1,12 @@
 services:
   api-gateway-1:
     container_name: api-gateway-1
-    image: ghcr.io/gideonadeti/reen-backend-api-gateway-1:latest
+    image: ghcr.io/gideonadeti/reen-backend-api-gateway:latest
     volumes:
       - ./.env:/app/apps/api-gateway/.env
   api-gateway-2:
     container_name: api-gateway-2
-    image: ghcr.io/gideonadeti/reen-backend-api-gateway-2:latest
+    image: ghcr.io/gideonadeti/reen-backend-api-gateway:latest
     volumes:
       - ./.env:/app/apps/api-gateway/.env
   nginx:
