@@ -1,6 +1,7 @@
 import * as cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   DocumentBuilder,
   SwaggerDocumentOptions,
@@ -11,7 +12,12 @@ import { ApiGatewayModule } from './api-gateway.module';
 
 const bootstrap = async () => {
   const app = await NestFactory.create(ApiGatewayModule, { rawBody: true });
+  const configService = app.get(ConfigService);
+  const frontendBaseUrl = configService.get('FRONTEND_BASE_URL') as string;
 
+  app.enableCors({
+    origin: [frontendBaseUrl],
+  });
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
