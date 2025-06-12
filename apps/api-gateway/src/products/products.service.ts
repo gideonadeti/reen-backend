@@ -18,20 +18,28 @@ import {
   PRODUCTS_SERVICE_NAME,
   ProductsServiceClient,
 } from '@app/protos/generated/products';
+import {
+  AUTH_PACKAGE_NAME,
+  AUTH_SERVICE_NAME,
+  AuthServiceClient,
+} from '@app/protos/generated/auth';
 
 @Injectable()
 export class ProductsService implements OnModuleInit {
   constructor(
     @Inject(PRODUCTS_PACKAGE_NAME) private productsClient: ClientGrpc,
+    @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
   ) {}
 
   private productsService: ProductsServiceClient;
+  private authService: AuthServiceClient;
   private logger = new Logger(ProductsService.name);
 
   onModuleInit() {
     this.productsService = this.productsClient.getService(
       PRODUCTS_SERVICE_NAME,
     );
+    this.authService = this.authClient.getService(AUTH_SERVICE_NAME);
   }
 
   private handleError(error: any, action: string) {
@@ -63,17 +71,38 @@ export class ProductsService implements OnModuleInit {
 
   async findAll(query: FindAllProductsDto) {
     try {
-      const response = await firstValueFrom(
+      const findAllResponse = await firstValueFrom(
         this.productsService.findAll(query),
       );
 
+      const products = findAllResponse.products || []; // [] Else gRPC returns undefined when there are no products
+      const adminIds = [...new Set(products.map((p) => p.adminId))];
+      const findAdminsResponse = await firstValueFrom(
+        this.authService.findAdmins({ adminIds }),
+      );
+
+      const admins = findAdminsResponse.admins || [];
+      const adminMap = new Map(admins.map((a) => [a.id, a]));
+
       if (!query.page && !query.limit) {
-        return response.products || []; // [] Else gRPC returns undefined when there are no products
+        return products.map((product) => ({
+          ...product,
+          admin: {
+            id: product.adminId,
+            name: adminMap.get(product.adminId)?.name,
+          },
+        }));
       }
 
       return {
-        ...response,
-        products: response.products || [],
+        ...findAllResponse,
+        products: products.map((product) => ({
+          ...product,
+          admin: {
+            id: product.adminId,
+            name: adminMap.get(product.adminId)?.name,
+          },
+        })),
       };
     } catch (error) {
       this.handleError(error, 'fetch products');
