@@ -10,6 +10,7 @@ service AuthService {
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
   rpc SignOut(SignOutRequest) returns (SignOutResponse) {}
   rpc FindUser(FindUserRequest) returns (User) {}
+  rpc FindAdmins(FindAdminsRequest) returns (FindAdminsResponse) {}
 }
 
 message SignUpRequest {
@@ -61,3 +62,7 @@ message SignOutResponse {
 }
 
 message FindUserRequest { string id = 1; }
+
+message FindAdminsRequest { repeated string admin_ids = 1; }
+
+message FindAdminsResponse { repeated User admins = 1; }

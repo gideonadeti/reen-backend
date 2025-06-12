@@ -178,4 +178,18 @@ export class AuthService {
       this.handleError(error, `find user with id ${id}`);
     }
   }
+
+  async findAdmins(adminIds: string[]) {
+    try {
+      const admins = await this.prismaService.user.findMany({
+        where: { id: { in: adminIds } },
+      });
+
+      return {
+        admins,
+      };
+    } catch (error) {
+      this.handleError(error, `fetch admins with ids ${adminIds.join(', ')}`);
+    }
+  }
 }

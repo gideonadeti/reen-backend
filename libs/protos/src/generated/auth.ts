@@ -69,6 +69,14 @@ export interface FindUserRequest {
   id: string;
 }
 
+export interface FindAdminsRequest {
+  adminIds: string[];
+}
+
+export interface FindAdminsResponse {
+  admins: User[];
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -92,6 +100,8 @@ export interface AuthServiceClient {
   signOut(request: SignOutRequest): Observable<SignOutResponse>;
 
   findUser(request: FindUserRequest): Observable<User>;
+
+  findAdmins(request: FindAdminsRequest): Observable<FindAdminsResponse>;
 }
 
 export interface AuthServiceController {
@@ -108,11 +118,23 @@ export interface AuthServiceController {
   signOut(request: SignOutRequest): Promise<SignOutResponse> | Observable<SignOutResponse> | SignOutResponse;
 
   findUser(request: FindUserRequest): Promise<User> | Observable<User> | User;
+
+  findAdmins(
+    request: FindAdminsRequest,
+  ): Promise<FindAdminsResponse> | Observable<FindAdminsResponse> | FindAdminsResponse;
 }
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["signUp", "validateUser", "signIn", "refreshToken", "signOut", "findUser"];
+    const grpcMethods: string[] = [
+      "signUp",
+      "validateUser",
+      "signIn",
+      "refreshToken",
+      "signOut",
+      "findUser",
+      "findAdmins",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);

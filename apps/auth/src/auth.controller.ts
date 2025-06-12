@@ -4,6 +4,7 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import {
   AUTH_SERVICE_NAME,
+  FindAdminsRequest,
   FindUserRequest,
   RefreshTokenRequest,
   SignOutRequest,
@@ -44,5 +45,10 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   findUser(data: FindUserRequest) {
     return this.authService.findUser(data.id);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  findAdmins(data: FindAdminsRequest) {
+    return this.authService.findAdmins(data.adminIds);
   }
 }
