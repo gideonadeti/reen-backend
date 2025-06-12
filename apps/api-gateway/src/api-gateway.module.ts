@@ -1,5 +1,7 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 
 import { AuthModule } from './auth/auth.module';
 import { LoggingMiddleware } from './logging/logging.middleware';
@@ -21,9 +23,15 @@ import { OrdersModule } from './orders/orders.module';
     CheckoutModule,
     WebhooksModule,
     OrdersModule,
+    CacheModule.register({ isGlobal: true, ttl: 120000 }),
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
+  ],
 })
 export class ApiGatewayModule {
   configure(consumer: MiddlewareConsumer) {
