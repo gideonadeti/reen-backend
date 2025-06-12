@@ -13,8 +13,10 @@ export const protobufPackage = "products";
 
 export interface CreateProductDto {
   name: string;
+  description: string;
   price: number;
   quantity: number;
+  imageUrls: string[];
 }
 
 export interface CreateRequest {
@@ -37,8 +39,11 @@ export interface FindAllRequest {
 export interface Product {
   id: string;
   name: string;
+  description: string;
   price: number;
   quantity: number;
+  imageUrls: string[];
+  adminId: string;
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
 }

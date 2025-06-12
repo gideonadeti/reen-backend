@@ -17,8 +17,10 @@ service ProductsService {
 
 message CreateProductDto {
   string name = 1;
-  double price = 2;
-  int32 quantity = 3;
+  string description = 2;
+  double price = 3;
+  int32 quantity = 4;
+  repeated string image_urls = 5;
 }
 
 message CreateRequest {
@@ -41,10 +43,13 @@ message FindAllRequest {
 message Product {
   string id = 1;
   string name = 2;
-  double price = 3;
-  int32 quantity = 4;
-  google.protobuf.Timestamp createdAt = 5;
-  google.protobuf.Timestamp updatedAt = 6;
+  string description = 3;
+  double price = 4;
+  int32 quantity = 5;
+  repeated string image_urls = 6;
+  string admin_id = 7;
+  google.protobuf.Timestamp createdAt = 8;
+  google.protobuf.Timestamp updatedAt = 9;
 }
 
 message Meta {

@@ -10,6 +10,14 @@ export class CreateProductDto {
   name: string;
 
   /**
+   * Product's description
+   * @example 'Laptop description'
+   */
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  /**
    * Product's price
    * @example 99.99
    */
@@ -26,4 +34,12 @@ export class CreateProductDto {
   @IsNotEmpty()
   @Min(0)
   quantity: number;
+
+  /**
+   * Product's image URLs
+   * @example ['https://example.com/image1.jpg', 'https://example.com/image2.jpg']
+   */
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  imageUrls: string[];
 }
