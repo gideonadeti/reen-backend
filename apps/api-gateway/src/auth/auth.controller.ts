@@ -38,8 +38,8 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post('sign-out')
-  signOut(@Req() req: Request & { user: User }, @Res() res: Response) {
-    return this.authService.signOut(req.user.id, res);
+  signOut(@UserId() userId: string, @Res() res: Response) {
+    return this.authService.signOut(userId, res);
   }
 
   @UseGuards(ClerkAuthGuard)
