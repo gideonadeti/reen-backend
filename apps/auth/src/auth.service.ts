@@ -11,6 +11,7 @@ import {
   RefreshTokenRequest,
   SignOutRequest,
   SignUpRequest,
+  UpdateUserRoleRequest,
   User,
   UserRole,
   ValidateUserRequest,
@@ -190,6 +191,21 @@ export class AuthService {
       };
     } catch (error) {
       this.handleError(error, `fetch admins with ids ${adminIds.join(', ')}`);
+    }
+  }
+
+  async updateUserRole({ id, role }: UpdateUserRoleRequest) {
+    const prismaUserRole = role === UserRole.ADMIN ? 'ADMIN' : 'NADMIN';
+
+    try {
+      await this.prismaService.user.update({
+        where: { id },
+        data: { role: prismaUserRole },
+      });
+
+      return {};
+    } catch (error) {
+      this.handleError(error, `update user role for user with id ${id}`);
     }
   }
 }

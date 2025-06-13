@@ -9,6 +9,7 @@ import {
   RefreshTokenRequest,
   SignOutRequest,
   SignUpRequest,
+  UpdateUserRoleRequest,
   User,
   ValidateUserRequest,
 } from '@app/protos/generated/auth';
@@ -50,5 +51,10 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   findAdmins(data: FindAdminsRequest) {
     return this.authService.findAdmins(data.adminIds);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  updateUserRole(data: UpdateUserRoleRequest) {
+    return this.authService.updateUserRole(data);
   }
 }
