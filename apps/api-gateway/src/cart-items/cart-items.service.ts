@@ -19,19 +19,29 @@ import {
   CART_ITEMS_SERVICE_NAME,
   CartItemsServiceClient,
 } from '@app/protos/generated/cart-items';
+import {
+  PRODUCTS_PACKAGE_NAME,
+  PRODUCTS_SERVICE_NAME,
+  ProductsServiceClient,
+} from '@app/protos/generated/products';
 
 @Injectable()
 export class CartItemsService implements OnModuleInit {
   constructor(
     @Inject(CART_ITEMS_PACKAGE_NAME) private cartItemsClient: ClientGrpc,
+    @Inject(PRODUCTS_PACKAGE_NAME) private productsClient: ClientGrpc,
   ) {}
 
   private cartItemsService: CartItemsServiceClient;
+  private productsService: ProductsServiceClient;
   private logger = new Logger(CartItemsService.name);
 
   onModuleInit() {
     this.cartItemsService = this.cartItemsClient.getService(
       CART_ITEMS_SERVICE_NAME,
+    );
+    this.productsService = this.productsClient.getService(
+      PRODUCTS_SERVICE_NAME,
     );
   }
 
@@ -79,7 +89,19 @@ export class CartItemsService implements OnModuleInit {
         this.cartItemsService.findAll({ userId }),
       );
 
-      return response.cartItems || [];
+      const cartItems = response.cartItems || [];
+      const productIds = [...new Set(cartItems.map((c) => c.productId))];
+      const findByIdsResponse = await firstValueFrom(
+        this.productsService.findByIds({ ids: productIds }),
+      );
+
+      const products = findByIdsResponse.products || [];
+      const productMap = new Map(products.map((p) => [p.id, p]));
+
+      return cartItems.map((cartItem) => ({
+        ...cartItem,
+        product: productMap.get(cartItem.productId),
+      }));
     } catch (error) {
       this.handleError(error, 'fetch cart items');
     }
