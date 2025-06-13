@@ -21,7 +21,8 @@ export enum UserRole {
 export interface SignUpRequest {
   name: string;
   email: string;
-  password: string;
+  password?: string | undefined;
+  clerkId?: string | undefined;
 }
 
 export interface SignUpInResponse {
@@ -85,6 +86,10 @@ export interface UpdateUserRoleRequest {
 export interface UpdateUserRoleResponse {
 }
 
+export interface FindUserByClerkIdRequest {
+  clerkId: string;
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -112,6 +117,8 @@ export interface AuthServiceClient {
   findAdmins(request: FindAdminsRequest): Observable<FindAdminsResponse>;
 
   updateUserRole(request: UpdateUserRoleRequest): Observable<UpdateUserRoleResponse>;
+
+  findUserByClerkId(request: FindUserByClerkIdRequest): Observable<User>;
 }
 
 export interface AuthServiceController {
@@ -136,6 +143,8 @@ export interface AuthServiceController {
   updateUserRole(
     request: UpdateUserRoleRequest,
   ): Promise<UpdateUserRoleResponse> | Observable<UpdateUserRoleResponse> | UpdateUserRoleResponse;
+
+  findUserByClerkId(request: FindUserByClerkIdRequest): Promise<User> | Observable<User> | User;
 }
 
 export function AuthServiceControllerMethods() {
@@ -149,6 +158,7 @@ export function AuthServiceControllerMethods() {
       "findUser",
       "findAdmins",
       "updateUserRole",
+      "findUserByClerkId",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

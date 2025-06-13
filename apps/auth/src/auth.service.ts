@@ -208,4 +208,14 @@ export class AuthService {
       this.handleError(error, `update user role for user with id ${id}`);
     }
   }
+
+  async findUserByClerkId(clerkId: string) {
+    try {
+      return await this.prismaService.user.findUnique({
+        where: { clerkId },
+      });
+    } catch (error) {
+      this.handleError(error, `find user with clerkId ${clerkId}`);
+    }
+  }
 }

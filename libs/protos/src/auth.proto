@@ -12,12 +12,14 @@ service AuthService {
   rpc FindUser(FindUserRequest) returns (User) {}
   rpc FindAdmins(FindAdminsRequest) returns (FindAdminsResponse) {}
   rpc UpdateUserRole(UpdateUserRoleRequest) returns (UpdateUserRoleResponse) {}
+  rpc FindUserByClerkId(FindUserByClerkIdRequest) returns (User) {}
 }
 
 message SignUpRequest {
   string name = 1;
   string email = 2;
-  string password = 3;
+  optional string password = 3;
+  optional string clerk_id = 4;
 }
 
 message SignUpInResponse {
@@ -74,3 +76,5 @@ message UpdateUserRoleRequest {
 }
 
 message UpdateUserRoleResponse {}
+
+message FindUserByClerkIdRequest { string clerk_id = 1; }
