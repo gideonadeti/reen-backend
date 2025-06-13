@@ -98,6 +98,7 @@ export class AuthService {
 
       return await this.handleSuccessfulAuth({
         ...rest,
+        clerkId: rest.clerkId as string | undefined,
         role: UserRole[rest.role],
       });
     } catch (error) {
