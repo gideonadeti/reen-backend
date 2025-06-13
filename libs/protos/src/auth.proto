@@ -54,11 +54,11 @@ message RefreshTokenRequest {
 
 message RefreshTokenResponse { string accessToken = 1; }
 
-message SignOutRequest { string userId = 1; }
+message SignOutRequest { string user_id = 1; }
 
 message SignOutResponse {
   string id = 1;
-  string userId = 2;
+  string user_id = 2;
   string value = 3;
   google.protobuf.Timestamp createdAt = 4;
   google.protobuf.Timestamp updatedAt = 5;
