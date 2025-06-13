@@ -6,9 +6,12 @@ import { AuthService } from './auth.service';
 import { SignUpDto } from './dtos/sign-up.dto';
 import { SignInDto } from './dtos/sign-in.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { User } from '@app/protos/generated/auth';
+import { User, UserRole } from '@app/protos/generated/auth';
 import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { ClerkAuthGuard } from './guards/clerk-auth.guard';
+import { UpdateUserRoleDto } from './dtos/update-user-role.dto';
+import { UserId } from './decorators/user-id.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -37,5 +40,17 @@ export class AuthController {
   @Post('sign-out')
   signOut(@Req() req: Request & { user: User }, @Res() res: Response) {
     return this.authService.signOut(req.user.id, res);
+  }
+
+  @UseGuards(ClerkAuthGuard)
+  @Post('update-user-role')
+  updateUserRole(
+    @UserId() userId: string,
+    @Body() updateUserRoleDto: UpdateUserRoleDto,
+  ) {
+    const role =
+      updateUserRoleDto.role === 'ADMIN' ? UserRole.ADMIN : UserRole.NADMIN;
+
+    return this.authService.updateUserRole(userId, role);
   }
 }

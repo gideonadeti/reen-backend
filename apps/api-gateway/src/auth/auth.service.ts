@@ -124,4 +124,14 @@ export class AuthService implements OnModuleInit {
       this.handleError(error, 'sign out');
     }
   }
+
+  async updateUserRole(userId: string, role: UserRole) {
+    try {
+      return await firstValueFrom(
+        this.authService.updateUserRole({ id: userId, role }),
+      );
+    } catch (error) {
+      this.handleError(error, `update user role for user with id ${userId}`);
+    }
+  }
 }
