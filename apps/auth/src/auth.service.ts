@@ -83,7 +83,9 @@ export class AuthService {
 
   async signUp(signUpRequest: SignUpRequest) {
     try {
-      const hashedPassword = await this.hashPassword(signUpRequest.password);
+      const hashedPassword = await this.hashPassword(
+        signUpRequest.password as string,
+      );
       const user = await this.prismaService.user.create({
         data: {
           ...signUpRequest,
