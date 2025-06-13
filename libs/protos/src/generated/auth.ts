@@ -35,6 +35,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  password?: string | undefined;
+  clerkId?: string | undefined;
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
   role: UserRole;
