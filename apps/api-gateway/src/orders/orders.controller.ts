@@ -3,10 +3,10 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { OrdersService } from './orders.service';
 import { UserId } from '../auth/decorators/user-id.decorator';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ClerkAuthGuard } from '../auth/guards/clerk-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(ClerkAuthGuard)
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}

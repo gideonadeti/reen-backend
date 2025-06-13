@@ -14,19 +14,20 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserRole } from '@app/protos/generated/auth';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserId } from '../auth/decorators/user-id.decorator';
 import { FindAllProductsDto } from './dto/find-all-products.dto';
+import { ClerkAuthGuard } from '../auth/guards/clerk-auth.guard';
 
+@UseGuards(ClerkAuthGuard)
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   @Post()
   create(@UserId() userId: string, @Body() createProductDto: CreateProductDto) {
@@ -44,7 +45,7 @@ export class ProductsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   @Patch(':id')
   update(
@@ -56,7 +57,7 @@ export class ProductsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   @Delete(':id')
   remove(@UserId() userId: string, @Param('id') id: string) {
