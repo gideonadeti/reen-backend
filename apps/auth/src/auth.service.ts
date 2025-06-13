@@ -7,6 +7,7 @@ import { RpcException } from '@nestjs/microservices';
 
 import { PrismaService } from './prisma/prisma.service';
 import { AuthPayload } from '@app/interfaces';
+import { User as PrismaUser } from '../generated/prisma';
 import {
   RefreshTokenRequest,
   SignOutRequest,
@@ -83,15 +84,22 @@ export class AuthService {
 
   async signUp(signUpRequest: SignUpRequest) {
     try {
-      const hashedPassword = await this.hashPassword(
-        signUpRequest.password as string,
-      );
-      const user = await this.prismaService.user.create({
-        data: {
-          ...signUpRequest,
-          password: hashedPassword,
-        },
-      });
+      let user: PrismaUser;
+
+      if (!signUpRequest.password) {
+        user = await this.prismaService.user.create({
+          data: signUpRequest,
+        });
+      } else {
+        const hashedPassword = await this.hashPassword(signUpRequest.password);
+
+        user = await this.prismaService.user.create({
+          data: {
+            ...signUpRequest,
+            password: hashedPassword,
+          },
+        });
+      }
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...rest } = user;
