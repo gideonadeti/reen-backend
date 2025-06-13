@@ -51,7 +51,7 @@ export class ClerkAuthGuard implements CanActivate, OnModuleInit {
       this.authService.findUserByClerkId({ clerkId }),
     );
 
-    if (!user) {
+    if (Object.keys(user).length === 0) {
       const clerkUser = await clerkClient.users.getUser(clerkId);
 
       const signUpResponse = await firstValueFrom(
