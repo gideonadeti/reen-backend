@@ -23,6 +23,7 @@
     "build:libs": "concurrently -n protos,interfaces,interceptors -c cyan,blue,magenta \"nest build protos\" \"nest build interfaces\" \"nest build interceptors\""
   },
   "dependencies": {
+    "@clerk/express": "^1.6.0",
     "@grpc/grpc-js": "^1.13.4",
     "@grpc/proto-loader": "^0.7.15",
     "@nestjs/cache-manager": "^3.0.1",

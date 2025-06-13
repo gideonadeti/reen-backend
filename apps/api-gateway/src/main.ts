@@ -2,6 +2,7 @@ import * as cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { clerkMiddleware } from '@clerk/express';
 import {
   DocumentBuilder,
   SwaggerDocumentOptions,
@@ -18,7 +19,7 @@ const bootstrap = async () => {
   app.enableCors({
     origin: [frontendBaseUrl],
   });
-  app.use(cookieParser());
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -29,6 +30,9 @@ const bootstrap = async () => {
       },
     }),
   );
+
+  app.use(cookieParser());
+  app.use(clerkMiddleware());
 
   const config = new DocumentBuilder()
     .setTitle('API Gateway')
