@@ -214,9 +214,14 @@ export class AuthService {
 
   async findUserByClerkId(clerkId: string) {
     try {
-      return await this.prismaService.user.findUnique({
+      const user = await this.prismaService.user.findUnique({
         where: { clerkId },
       });
+
+      // Return `{}` if user is not found to avoid gRPC converting null to User
+      if (!user) return {};
+
+      return user;
     } catch (error) {
       this.handleError(error, `find user with clerkId ${clerkId}`);
     }
