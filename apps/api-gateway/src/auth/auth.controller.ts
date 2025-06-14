@@ -65,6 +65,11 @@ export class AuthController {
   @UseGuards(ClerkAuthGuard)
   @Get('users/:id')
   findUser(@Req() req: Request) {
-    return req.user;
+    const user = req.user as User;
+
+    return {
+      ...user,
+      role: UserRole[user.role],
+    };
   }
 }
