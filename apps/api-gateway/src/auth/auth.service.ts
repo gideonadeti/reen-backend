@@ -127,9 +127,14 @@ export class AuthService implements OnModuleInit {
 
   async updateUserRole(userId: string, role: UserRole) {
     try {
-      return await firstValueFrom(
+      const user = await firstValueFrom(
         this.authService.updateUserRole({ id: userId, role }),
       );
+
+      return {
+        ...user,
+        role: UserRole[user.role],
+      };
     } catch (error) {
       this.handleError(error, `update user role for user with id ${userId}`);
     }
