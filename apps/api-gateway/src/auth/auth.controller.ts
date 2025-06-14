@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
@@ -52,5 +60,11 @@ export class AuthController {
       updateUserRoleDto.role === 'ADMIN' ? UserRole.ADMIN : UserRole.NADMIN;
 
     return this.authService.updateUserRole(userId, role);
+  }
+
+  @UseGuards(ClerkAuthGuard)
+  @Get('users/:id')
+  findUser(@Req() req: Request) {
+    return req.user;
   }
 }
