@@ -209,12 +209,15 @@ export class AuthService {
     const prismaUserRole = role === UserRole.ADMIN ? 'ADMIN' : 'NADMIN';
 
     try {
-      await this.prismaService.user.update({
+      const user = await this.prismaService.user.update({
         where: { id },
         data: { role: prismaUserRole },
       });
 
-      return {};
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...rest } = user;
+
+      return rest;
     } catch (error) {
       this.handleError(error, `update user role for user with id ${id}`);
     }

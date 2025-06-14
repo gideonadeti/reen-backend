@@ -11,7 +11,7 @@ service AuthService {
   rpc SignOut(SignOutRequest) returns (SignOutResponse) {}
   rpc FindUser(FindUserRequest) returns (User) {}
   rpc FindAdmins(FindAdminsRequest) returns (FindAdminsResponse) {}
-  rpc UpdateUserRole(UpdateUserRoleRequest) returns (UpdateUserRoleResponse) {}
+  rpc UpdateUserRole(UpdateUserRoleRequest) returns (User) {}
   rpc FindUserByClerkId(FindUserByClerkIdRequest) returns (User) {}
 }
 
@@ -76,7 +76,5 @@ message UpdateUserRoleRequest {
   string id = 1;
   UserRole role = 2;
 }
-
-message UpdateUserRoleResponse {}
 
 message FindUserByClerkIdRequest { string clerk_id = 1; }

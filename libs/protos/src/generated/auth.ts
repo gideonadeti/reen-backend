@@ -85,9 +85,6 @@ export interface UpdateUserRoleRequest {
   role: UserRole;
 }
 
-export interface UpdateUserRoleResponse {
-}
-
 export interface FindUserByClerkIdRequest {
   clerkId: string;
 }
@@ -118,7 +115,7 @@ export interface AuthServiceClient {
 
   findAdmins(request: FindAdminsRequest): Observable<FindAdminsResponse>;
 
-  updateUserRole(request: UpdateUserRoleRequest): Observable<UpdateUserRoleResponse>;
+  updateUserRole(request: UpdateUserRoleRequest): Observable<User>;
 
   findUserByClerkId(request: FindUserByClerkIdRequest): Observable<User>;
 }
@@ -142,9 +139,7 @@ export interface AuthServiceController {
     request: FindAdminsRequest,
   ): Promise<FindAdminsResponse> | Observable<FindAdminsResponse> | FindAdminsResponse;
 
-  updateUserRole(
-    request: UpdateUserRoleRequest,
-  ): Promise<UpdateUserRoleResponse> | Observable<UpdateUserRoleResponse> | UpdateUserRoleResponse;
+  updateUserRole(request: UpdateUserRoleRequest): Promise<User> | Observable<User> | User;
 
   findUserByClerkId(request: FindUserByClerkIdRequest): Promise<User> | Observable<User> | User;
 }
