@@ -23,7 +23,7 @@ import { OrdersModule } from './orders/orders.module';
     CheckoutModule,
     WebhooksModule,
     OrdersModule,
-    CacheModule.register({ isGlobal: true, ttl: 120000 }),
+    CacheModule.register({ isGlobal: true }),
   ],
   controllers: [],
   providers: [
