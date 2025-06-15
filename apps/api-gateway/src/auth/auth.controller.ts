@@ -1,3 +1,6 @@
+import { CacheInterceptor } from '@nestjs/cache-manager';
+import { Request, Response } from 'express';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -6,9 +9,8 @@ import {
   Req,
   Res,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dtos/sign-up.dto';
@@ -63,6 +65,7 @@ export class AuthController {
   }
 
   @UseGuards(ClerkAuthGuard)
+  @UseInterceptors(CacheInterceptor)
   @Get('users/:id')
   findUser(@Req() req: Request) {
     const user = req.user as User;

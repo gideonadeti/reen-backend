@@ -1,4 +1,5 @@
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import {
   Controller,
   Get,
@@ -9,6 +10,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { ProductsService } from './products.service';
@@ -34,6 +36,7 @@ export class ProductsController {
     return this.productsService.create(userId, createProductDto);
   }
 
+  @UseInterceptors(CacheInterceptor)
   @Get()
   findAll(@Query() query: FindAllProductsDto) {
     return this.productsService.findAll(query);
