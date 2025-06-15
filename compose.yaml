@@ -51,3 +51,12 @@ services:
     image: ghcr.io/gideonadeti/reen-backend-orders:latest
     volumes:
       - ./.env:/app/apps/orders/.env
+  redis:
+    container_name: redis
+    image: redis:8.0.2
+    volumes:
+      - redis_data:/data
+    command: ['redis-server', '--appendonly', 'yes']
+
+volumes:
+  redis_data:
