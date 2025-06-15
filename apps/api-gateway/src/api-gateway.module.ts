@@ -1,6 +1,8 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
+import { createKeyv, Keyv } from '@keyv/redis';
+import { CacheableMemory } from 'cacheable';
 
 import { AuthModule } from './auth/auth.module';
 import { LoggingMiddleware } from './logging/logging.middleware';
@@ -22,7 +24,20 @@ import { OrdersModule } from './orders/orders.module';
     CheckoutModule,
     WebhooksModule,
     OrdersModule,
-    CacheModule.register({ isGlobal: true }),
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => {
+        return {
+          stores: [
+            new Keyv({
+              store: new CacheableMemory({ lruSize: 200 }),
+            }),
+            createKeyv(configService.get('REDIS_SERVICE_URL') as string),
+          ],
+        };
+      },
+      inject: [ConfigService],
+    }),
   ],
   controllers: [],
   providers: [],
