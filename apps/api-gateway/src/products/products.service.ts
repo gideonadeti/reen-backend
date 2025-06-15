@@ -1,5 +1,7 @@
 import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import {
   Inject,
   Injectable,
@@ -29,6 +31,7 @@ export class ProductsService implements OnModuleInit {
   constructor(
     @Inject(PRODUCTS_PACKAGE_NAME) private productsClient: ClientGrpc,
     @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   private productsService: ProductsServiceClient;
@@ -58,12 +61,17 @@ export class ProductsService implements OnModuleInit {
 
   async create(userId: string, createProductDto: CreateProductDto) {
     try {
-      return await firstValueFrom(
+      const product = await firstValueFrom(
         this.productsService.create({
           adminId: userId,
           createProductDto,
         }),
       );
+
+      // Invalidate products cache after product creation
+      await this.cacheManager.del('/products');
+
+      return product;
     } catch (error) {
       this.handleError(error, 'create product');
     }
@@ -119,13 +127,18 @@ export class ProductsService implements OnModuleInit {
 
   async update(userId: string, id: string, updateProductDto: UpdateProductDto) {
     try {
-      return await firstValueFrom(
+      const product = await firstValueFrom(
         this.productsService.update({
           adminId: userId,
           id,
           updateProductDto,
         }),
       );
+
+      // Invalidate products cache after product update
+      await this.cacheManager.del('/products');
+
+      return product;
     } catch (error) {
       this.handleError(error, `update product with id ${id}`);
     }
@@ -133,9 +146,14 @@ export class ProductsService implements OnModuleInit {
 
   async remove(userId: string, id: string) {
     try {
-      return await firstValueFrom(
+      const product = await firstValueFrom(
         this.productsService.remove({ adminId: userId, id }),
       );
+
+      // Invalidate products cache after product deletion
+      await this.cacheManager.del('/products');
+
+      return product;
     } catch (error) {
       this.handleError(error, `delete product with id ${id}`);
     }
