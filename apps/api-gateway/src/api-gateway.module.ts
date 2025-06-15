@@ -31,6 +31,7 @@ import { OrdersModule } from './orders/orders.module';
         };
       },
       inject: [ConfigService],
+      isGlobal: true,
     }),
   ],
   controllers: [],
