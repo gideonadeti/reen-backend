@@ -1,6 +1,8 @@
 import { CookieOptions, Request, Response } from 'express';
 import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import {
   ConflictException,
   Inject,
@@ -30,7 +32,10 @@ const REFRESH_COOKIE_OPTIONS: CookieOptions = {
 
 @Injectable()
 export class AuthService implements OnModuleInit {
-  constructor(@Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc) {}
+  constructor(
+    @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   private authService: AuthServiceClient;
   private logger = new Logger(AuthService.name);
@@ -130,6 +135,9 @@ export class AuthService implements OnModuleInit {
       const user = await firstValueFrom(
         this.authService.updateUserRole({ id: userId, role }),
       );
+
+      // Invalidate user cache after role update
+      await this.cacheManager.del(`/auth/users/${userId}`);
 
       return {
         ...user,
