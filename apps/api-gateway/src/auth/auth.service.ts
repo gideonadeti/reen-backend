@@ -130,14 +130,14 @@ export class AuthService implements OnModuleInit {
     }
   }
 
-  async updateUserRole(userId: string, role: UserRole) {
+  async updateUserRole(userId: string, role: UserRole, clerkId: string) {
     try {
       const user = await firstValueFrom(
         this.authService.updateUserRole({ id: userId, role }),
       );
 
       // Invalidate user cache after role update
-      await this.cacheManager.del(`/auth/users/${userId}`);
+      await this.cacheManager.del(`/auth/users/${clerkId}`);
 
       return {
         ...user,

@@ -55,13 +55,18 @@ export class AuthController {
   @UseGuards(ClerkAuthGuard)
   @Post('update-user-role')
   updateUserRole(
+    @Req() req: Request & { user: User },
     @UserId() userId: string,
     @Body() updateUserRoleDto: UpdateUserRoleDto,
   ) {
     const role =
       updateUserRoleDto.role === 'ADMIN' ? UserRole.ADMIN : UserRole.NADMIN;
 
-    return this.authService.updateUserRole(userId, role);
+    return this.authService.updateUserRole(
+      userId,
+      role,
+      req.user.clerkId as string,
+    );
   }
 
   @UseGuards(ClerkAuthGuard)
