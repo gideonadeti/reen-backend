@@ -1,8 +1,7 @@
+import KeyvRedis from '@keyv/redis';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
-import { createKeyv } from '@keyv/redis';
-import { Cacheable } from 'cacheable';
 
 import { AuthModule } from './auth/auth.module';
 import { LoggingMiddleware } from './logging/logging.middleware';
@@ -30,10 +29,8 @@ import { OrdersModule } from './orders/orders.module';
         const redisServiceUrl = configService.get(
           'REDIS_SERVICE_URL',
         ) as string;
-        const secondary = createKeyv(redisServiceUrl);
-
         return {
-          store: new Cacheable({ secondary }),
+          stores: [new KeyvRedis(redisServiceUrl)],
         };
       },
       inject: [ConfigService],
