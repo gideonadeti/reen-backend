@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import { createKeyv } from '@keyv/redis';
+import { Cacheable } from 'cacheable';
 
 import { AuthModule } from './auth/auth.module';
 import { LoggingMiddleware } from './logging/logging.middleware';
@@ -26,8 +27,13 @@ import { OrdersModule } from './orders/orders.module';
     CacheModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
+        const redisServiceUrl = configService.get(
+          'REDIS_SERVICE_URL',
+        ) as string;
+        const secondary = createKeyv(redisServiceUrl);
+
         return {
-          store: createKeyv(configService.get('REDIS_SERVICE_URL') as string),
+          store: new Cacheable({ secondary }),
         };
       },
       inject: [ConfigService],
