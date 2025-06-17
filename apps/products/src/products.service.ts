@@ -1,5 +1,7 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 import { PrismaService } from './prisma/prisma.service';
 import { Prisma } from '../generated/prisma';
@@ -16,7 +18,10 @@ import {
 
 @Injectable()
 export class ProductsService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   private logger = new Logger(ProductsService.name);
 
@@ -24,16 +29,6 @@ export class ProductsService {
     this.logger.error(`Failed to ${action}`, (error as Error).stack);
 
     throw new RpcException(JSON.stringify(error));
-  }
-
-  async create({ adminId, createProductDto }: CreateRequest) {
-    try {
-      return await this.prismaService.product.create({
-        data: { ...(createProductDto as CreateProductDto), adminId },
-      });
-    } catch (error) {
-      this.handleError(error, 'create product');
-    }
   }
 
   private getWhereConditions(query: FindAllRequest) {
@@ -59,6 +54,16 @@ export class ProductsService {
     }
 
     return whereConditions;
+  }
+
+  async create({ adminId, createProductDto }: CreateRequest) {
+    try {
+      return await this.prismaService.product.create({
+        data: { ...(createProductDto as CreateProductDto), adminId },
+      });
+    } catch (error) {
+      this.handleError(error, 'create product');
+    }
   }
 
   async findAll(query: FindAllRequest) {
@@ -160,9 +165,19 @@ export class ProductsService {
   async updateQuantities({ cartItems, increment }: UpdateQuantitiesRequest) {
     try {
       if (increment) {
-        return await this.incrementQuantities(cartItems);
+        const response = await this.incrementQuantities(cartItems);
+
+        // Invalidate products cache after incrementing quantities
+        await this.cacheManager.del('/products');
+
+        return response;
       } else {
-        return await this.decrementQuantities(cartItems);
+        const response = await this.decrementQuantities(cartItems);
+
+        // Invalidate products cache after decrementing quantities
+        await this.cacheManager.del('/products');
+
+        return response;
       }
     } catch (error) {
       this.handleError(error, 'update quantities');
