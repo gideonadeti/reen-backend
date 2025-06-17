@@ -15,18 +15,28 @@ import {
   ORDERS_SERVICE_NAME,
   OrdersServiceClient,
 } from '@app/protos/generated/orders';
+import {
+  PRODUCTS_PACKAGE_NAME,
+  PRODUCTS_SERVICE_NAME,
+  ProductsServiceClient,
+} from '@app/protos/generated/products';
 
 @Injectable()
 export class OrdersService implements OnModuleInit {
   constructor(
-    @Inject(ORDERS_PACKAGE_NAME) private productsClient: ClientGrpc,
+    @Inject(ORDERS_PACKAGE_NAME) private ordersClient: ClientGrpc,
+    @Inject(PRODUCTS_PACKAGE_NAME) private productsClient: ClientGrpc,
   ) {}
 
   private ordersService: OrdersServiceClient;
+  private productsService: ProductsServiceClient;
   private logger = new Logger(OrdersService.name);
 
   onModuleInit() {
-    this.ordersService = this.productsClient.getService(ORDERS_SERVICE_NAME);
+    this.ordersService = this.ordersClient.getService(ORDERS_SERVICE_NAME);
+    this.productsService = this.productsClient.getService(
+      PRODUCTS_SERVICE_NAME,
+    );
   }
 
   private handleError(error: any, action: string) {
@@ -51,7 +61,29 @@ export class OrdersService implements OnModuleInit {
         }),
       );
 
-      return findAllResponse.orders || [];
+      const orders = findAllResponse.orders || [];
+      const productIds = orders.flatMap((order) =>
+        order.orderItems.map((item) => item.productId),
+      );
+
+      const findByIdsResponse = await firstValueFrom(
+        this.productsService.findByIds({
+          ids: productIds,
+        }),
+      );
+
+      const products = findByIdsResponse.products || [];
+      const productsMap = new Map(
+        products.map((product) => [product.id, product]),
+      );
+
+      return orders.map((order) => ({
+        ...order,
+        orderItems: order.orderItems.map((item) => ({
+          ...item,
+          product: productsMap.get(item.productId),
+        })),
+      }));
     } catch (error) {
       this.handleError(error, 'fetch orders');
     }
