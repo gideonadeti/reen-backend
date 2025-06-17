@@ -131,7 +131,10 @@ export class ProductsService implements OnModuleInit {
         this.productsService.update({
           adminId: userId,
           id,
-          updateProductDto,
+          updateProductDto: {
+            ...updateProductDto,
+            imageUrls: updateProductDto.imageUrls || [],
+          },
         }),
       );
 
