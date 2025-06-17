@@ -99,7 +99,7 @@ export class EventsHandlerService
       const orderItems = cartItems.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
-        price: Number(productMap.get(item.productId)?.price),
+        price: Number(productMap.get(item.productId)?.price) * item.quantity,
       }));
       const order = await firstValueFrom(
         this.ordersService.create({
