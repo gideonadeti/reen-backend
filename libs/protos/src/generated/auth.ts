@@ -97,6 +97,15 @@ export interface FindByIdsResponse {
   users: User[];
 }
 
+export interface UpdateBalancesRequest {
+  userId: string;
+  adminId: string;
+  amount: number;
+}
+
+export interface UpdateBalancesResponse {
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -128,6 +137,8 @@ export interface AuthServiceClient {
   findUserByClerkId(request: FindUserByClerkIdRequest): Observable<User>;
 
   findByIds(request: FindByIdsRequest): Observable<FindByIdsResponse>;
+
+  updateBalances(request: UpdateBalancesRequest): Observable<UpdateBalancesResponse>;
 }
 
 export interface AuthServiceController {
@@ -154,6 +165,10 @@ export interface AuthServiceController {
   findUserByClerkId(request: FindUserByClerkIdRequest): Promise<User> | Observable<User> | User;
 
   findByIds(request: FindByIdsRequest): Promise<FindByIdsResponse> | Observable<FindByIdsResponse> | FindByIdsResponse;
+
+  updateBalances(
+    request: UpdateBalancesRequest,
+  ): Promise<UpdateBalancesResponse> | Observable<UpdateBalancesResponse> | UpdateBalancesResponse;
 }
 
 export function AuthServiceControllerMethods() {
@@ -169,6 +184,7 @@ export function AuthServiceControllerMethods() {
       "updateUserRole",
       "findUserByClerkId",
       "findByIds",
+      "updateBalances",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

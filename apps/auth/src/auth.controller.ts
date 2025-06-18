@@ -11,6 +11,7 @@ import {
   RefreshTokenRequest,
   SignOutRequest,
   SignUpRequest,
+  UpdateBalancesRequest,
   UpdateUserRoleRequest,
   User,
   ValidateUserRequest,
@@ -68,5 +69,10 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   findByIds(data: FindByIdsRequest) {
     return this.authService.findByIds(data.ids);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  updateBalances(data: UpdateBalancesRequest) {
+    return this.authService.updateBalances(data);
   }
 }

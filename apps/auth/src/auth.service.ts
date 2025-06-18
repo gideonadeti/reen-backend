@@ -12,6 +12,7 @@ import {
   RefreshTokenRequest,
   SignOutRequest,
   SignUpRequest,
+  UpdateBalancesRequest,
   UpdateUserRoleRequest,
   User,
   UserRole,
@@ -247,6 +248,25 @@ export class AuthService {
       return users;
     } catch (error) {
       this.handleError(error, `find users with ids ${ids.join(', ')}`);
+    }
+  }
+
+  async updateBalances({ userId, adminId, amount }: UpdateBalancesRequest) {
+    try {
+      await this.prismaService.$transaction([
+        this.prismaService.user.update({
+          where: { id: userId },
+          data: { balance: { decrement: amount } },
+        }),
+        this.prismaService.user.update({
+          where: { id: adminId },
+          data: { balance: { increment: amount } },
+        }),
+      ]);
+
+      return {};
+    } catch (error) {
+      this.handleError(error, `update balances`);
     }
   }
 }
