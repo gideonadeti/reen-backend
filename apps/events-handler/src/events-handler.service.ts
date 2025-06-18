@@ -32,6 +32,7 @@ import {
   AUTH_PACKAGE_NAME,
   AUTH_SERVICE_NAME,
   AuthServiceClient,
+  UpdateBalancesRequest,
 } from '@app/protos/generated/auth';
 
 @Injectable()
@@ -75,7 +76,9 @@ export class EventsHandlerService
 
   private async undoOperations(
     cartItems: CartItem[],
+    updateBalancesRequests: UpdateBalancesRequest[],
     didDecrementProducts: boolean,
+    didUpdateBalances: boolean,
     orderId: string | null,
   ) {
     try {
@@ -87,6 +90,21 @@ export class EventsHandlerService
 
       if (orderId) {
         await firstValueFrom(this.ordersService.remove({ id: orderId }));
+      }
+
+      if (didUpdateBalances) {
+        // Reverse the balance updates
+        await Promise.all(
+          updateBalancesRequests.map((updateBalanceRequest) =>
+            firstValueFrom(
+              this.authService.updateBalances({
+                userId: updateBalanceRequest.adminId,
+                adminId: updateBalanceRequest.userId,
+                amount: updateBalanceRequest.amount,
+              }),
+            ),
+          ),
+        );
       }
     } catch (error) {
       this.handleError(error, 'undo operations');
@@ -107,7 +125,9 @@ export class EventsHandlerService
   async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
     const userId = session.metadata!.userId;
     let cartItems: CartItem[] = [];
+    let updateBalancesRequests: UpdateBalancesRequest[] = [];
     let didDecrementProducts = false;
+    let didUpdateBalances = false;
     let orderId: string | null = null;
 
     try {
@@ -127,6 +147,7 @@ export class EventsHandlerService
       const findByIdsResponse = await firstValueFrom(
         this.productsService.findByIds({ ids: productIds }),
       );
+
       const products = findByIdsResponse.products || [];
       const productMap = new Map(products.map((p) => [p.id, p]));
       const orderItems = cartItems.map((item) => ({
@@ -144,10 +165,6 @@ export class EventsHandlerService
       );
 
       orderId = order.id;
-
-      await firstValueFrom(this.cartItemsService.removeAll({ userId }));
-
-      this.eventsHandlerClient.emit('send-order-confirmation', userId);
 
       const orderItemsWithProduct = orderItems.map((orderItem) => {
         const product = productMap.get(orderItem.productId) as Product;
@@ -172,6 +189,24 @@ export class EventsHandlerService
         adminOrderItemsMap.get(adminId)!.push(orderItem);
       }
 
+      updateBalancesRequests = Array.from(adminOrderItemsMap.entries()).map(
+        ([adminId, orderItems]) => ({
+          userId,
+          adminId,
+          amount: orderItems.reduce((acc, item) => acc + item.price, 0),
+        }),
+      );
+
+      for (const req of updateBalancesRequests) {
+        await firstValueFrom(this.authService.updateBalances(req));
+      }
+
+      didUpdateBalances = true;
+
+      await firstValueFrom(this.cartItemsService.removeAll({ userId }));
+
+      this.eventsHandlerClient.emit('send-order-confirmation', userId);
+
       const adminNotificationPayloads = Array.from(
         adminOrderItemsMap.entries(),
       ).map(([adminId, orderItems]) => ({
@@ -185,7 +220,13 @@ export class EventsHandlerService
         adminNotificationPayloads,
       );
     } catch (error) {
-      await this.undoOperations(cartItems, didDecrementProducts, orderId);
+      await this.undoOperations(
+        cartItems,
+        updateBalancesRequests,
+        didDecrementProducts,
+        didUpdateBalances,
+        orderId,
+      );
 
       this.handleError(error, 'handle successful checkout');
     }
