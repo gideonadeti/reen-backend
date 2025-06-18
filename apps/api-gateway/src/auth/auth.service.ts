@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import {
+  BadRequestException,
   ConflictException,
   Inject,
   Injectable,
@@ -130,7 +131,20 @@ export class AuthService implements OnModuleInit {
     }
   }
 
-  async updateUserRole(userId: string, role: UserRole, clerkId: string) {
+  async updateUserRole(
+    userId: string,
+    role: UserRole,
+    clerkId: string,
+    balance: number,
+  ) {
+    const nadminToAdminFee = 160000; // $160,00.00
+
+    if (role === UserRole.ADMIN && balance < nadminToAdminFee) {
+      throw new BadRequestException(
+        `Insufficient balance to upgrade to ADMIN. Minimum required is $160,000.00`,
+      );
+    }
+
     try {
       const user = await firstValueFrom(
         this.authService.updateUserRole({ id: userId, role }),

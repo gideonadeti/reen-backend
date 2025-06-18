@@ -66,6 +66,7 @@ export class AuthController {
       userId,
       role,
       req.user.clerkId as string,
+      req.user.balance,
     );
   }
 

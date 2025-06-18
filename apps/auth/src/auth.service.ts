@@ -210,10 +210,24 @@ export class AuthService {
     const prismaUserRole = role === UserRole.ADMIN ? 'ADMIN' : 'NADMIN';
 
     try {
-      const user = await this.prismaService.user.update({
-        where: { id },
-        data: { role: prismaUserRole },
-      });
+      const transactions = [
+        this.prismaService.user.update({
+          where: { id },
+          data: { role: prismaUserRole },
+        }),
+      ];
+
+      // NADMIN to ADMIN upgrade fee
+      if (role === UserRole.ADMIN) {
+        transactions.push(
+          this.prismaService.user.update({
+            where: { id },
+            data: { balance: { decrement: 160000 } },
+          }),
+        );
+      }
+
+      const [user] = await this.prismaService.$transaction(transactions);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...rest } = user;
