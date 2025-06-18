@@ -6,6 +6,7 @@ import {
   CreateRequest,
   FindAllRequest,
   FindOneRequest,
+  FindProductOrderCountsRequest,
   ORDERS_SERVICE_NAME,
   RemoveRequest,
 } from '@app/protos/generated/orders';
@@ -32,5 +33,10 @@ export class OrdersController {
   @GrpcMethod(ORDERS_SERVICE_NAME)
   findOne(data: FindOneRequest) {
     return this.ordersService.findOne(data.id);
+  }
+
+  @GrpcMethod(ORDERS_SERVICE_NAME)
+  findProductOrderCounts(data: FindProductOrderCountsRequest) {
+    return this.ordersService.findProductOrderCounts(data.productIds);
   }
 }

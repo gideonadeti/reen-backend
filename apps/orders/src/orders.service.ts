@@ -88,4 +88,29 @@ export class OrdersService {
       this.handleError(error, `fetch order with id ${id}`);
     }
   }
+
+  async findProductOrderCounts(productIds: string[]) {
+    try {
+      const productOrderCounts = await this.prismaService.orderItem.groupBy({
+        by: ['productId'],
+        _count: {
+          productId: true,
+        },
+        where: {
+          productId: {
+            in: productIds,
+          },
+        },
+      });
+
+      return {
+        productOrderCounts: productOrderCounts.map((item) => ({
+          productId: item.productId,
+          count: item._count.productId,
+        })),
+      };
+    } catch (error) {
+      this.handleError(error, 'fetch product order counts');
+    }
+  }
 }

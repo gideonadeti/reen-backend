@@ -9,6 +9,8 @@ service OrdersService {
   rpc Remove(RemoveRequest) returns (Order);
   rpc FindAll(FindAllRequest) returns (FindAllResponse);
   rpc FindOne(FindOneRequest) returns (Order);
+  rpc FindProductOrderCounts(FindProductOrderCountsRequest)
+      returns (FindProductOrderCountsResponse);
 }
 
 message CreateRequest {
@@ -39,3 +41,13 @@ message FindAllRequest { string user_id = 1; }
 message FindAllResponse { repeated Order orders = 1; }
 
 message FindOneRequest { string id = 1; }
+
+message FindProductOrderCountsRequest { repeated string product_ids = 1; }
+message FindProductOrderCountsResponse {
+  repeated ProductOrderCount product_order_counts = 1;
+}
+
+message ProductOrderCount {
+  string product_id = 1;
+  int32 count = 2;
+}
