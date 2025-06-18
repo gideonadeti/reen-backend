@@ -73,6 +73,26 @@ export class EventsHandlerService
     this.logger.error(`Failed to ${action}`, (error as Error).stack);
   }
 
+  private async undoOperations(
+    cartItems: CartItem[],
+    didDecrementProducts: boolean,
+    orderId: string | null,
+  ) {
+    try {
+      if (didDecrementProducts) {
+        await firstValueFrom(
+          this.productsService.updateQuantities({ cartItems, increment: true }),
+        );
+      }
+
+      if (orderId) {
+        await firstValueFrom(this.ordersService.remove({ id: orderId }));
+      }
+    } catch (error) {
+      this.handleError(error, 'undo operations');
+    }
+  }
+
   private getAllUserIds(payloads: AdminNotificationPayload[]) {
     const userIdSet = new Set<string>();
 
@@ -168,26 +188,6 @@ export class EventsHandlerService
       await this.undoOperations(cartItems, didDecrementProducts, orderId);
 
       this.handleError(error, 'handle successful checkout');
-    }
-  }
-
-  async undoOperations(
-    cartItems: CartItem[],
-    didDecrementProducts: boolean,
-    orderId: string | null,
-  ) {
-    try {
-      if (didDecrementProducts) {
-        await firstValueFrom(
-          this.productsService.updateQuantities({ cartItems, increment: true }),
-        );
-      }
-
-      if (orderId) {
-        await firstValueFrom(this.ordersService.remove({ id: orderId }));
-      }
-    } catch (error) {
-      this.handleError(error, 'undo operations');
     }
   }
 
