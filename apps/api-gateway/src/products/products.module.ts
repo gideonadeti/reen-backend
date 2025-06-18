@@ -7,6 +7,7 @@ import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
 import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
 import { AUTH_PACKAGE_NAME } from '@app/protos/generated/auth';
+import { ORDERS_PACKAGE_NAME } from '@app/protos/generated/orders';
 
 @Module({
   imports: [
@@ -35,6 +36,21 @@ import { AUTH_PACKAGE_NAME } from '@app/protos/generated/auth';
             package: AUTH_PACKAGE_NAME,
             protoPath: join(__dirname, '../../libs/protos/auth.proto'),
             url: configService.get('AUTH_SERVICE_URL') as string,
+          },
+        }),
+        inject: [ConfigService],
+      },
+    ]),
+    ClientsModule.registerAsync([
+      {
+        imports: [ConfigModule],
+        name: ORDERS_PACKAGE_NAME,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: ORDERS_PACKAGE_NAME,
+            protoPath: join(__dirname, '../../libs/protos/orders.proto'),
+            url: configService.get('ORDERS_SERVICE_URL') as string,
           },
         }),
         inject: [ConfigService],

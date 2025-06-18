@@ -25,24 +25,32 @@ import {
   AUTH_SERVICE_NAME,
   AuthServiceClient,
 } from '@app/protos/generated/auth';
+import {
+  ORDERS_PACKAGE_NAME,
+  ORDERS_SERVICE_NAME,
+  OrdersServiceClient,
+} from '@app/protos/generated/orders';
 
 @Injectable()
 export class ProductsService implements OnModuleInit {
   constructor(
     @Inject(PRODUCTS_PACKAGE_NAME) private productsClient: ClientGrpc,
     @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
+    @Inject(ORDERS_PACKAGE_NAME) private ordersClient: ClientGrpc,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   private productsService: ProductsServiceClient;
   private authService: AuthServiceClient;
+  private ordersService: OrdersServiceClient;
   private logger = new Logger(ProductsService.name);
 
   onModuleInit() {
+    this.authService = this.authClient.getService(AUTH_SERVICE_NAME);
+    this.ordersService = this.ordersClient.getService(ORDERS_SERVICE_NAME);
     this.productsService = this.productsClient.getService(
       PRODUCTS_SERVICE_NAME,
     );
-    this.authService = this.authClient.getService(AUTH_SERVICE_NAME);
   }
 
   private handleError(error: any, action: string) {
@@ -91,6 +99,17 @@ export class ProductsService implements OnModuleInit {
 
       const admins = findAdminsResponse.admins || [];
       const adminMap = new Map(admins.map((a) => [a.id, a]));
+      const productIds = products.map((p) => p.id);
+      const findProductOrderCountsResponse = await firstValueFrom(
+        this.ordersService.findProductOrderCounts({ productIds }),
+      );
+
+      const productOrderCounts =
+        findProductOrderCountsResponse.productOrderCounts || [];
+
+      const productOrderCountMap = new Map(
+        productOrderCounts.map((poc) => [poc.productId, poc.count]),
+      );
 
       if (!query.page && !query.limit) {
         return products.map((product) => ({
@@ -99,6 +118,7 @@ export class ProductsService implements OnModuleInit {
             id: product.adminId,
             name: adminMap.get(product.adminId)?.name,
           },
+          orderCount: productOrderCountMap.get(product.id) || 0,
         }));
       }
 
