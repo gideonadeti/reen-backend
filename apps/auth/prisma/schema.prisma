@@ -12,6 +12,7 @@ model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String   @unique
+  balance   Float    @default(4000000) // 4 million
   password  String?
   clerkId   String?  @unique
   createdAt DateTime @default(now())
