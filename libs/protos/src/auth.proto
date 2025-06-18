@@ -13,6 +13,7 @@ service AuthService {
   rpc FindAdmins(FindAdminsRequest) returns (FindAdminsResponse) {}
   rpc UpdateUserRole(UpdateUserRoleRequest) returns (User) {}
   rpc FindUserByClerkId(FindUserByClerkIdRequest) returns (User) {}
+  rpc FindByIds(FindByIdsRequest) returns (FindByIdsResponse) {}
 }
 
 message SignUpRequest {
@@ -78,3 +79,7 @@ message UpdateUserRoleRequest {
 }
 
 message FindUserByClerkIdRequest { string clerk_id = 1; }
+
+message FindByIdsRequest { repeated string ids = 1; }
+
+message FindByIdsResponse { repeated User users = 1; }

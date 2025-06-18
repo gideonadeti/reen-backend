@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import {
   AUTH_SERVICE_NAME,
   FindAdminsRequest,
+  FindByIdsRequest,
   FindUserByClerkIdRequest,
   FindUserRequest,
   RefreshTokenRequest,
@@ -62,5 +63,10 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   findUserByClerkId(data: FindUserByClerkIdRequest) {
     return this.authService.findUserByClerkId(data.clerkId);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  findByIds(data: FindByIdsRequest) {
+    return this.authService.findByIds(data.ids);
   }
 }
