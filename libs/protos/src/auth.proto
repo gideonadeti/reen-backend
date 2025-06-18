@@ -34,11 +34,12 @@ message User {
   string id = 1;
   string name = 2;
   string email = 3;
-  optional string password = 4;
-  optional string clerk_id = 5;
-  google.protobuf.Timestamp createdAt = 6;
-  google.protobuf.Timestamp updatedAt = 7;
-  UserRole role = 8;
+  UserRole role = 4;
+  double balance = 5;
+  optional string password = 6;
+  optional string clerk_id = 7;
+  google.protobuf.Timestamp createdAt = 8;
+  google.protobuf.Timestamp updatedAt = 9;
 }
 
 enum UserRole {

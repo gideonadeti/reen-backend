@@ -35,11 +35,12 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  role: UserRole;
+  balance: number;
   password?: string | undefined;
   clerkId?: string | undefined;
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
-  role: UserRole;
 }
 
 export interface ValidateUserRequest {
