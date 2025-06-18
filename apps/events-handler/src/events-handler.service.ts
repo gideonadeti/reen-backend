@@ -10,6 +10,7 @@ import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 import { ResendService } from './resend/resend.service';
+import { AdminNotificationPayload } from '@app/interfaces/admin-notification-payload/admin-notification-payload.interface';
 import {
   CART_ITEMS_PACKAGE_NAME,
   CART_ITEMS_SERVICE_NAME,
@@ -17,6 +18,7 @@ import {
 } from '@app/protos/generated/cart-items';
 import {
   CartItem,
+  Product,
   PRODUCTS_PACKAGE_NAME,
   PRODUCTS_SERVICE_NAME,
   ProductsServiceClient,
@@ -71,6 +73,17 @@ export class EventsHandlerService
     this.logger.error(`Failed to ${action}`, (error as Error).stack);
   }
 
+  private getAllUserIds(payloads: AdminNotificationPayload[]) {
+    const userIdSet = new Set<string>();
+
+    for (const payload of payloads) {
+      userIdSet.add(payload.userId); // buyer
+      userIdSet.add(payload.adminId); // seller
+    }
+
+    return Array.from(userIdSet);
+  }
+
   async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
     const userId = session.metadata!.userId;
     let cartItems: CartItem[] = [];
@@ -101,6 +114,7 @@ export class EventsHandlerService
         quantity: item.quantity,
         price: Number(productMap.get(item.productId)?.price) * item.quantity,
       }));
+
       const order = await firstValueFrom(
         this.ordersService.create({
           userId,
@@ -114,6 +128,42 @@ export class EventsHandlerService
       await firstValueFrom(this.cartItemsService.removeAll({ userId }));
 
       this.eventsHandlerClient.emit('send-order-confirmation', userId);
+
+      const orderItemsWithProduct = orderItems.map((orderItem) => {
+        const product = productMap.get(orderItem.productId) as Product;
+
+        return {
+          ...orderItem,
+          product,
+        };
+      });
+
+      const adminOrderItemsMap = new Map<
+        string,
+        typeof orderItemsWithProduct
+      >();
+
+      for (const orderItem of orderItemsWithProduct) {
+        const adminId = orderItem.product.adminId;
+
+        if (!adminOrderItemsMap.has(adminId))
+          adminOrderItemsMap.set(adminId, []);
+
+        adminOrderItemsMap.get(adminId)!.push(orderItem);
+      }
+
+      const adminNotificationPayloads = Array.from(
+        adminOrderItemsMap.entries(),
+      ).map(([adminId, orderItems]) => ({
+        adminId,
+        userId,
+        orderItems,
+      }));
+
+      this.eventsHandlerClient.emit(
+        'send-admin-notifications',
+        adminNotificationPayloads,
+      );
     } catch (error) {
       await this.undoOperations(cartItems, didDecrementProducts, orderId);
 
@@ -154,6 +204,40 @@ export class EventsHandlerService
     } catch (error) {
       this.logger.error(
         'Failed to send order confirmation',
+        (error as Error).stack,
+      );
+    }
+  }
+
+  async handleSendAdminNotifications(
+    adminNotificationPayloads: AdminNotificationPayload[],
+  ) {
+    try {
+      const allUserIds = this.getAllUserIds(adminNotificationPayloads);
+      const findByIdsResponse = await firstValueFrom(
+        this.authService.findByIds({ ids: allUserIds }),
+      );
+      const users = findByIdsResponse.users || [];
+      const userMap = new Map(users.map((user) => [user.id, user]));
+
+      await Promise.all(
+        adminNotificationPayloads.map(async (payload) => {
+          const admin = userMap.get(payload.adminId);
+          const buyer = userMap.get(payload.userId);
+
+          if (!admin || !buyer) return;
+
+          await this.resendService.sendAdminNotification(
+            admin.email,
+            admin.name.split(' ')[0],
+            buyer.name,
+            payload.orderItems,
+          );
+        }),
+      );
+    } catch (error) {
+      this.logger.error(
+        'Failed to send admin notifications',
         (error as Error).stack,
       );
     }
