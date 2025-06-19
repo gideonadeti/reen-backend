@@ -428,6 +428,12 @@ export class EventsHandlerService
           );
         }),
       );
+
+      await this.prismaService.sagaState.delete({
+        where: { id: data.sagaStateId },
+      });
+
+      await this.cacheManager.del(data.sagaStateId);
     } catch (error) {
       this.handleError(error, 'notify admins');
 
