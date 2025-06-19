@@ -3,6 +3,7 @@ import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { v4 as uuidv4 } from 'uuid';
 import {
   Inject,
   Injectable,
@@ -142,6 +143,7 @@ export class EventsHandlerService
         userId,
         adminId,
         amount: orderItems.reduce((acc, item) => acc + item.price, 0),
+        idempotencyKey: uuidv4(),
       }));
 
       const adminNotificationPayloads = Array.from(
