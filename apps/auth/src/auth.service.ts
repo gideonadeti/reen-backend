@@ -265,8 +265,23 @@ export class AuthService {
     }
   }
 
-  async updateBalances({ userId, adminId, amount }: UpdateBalancesRequest) {
+  async updateBalances({
+    userId,
+    adminId,
+    amount,
+    idempotencyKey,
+  }: UpdateBalancesRequest) {
     try {
+      const idempotencyRecord =
+        await this.prismaService.idempotencyRecord.findUnique({
+          where: { key: idempotencyKey },
+        });
+
+      // If the idempotency record exists, it means the operation has already been processed.
+      if (idempotencyRecord !== null) {
+        return {};
+      }
+
       await this.prismaService.$transaction([
         this.prismaService.user.update({
           where: { id: userId },
@@ -275,6 +290,9 @@ export class AuthService {
         this.prismaService.user.update({
           where: { id: adminId },
           data: { balance: { increment: amount } },
+        }),
+        this.prismaService.idempotencyRecord.create({
+          data: { key: idempotencyKey },
         }),
       ]);
 
