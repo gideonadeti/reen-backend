@@ -37,4 +37,11 @@ export class EventsHandlerController {
   ) {
     return this.eventsHandlerService.handleUpdateBalances(data);
   }
+
+  @EventPattern('clear-cart')
+  handleClearCart(
+    @Payload() data: { sagaStateId: string; retryCount?: number },
+  ) {
+    return this.eventsHandlerService.handleClearCart(data);
+  }
 }

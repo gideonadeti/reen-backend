@@ -296,4 +296,35 @@ export class EventsHandlerService
       }
     }
   }
+
+  async handleClearCart(data: { sagaStateId: string; retryCount?: number }) {
+    try {
+      const payload = await this.cacheManager.get(data.sagaStateId);
+      const { userId } = payload as HandleCheckoutSessionCompletedPayload;
+
+      await firstValueFrom(this.cartItemsService.removeAll({ userId }));
+
+      this.eventsHandlerClient.emit('create-order', {
+        ...data,
+        retryCount: 0,
+      });
+    } catch (error) {
+      this.handleError(error, 'clear cart');
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('clear-cart', {
+          sagaStateId: data.sagaStateId,
+          retryCount: retryCount + 1,
+        });
+      } else {
+        this.eventsHandlerClient.emit('clear-cart-failed', {
+          sagaStateId: data.sagaStateId,
+        });
+      }
+    }
+  }
 }
