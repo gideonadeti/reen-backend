@@ -168,7 +168,9 @@ export class EventsHandlerService
 
       await this.cacheManager.set(sagaState.id, sagaState.payload);
 
-      this.eventsHandlerClient.emit('update-quantities', sagaState.id);
+      this.eventsHandlerClient.emit('update-quantities', {
+        sagaStateId: sagaState.id,
+      });
     } catch (error) {
       this.handleError(error, 'handle successful checkout');
     }
