@@ -327,4 +327,39 @@ export class EventsHandlerService
       }
     }
   }
+
+  async handleCreateOrder(data: { sagaStateId: string; retryCount?: number }) {
+    try {
+      const payload = await this.cacheManager.get(data.sagaStateId);
+      const { userId, total, orderItems } =
+        payload as HandleCheckoutSessionCompletedPayload;
+
+      await firstValueFrom(
+        this.ordersService.create({
+          userId,
+          total,
+          orderItems,
+        }),
+      );
+
+      this.eventsHandlerClient.emit('send-notifications', userId);
+    } catch (error) {
+      this.handleError(error, 'create order');
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('create-order', {
+          sagaStateId: data.sagaStateId,
+          retryCount: retryCount + 1,
+        });
+      } else {
+        this.eventsHandlerClient.emit('create-order-failed', {
+          sagaStateId: data.sagaStateId,
+        });
+      }
+    }
+  }
 }

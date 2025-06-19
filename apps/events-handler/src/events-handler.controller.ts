@@ -44,4 +44,11 @@ export class EventsHandlerController {
   ) {
     return this.eventsHandlerService.handleClearCart(data);
   }
+
+  @EventPattern('create-order')
+  handleCreateOrder(
+    @Payload() data: { sagaStateId: string; retryCount?: number },
+  ) {
+    return this.eventsHandlerService.handleCreateOrder(data);
+  }
 }
