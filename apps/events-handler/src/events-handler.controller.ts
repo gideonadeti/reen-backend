@@ -3,6 +3,7 @@ import { Controller } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 
 import { EventsHandlerService } from './events-handler.service';
+import { SagaFlowProps } from '@app/interfaces/saga-flow-props/saga-flow-props.interface';
 
 @Controller()
 export class EventsHandlerController {
@@ -14,44 +15,32 @@ export class EventsHandlerController {
   }
 
   @EventPattern('update-quantities')
-  handleUpdateQuantities(
-    @Payload() data: { sagaStateId: string; retryCount?: number },
-  ) {
+  handleUpdateQuantities(@Payload() data: SagaFlowProps) {
     return this.eventsHandlerService.handleUpdateQuantities(data);
   }
 
   @EventPattern('update-balances')
-  handleUpdateBalances(
-    @Payload() data: { sagaStateId: string; retryCount?: number },
-  ) {
+  handleUpdateBalances(@Payload() data: SagaFlowProps) {
     return this.eventsHandlerService.handleUpdateBalances(data);
   }
 
   @EventPattern('clear-cart')
-  handleClearCart(
-    @Payload() data: { sagaStateId: string; retryCount?: number },
-  ) {
+  handleClearCart(@Payload() data: SagaFlowProps) {
     return this.eventsHandlerService.handleClearCart(data);
   }
 
   @EventPattern('create-order')
-  handleCreateOrder(
-    @Payload() data: { sagaStateId: string; retryCount?: number },
-  ) {
+  handleCreateOrder(@Payload() data: SagaFlowProps) {
     return this.eventsHandlerService.handleCreateOrder(data);
   }
 
   @EventPattern('notify-buyer')
-  handleNotifyBuyer(
-    @Payload() data: { sagaStateId: string; retryCount?: number },
-  ) {
+  handleNotifyBuyer(@Payload() data: SagaFlowProps) {
     return this.eventsHandlerService.handleNotifyBuyer(data);
   }
 
   @EventPattern('notify-admins')
-  handleNotifyAdmins(
-    @Payload() data: { sagaStateId: string; retryCount?: number },
-  ) {
+  handleNotifyAdmins(@Payload() data: SagaFlowProps) {
     return this.eventsHandlerService.handleNotifyAdmins(data);
   }
 }

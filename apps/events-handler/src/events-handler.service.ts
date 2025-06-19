@@ -16,6 +16,7 @@ import { AdminNotificationPayload } from '@app/interfaces/admin-notification-pay
 import { PrismaService } from './prisma/prisma.service';
 import { HandleCheckoutSessionCompletedPayload } from '@app/interfaces/handle-checkout-session-completed-payload/handle-checkout-session-completed-payload.interface';
 import { InputJsonValue } from '../generated/prisma/runtime/library';
+import { SagaFlowProps } from '@app/interfaces/saga-flow-props/saga-flow-props.interface';
 import {
   CART_ITEMS_PACKAGE_NAME,
   CART_ITEMS_SERVICE_NAME,
@@ -228,10 +229,7 @@ export class EventsHandlerService
     }
   }
 
-  async handleUpdateQuantities(data: {
-    sagaStateId: string;
-    retryCount?: number;
-  }) {
+  async handleUpdateQuantities(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
       const { cartItems } = payload as HandleCheckoutSessionCompletedPayload;
@@ -260,10 +258,7 @@ export class EventsHandlerService
     }
   }
 
-  async handleUpdateBalances(data: {
-    sagaStateId: string;
-    retryCount?: number;
-  }) {
+  async handleUpdateBalances(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
       const { updateBalancesRequests } =
@@ -297,7 +292,7 @@ export class EventsHandlerService
     }
   }
 
-  async handleClearCart(data: { sagaStateId: string; retryCount?: number }) {
+  async handleClearCart(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
       const { userId } = payload as HandleCheckoutSessionCompletedPayload;
@@ -328,7 +323,7 @@ export class EventsHandlerService
     }
   }
 
-  async handleCreateOrder(data: { sagaStateId: string; retryCount?: number }) {
+  async handleCreateOrder(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
       const { userId, total, orderItems } =
@@ -363,7 +358,7 @@ export class EventsHandlerService
     }
   }
 
-  async handleNotifyBuyer(data: { sagaStateId: string; retryCount?: number }) {
+  async handleNotifyBuyer(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
       const { userId } = payload as HandleCheckoutSessionCompletedPayload;
@@ -400,7 +395,7 @@ export class EventsHandlerService
     }
   }
 
-  async handleNotifyAdmins(data: { sagaStateId: string; retryCount?: number }) {
+  async handleNotifyAdmins(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
       const { adminNotificationPayloads } =
