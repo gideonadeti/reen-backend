@@ -227,4 +227,33 @@ export class EventsHandlerService
       );
     }
   }
+
+  async handleUpdateQuantities(data: {
+    sagaStateId: string;
+    retryCount?: number;
+  }) {
+    try {
+      const payload = await this.cacheManager.get(data.sagaStateId);
+      const { cartItems } = payload as HandleCheckoutSessionCompletedPayload;
+
+      await firstValueFrom(
+        this.productsService.updateQuantities({ cartItems, increment: false }),
+      );
+
+      this.eventsHandlerClient.emit('create-order', { ...data, retryCount: 0 });
+    } catch (error) {
+      this.handleError(error, 'update quantities');
+
+      await new Promise((res) => setTimeout(res, 1000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('update-quantities', {
+          sagaStateId: data.sagaStateId,
+          retryCount: retryCount + 1,
+        });
+      }
+    }
+  }
 }

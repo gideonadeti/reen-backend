@@ -23,4 +23,11 @@ export class EventsHandlerController {
   handleSendAdminNotifications(@Payload() data: AdminNotificationPayload[]) {
     return this.eventsHandlerService.handleSendAdminNotifications(data);
   }
+
+  @EventPattern('update-quantities')
+  handleUpdateQuantities(
+    @Payload() data: { sagaStateId: string; retryCount?: number },
+  ) {
+    return this.eventsHandlerService.handleUpdateQuantities(data);
+  }
 }
