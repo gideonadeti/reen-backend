@@ -14,13 +14,14 @@ import {
 import { ResendService } from './resend/resend.service';
 import { AdminNotificationPayload } from '@app/interfaces/admin-notification-payload/admin-notification-payload.interface';
 import { PrismaService } from './prisma/prisma.service';
+import { HandleCheckoutSessionCompletedPayload } from '@app/interfaces/handle-checkout-session-completed-payload/handle-checkout-session-completed-payload.interface';
+import { InputJsonValue } from '../generated/prisma/runtime/library';
 import {
   CART_ITEMS_PACKAGE_NAME,
   CART_ITEMS_SERVICE_NAME,
   CartItemsServiceClient,
 } from '@app/protos/generated/cart-items';
 import {
-  CartItem,
   Product,
   PRODUCTS_PACKAGE_NAME,
   PRODUCTS_SERVICE_NAME,
@@ -35,7 +36,6 @@ import {
   AUTH_PACKAGE_NAME,
   AUTH_SERVICE_NAME,
   AuthServiceClient,
-  UpdateBalancesRequest,
 } from '@app/protos/generated/auth';
 
 @Injectable()
@@ -79,43 +79,6 @@ export class EventsHandlerService
     this.logger.error(`Failed to ${action}`, (error as Error).stack);
   }
 
-  private async undoOperations(
-    cartItems: CartItem[],
-    updateBalancesRequests: UpdateBalancesRequest[],
-    didDecrementProducts: boolean,
-    didUpdateBalances: boolean,
-    orderId: string | null,
-  ) {
-    try {
-      if (didDecrementProducts) {
-        await firstValueFrom(
-          this.productsService.updateQuantities({ cartItems, increment: true }),
-        );
-      }
-
-      if (orderId) {
-        await firstValueFrom(this.ordersService.remove({ id: orderId }));
-      }
-
-      if (didUpdateBalances) {
-        // Reverse the balance updates
-        await Promise.all(
-          updateBalancesRequests.map((updateBalanceRequest) =>
-            firstValueFrom(
-              this.authService.updateBalances({
-                userId: updateBalanceRequest.adminId,
-                adminId: updateBalanceRequest.userId,
-                amount: updateBalanceRequest.amount,
-              }),
-            ),
-          ),
-        );
-      }
-    } catch (error) {
-      this.handleError(error, 'undo operations');
-    }
-  }
-
   private getAllUserIds(payloads: AdminNotificationPayload[]) {
     const userIdSet = new Set<string>();
 
@@ -128,26 +91,14 @@ export class EventsHandlerService
   }
 
   async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
-    const userId = session.metadata!.userId;
-    let cartItems: CartItem[] = [];
-    let updateBalancesRequests: UpdateBalancesRequest[] = [];
-    let didDecrementProducts = false;
-    let didUpdateBalances = false;
-    let orderId: string | null = null;
-
     try {
+      const userId = session.metadata!.userId;
       const findAllResponse = await firstValueFrom(
         this.cartItemsService.findAll({ userId }),
       );
 
-      cartItems = findAllResponse.cartItems || [];
-
-      await firstValueFrom(
-        this.productsService.updateQuantities({ cartItems, increment: false }),
-      );
-
-      didDecrementProducts = true;
-
+      const cartItems = findAllResponse.cartItems || [];
+      const total = session.amount_total! / 100;
       const productIds = cartItems.map((cartItem) => cartItem.productId);
       const findByIdsResponse = await firstValueFrom(
         this.productsService.findByIds({ ids: productIds }),
@@ -160,16 +111,6 @@ export class EventsHandlerService
         quantity: item.quantity,
         price: Number(productMap.get(item.productId)?.price) * item.quantity,
       }));
-
-      const order = await firstValueFrom(
-        this.ordersService.create({
-          userId,
-          total: session.amount_total! / 100,
-          orderItems,
-        }),
-      );
-
-      orderId = order.id;
 
       const orderItemsWithProduct = orderItems.map((orderItem) => {
         const product = productMap.get(orderItem.productId) as Product;
@@ -194,23 +135,13 @@ export class EventsHandlerService
         adminOrderItemsMap.get(adminId)!.push(orderItem);
       }
 
-      updateBalancesRequests = Array.from(adminOrderItemsMap.entries()).map(
-        ([adminId, orderItems]) => ({
-          userId,
-          adminId,
-          amount: orderItems.reduce((acc, item) => acc + item.price, 0),
-        }),
-      );
-
-      for (const req of updateBalancesRequests) {
-        await firstValueFrom(this.authService.updateBalances(req));
-      }
-
-      didUpdateBalances = true;
-
-      await firstValueFrom(this.cartItemsService.removeAll({ userId }));
-
-      this.eventsHandlerClient.emit('send-order-confirmation', userId);
+      const updateBalancesRequests = Array.from(
+        adminOrderItemsMap.entries(),
+      ).map(([adminId, orderItems]) => ({
+        userId,
+        adminId,
+        amount: orderItems.reduce((acc, item) => acc + item.price, 0),
+      }));
 
       const adminNotificationPayloads = Array.from(
         adminOrderItemsMap.entries(),
@@ -220,19 +151,25 @@ export class EventsHandlerService
         orderItems,
       }));
 
-      this.eventsHandlerClient.emit(
-        'send-admin-notifications',
-        adminNotificationPayloads,
-      );
-    } catch (error) {
-      await this.undoOperations(
+      const payload: HandleCheckoutSessionCompletedPayload = {
         cartItems,
+        userId,
+        total,
+        orderItems,
         updateBalancesRequests,
-        didDecrementProducts,
-        didUpdateBalances,
-        orderId,
-      );
+        adminNotificationPayloads,
+      };
 
+      const sagaState = await this.prismaService.sagaState.create({
+        data: {
+          payload: JSON.parse(JSON.stringify(payload)) as InputJsonValue,
+        },
+      });
+
+      await this.cacheManager.set(sagaState.id, sagaState.payload);
+
+      this.eventsHandlerClient.emit('update-quantities', sagaState.id);
+    } catch (error) {
       this.handleError(error, 'handle successful checkout');
     }
   }
