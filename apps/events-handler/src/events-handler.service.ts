@@ -240,7 +240,10 @@ export class EventsHandlerService
         this.productsService.updateQuantities({ cartItems, increment: false }),
       );
 
-      this.eventsHandlerClient.emit('create-order', { ...data, retryCount: 0 });
+      this.eventsHandlerClient.emit('update-balances', {
+        ...data,
+        retryCount: 0,
+      });
     } catch (error) {
       this.handleError(error, 'update quantities');
 
