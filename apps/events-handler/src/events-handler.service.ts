@@ -270,6 +270,16 @@ export class EventsHandlerService
         await firstValueFrom(this.authService.updateBalances(request));
       }
 
+      const idempotencyKeys = updateBalancesRequests.map(
+        (request) => request.idempotencyKey,
+      );
+
+      await firstValueFrom(
+        this.authService.removeIdempotencyRecordsByKeys({
+          keys: idempotencyKeys,
+        }),
+      );
+
       this.eventsHandlerClient.emit('clear-cart', {
         ...data,
         retryCount: 0,
