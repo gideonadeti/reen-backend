@@ -30,4 +30,11 @@ export class EventsHandlerController {
   ) {
     return this.eventsHandlerService.handleUpdateQuantities(data);
   }
+
+  @EventPattern('update-balances')
+  handleUpdateBalances(
+    @Payload() data: { sagaStateId: string; retryCount?: number },
+  ) {
+    return this.eventsHandlerService.handleUpdateBalances(data);
+  }
 }

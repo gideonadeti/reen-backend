@@ -259,4 +259,41 @@ export class EventsHandlerService
       }
     }
   }
+
+  async handleUpdateBalances(data: {
+    sagaStateId: string;
+    retryCount?: number;
+  }) {
+    try {
+      const payload = await this.cacheManager.get(data.sagaStateId);
+      const { updateBalancesRequests } =
+        payload as HandleCheckoutSessionCompletedPayload;
+
+      for (const request of updateBalancesRequests) {
+        await firstValueFrom(this.authService.updateBalances(request));
+      }
+
+      this.eventsHandlerClient.emit('clear-cart', {
+        ...data,
+        retryCount: 0,
+      });
+    } catch (error) {
+      this.handleError(error, 'update balances');
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('update-balances', {
+          sagaStateId: data.sagaStateId,
+          retryCount: retryCount + 1,
+        });
+      } else {
+        this.eventsHandlerClient.emit('update-balances-failed', {
+          sagaStateId: data.sagaStateId,
+        });
+      }
+    }
+  }
 }
