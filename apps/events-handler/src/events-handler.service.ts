@@ -247,7 +247,7 @@ export class EventsHandlerService
     } catch (error) {
       this.handleError(error, 'update quantities');
 
-      await new Promise((res) => setTimeout(res, 1000)); // 2 secs delay
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
 
       const retryCount = data.retryCount || 0;
 
