@@ -36,3 +36,10 @@ model RefreshToken {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model IdempotencyRecord {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
