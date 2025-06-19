@@ -342,7 +342,7 @@ export class EventsHandlerService
         }),
       );
 
-      this.eventsHandlerClient.emit('send-notifications', userId);
+      this.eventsHandlerClient.emit('notify-buyer', userId);
     } catch (error) {
       this.handleError(error, 'create order');
 
