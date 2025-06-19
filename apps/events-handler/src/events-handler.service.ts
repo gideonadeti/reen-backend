@@ -34,6 +34,7 @@ import {
   AuthServiceClient,
   UpdateBalancesRequest,
 } from '@app/protos/generated/auth';
+import { PrismaService } from './prisma/prisma.service';
 
 @Injectable()
 export class EventsHandlerService
@@ -46,6 +47,7 @@ export class EventsHandlerService
     @Inject('EVENTS_HANDLER_SERVICE') private eventsHandlerClient: ClientProxy,
     @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
     private readonly resendService: ResendService,
+    private prismaService: PrismaService,
   ) {}
 
   private cartItemsService: CartItemsServiceClient;

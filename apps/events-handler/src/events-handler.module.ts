@@ -12,6 +12,7 @@ import { ORDERS_PACKAGE_NAME } from '@app/protos/generated/orders';
 import { RmqLoggingInterceptor } from './rmq-logging/rmq-logging.middleware';
 import { AUTH_PACKAGE_NAME } from '@app/protos/generated/auth';
 import { ResendService } from './resend/resend.service';
+import { PrismaService } from './prisma/prisma.service';
 
 @Module({
   imports: [
@@ -102,6 +103,7 @@ import { ResendService } from './resend/resend.service';
       useClass: RmqLoggingInterceptor,
     },
     ResendService,
+    PrismaService,
   ],
 })
 export class EventsHandlerModule {}
