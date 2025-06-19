@@ -1,8 +1,10 @@
+import KeyvRedis from '@keyv/redis';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { CacheModule } from '@nestjs/cache-manager';
 
 import { EventsHandlerController } from './events-handler.controller';
 import { EventsHandlerService } from './events-handler.service';
@@ -94,6 +96,19 @@ import { PrismaService } from './prisma/prisma.service';
         inject: [ConfigService],
       },
     ]),
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => {
+        const redisServiceUrl = configService.get(
+          'REDIS_SERVICE_URL',
+        ) as string;
+        return {
+          stores: [new KeyvRedis(redisServiceUrl)],
+        };
+      },
+      inject: [ConfigService],
+      isGlobal: true,
+    }),
   ],
   controllers: [EventsHandlerController],
   providers: [

@@ -1,4 +1,8 @@
 import Stripe from 'stripe';
+import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import {
   Inject,
   Injectable,
@@ -6,11 +10,10 @@ import {
   OnApplicationBootstrap,
   OnModuleInit,
 } from '@nestjs/common';
-import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
 
 import { ResendService } from './resend/resend.service';
 import { AdminNotificationPayload } from '@app/interfaces/admin-notification-payload/admin-notification-payload.interface';
+import { PrismaService } from './prisma/prisma.service';
 import {
   CART_ITEMS_PACKAGE_NAME,
   CART_ITEMS_SERVICE_NAME,
@@ -34,7 +37,6 @@ import {
   AuthServiceClient,
   UpdateBalancesRequest,
 } from '@app/protos/generated/auth';
-import { PrismaService } from './prisma/prisma.service';
 
 @Injectable()
 export class EventsHandlerService
@@ -46,6 +48,7 @@ export class EventsHandlerService
     @Inject(ORDERS_PACKAGE_NAME) private ordersClient: ClientGrpc,
     @Inject('EVENTS_HANDLER_SERVICE') private eventsHandlerClient: ClientProxy,
     @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly resendService: ResendService,
     private prismaService: PrismaService,
   ) {}
