@@ -90,6 +90,7 @@ message UpdateBalancesRequest {
   string user_id = 1;
   string admin_id = 2;
   double amount = 3;
+  string idempotency_key = 4;
 }
 
 message UpdateBalancesResponse {}

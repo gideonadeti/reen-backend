@@ -102,6 +102,7 @@ export interface UpdateBalancesRequest {
   userId: string;
   adminId: string;
   amount: number;
+  idempotencyKey: string;
 }
 
 export interface UpdateBalancesResponse {
