@@ -40,4 +40,18 @@ export class EventsHandlerController {
   ) {
     return this.eventsHandlerService.handleCreateOrder(data);
   }
+
+  @EventPattern('notify-buyer')
+  handleNotifyBuyer(
+    @Payload() data: { sagaStateId: string; retryCount?: number },
+  ) {
+    return this.eventsHandlerService.handleNotifyBuyer(data);
+  }
+
+  @EventPattern('notify-admins')
+  handleNotifyAdmins(
+    @Payload() data: { sagaStateId: string; retryCount?: number },
+  ) {
+    return this.eventsHandlerService.handleNotifyAdmins(data);
+  }
 }

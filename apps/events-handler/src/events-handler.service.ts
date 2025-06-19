@@ -362,4 +362,89 @@ export class EventsHandlerService
       }
     }
   }
+
+  async handleNotifyBuyer(data: { sagaStateId: string; retryCount?: number }) {
+    try {
+      const payload = await this.cacheManager.get(data.sagaStateId);
+      const { userId } = payload as HandleCheckoutSessionCompletedPayload;
+      const user = await firstValueFrom(
+        this.authService.findUser({ id: userId }),
+      );
+
+      await this.resendService.sendOrderConfirmation(
+        user.email,
+        user.name.split(' ')[0],
+      );
+
+      this.eventsHandlerClient.emit('notify-admins', {
+        ...data,
+        retryCount: 0,
+      });
+    } catch (error) {
+      this.handleError(error, 'notify buyer');
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('notify-buyer', {
+          sagaStateId: data.sagaStateId,
+          retryCount: retryCount + 1,
+        });
+      } else {
+        this.eventsHandlerClient.emit('notify-buyer-failed', {
+          sagaStateId: data.sagaStateId,
+        });
+      }
+    }
+  }
+
+  async handleNotifyAdmins(data: { sagaStateId: string; retryCount?: number }) {
+    try {
+      const payload = await this.cacheManager.get(data.sagaStateId);
+      const { adminNotificationPayloads } =
+        payload as HandleCheckoutSessionCompletedPayload;
+
+      const allUserIds = this.getAllUserIds(adminNotificationPayloads);
+      const findByIdsResponse = await firstValueFrom(
+        this.authService.findByIds({ ids: allUserIds }),
+      );
+      const users = findByIdsResponse.users || [];
+      const userMap = new Map(users.map((user) => [user.id, user]));
+
+      await Promise.all(
+        adminNotificationPayloads.map(async (payload) => {
+          const admin = userMap.get(payload.adminId);
+          const buyer = userMap.get(payload.userId);
+
+          if (!admin || !buyer) return;
+
+          await this.resendService.sendAdminNotification(
+            admin.email,
+            admin.name.split(' ')[0],
+            buyer.name,
+            payload.orderItems,
+          );
+        }),
+      );
+    } catch (error) {
+      this.handleError(error, 'notify admins');
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('notify-admins', {
+          sagaStateId: data.sagaStateId,
+          retryCount: retryCount + 1,
+        });
+      } else {
+        this.eventsHandlerClient.emit('notify-admins-failed', {
+          sagaStateId: data.sagaStateId,
+        });
+      }
+    }
+  }
 }
