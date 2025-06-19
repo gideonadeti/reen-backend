@@ -108,6 +108,13 @@ export interface UpdateBalancesRequest {
 export interface UpdateBalancesResponse {
 }
 
+export interface RemoveIdempotencyRecordsByKeysRequest {
+  keys: string[];
+}
+
+export interface RemoveIdempotencyRecordsByKeysResponse {
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -141,6 +148,10 @@ export interface AuthServiceClient {
   findByIds(request: FindByIdsRequest): Observable<FindByIdsResponse>;
 
   updateBalances(request: UpdateBalancesRequest): Observable<UpdateBalancesResponse>;
+
+  removeIdempotencyRecordsByKeys(
+    request: RemoveIdempotencyRecordsByKeysRequest,
+  ): Observable<RemoveIdempotencyRecordsByKeysResponse>;
 }
 
 export interface AuthServiceController {
@@ -171,6 +182,13 @@ export interface AuthServiceController {
   updateBalances(
     request: UpdateBalancesRequest,
   ): Promise<UpdateBalancesResponse> | Observable<UpdateBalancesResponse> | UpdateBalancesResponse;
+
+  removeIdempotencyRecordsByKeys(
+    request: RemoveIdempotencyRecordsByKeysRequest,
+  ):
+    | Promise<RemoveIdempotencyRecordsByKeysResponse>
+    | Observable<RemoveIdempotencyRecordsByKeysResponse>
+    | RemoveIdempotencyRecordsByKeysResponse;
 }
 
 export function AuthServiceControllerMethods() {
@@ -187,6 +205,7 @@ export function AuthServiceControllerMethods() {
       "findUserByClerkId",
       "findByIds",
       "updateBalances",
+      "removeIdempotencyRecordsByKeys",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

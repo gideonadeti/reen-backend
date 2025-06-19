@@ -301,4 +301,16 @@ export class AuthService {
       this.handleError(error, `update balances`);
     }
   }
+
+  async removeIdempotencyRecordsByKeys(keys: string[]) {
+    try {
+      await this.prismaService.idempotencyRecord.deleteMany({
+        where: { key: { in: keys } },
+      });
+
+      return {};
+    } catch (error) {
+      this.handleError(error, `remove idempotency records by keys`);
+    }
+  }
 }
