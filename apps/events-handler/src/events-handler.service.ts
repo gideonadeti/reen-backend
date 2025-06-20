@@ -179,58 +179,6 @@ export class EventsHandlerService
     }
   }
 
-  async handleSendOrderConfirmation(userId: string) {
-    try {
-      const user = await firstValueFrom(
-        this.authService.findUser({ id: userId }),
-      );
-
-      await this.resendService.sendOrderConfirmation(
-        user.email,
-        user.name.split(' ')[0],
-      );
-    } catch (error) {
-      this.logger.error(
-        'Failed to send order confirmation',
-        (error as Error).stack,
-      );
-    }
-  }
-
-  async handleSendAdminNotifications(
-    adminNotificationPayloads: AdminNotificationPayload[],
-  ) {
-    try {
-      const allUserIds = this.getAllUserIds(adminNotificationPayloads);
-      const findByIdsResponse = await firstValueFrom(
-        this.authService.findByIds({ ids: allUserIds }),
-      );
-      const users = findByIdsResponse.users || [];
-      const userMap = new Map(users.map((user) => [user.id, user]));
-
-      await Promise.all(
-        adminNotificationPayloads.map(async (payload) => {
-          const admin = userMap.get(payload.adminId);
-          const buyer = userMap.get(payload.userId);
-
-          if (!admin || !buyer) return;
-
-          await this.resendService.sendAdminNotification(
-            admin.email,
-            admin.name.split(' ')[0],
-            buyer.name,
-            payload.orderItems,
-          );
-        }),
-      );
-    } catch (error) {
-      this.logger.error(
-        'Failed to send admin notifications',
-        (error as Error).stack,
-      );
-    }
-  }
-
   async handleUpdateQuantities(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
