@@ -1,0 +1,4 @@
+FROM ghcr.io/gideonadeti/reen-backend-build-base-image:latest as build
+WORKDIR /app
+COPY . .
+CMD ["npm", "run", "start:dev", "events-handler"]
