@@ -1,0 +1,24 @@
+services:
+  api-gateway-1:
+    image: ghcr.io/gideonadeti/reen-backend-api-gateway:latest
+
+  api-gateway-2:
+    image: ghcr.io/gideonadeti/reen-backend-api-gateway:latest
+
+  auth:
+    image: ghcr.io/gideonadeti/reen-backend-auth:latest
+
+  products:
+    image: ghcr.io/gideonadeti/reen-backend-products:latest
+
+  cart-items:
+    image: ghcr.io/gideonadeti/reen-backend-cart-items:latest
+
+  checkout:
+    image: ghcr.io/gideonadeti/reen-backend-checkout:latest
+
+  events-handler:
+    image: ghcr.io/gideonadeti/reen-backend-events-handler:latest
+
+  orders:
+    image: ghcr.io/gideonadeti/reen-backend-orders:latest

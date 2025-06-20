@@ -1,12 +1,10 @@
 services:
   api-gateway-1:
     container_name: api-gateway-1
-    image: ghcr.io/gideonadeti/reen-backend-api-gateway:latest
     volumes:
       - ./.env:/app/apps/api-gateway/.env
   api-gateway-2:
     container_name: api-gateway-2
-    image: ghcr.io/gideonadeti/reen-backend-api-gateway:latest
     volumes:
       - ./.env:/app/apps/api-gateway/.env
   nginx:
@@ -23,37 +21,33 @@ services:
       - ./key.key:/etc/nginx/certs/key.key
   auth:
     container_name: auth
-    image: ghcr.io/gideonadeti/reen-backend-auth:latest
     volumes:
       - ./.env:/app/apps/auth/.env
   products:
     container_name: products
-    image: ghcr.io/gideonadeti/reen-backend-products:latest
     volumes:
       - ./.env:/app/apps/products/.env
   cart-items:
     container_name: cart-items
-    image: ghcr.io/gideonadeti/reen-backend-cart-items:latest
     volumes:
       - ./.env:/app/apps/cart-items/.env
   checkout:
     container_name: checkout
-    image: ghcr.io/gideonadeti/reen-backend-checkout:latest
     volumes:
       - ./.env:/app/apps/checkout/.env
   events-handler:
     container_name: events-handler
-    image: ghcr.io/gideonadeti/reen-backend-events-handler:latest
     volumes:
       - ./.env:/app/apps/events-handler/.env
   orders:
     container_name: orders
-    image: ghcr.io/gideonadeti/reen-backend-orders:latest
     volumes:
       - ./.env:/app/apps/orders/.env
   redis:
     container_name: redis
     image: redis:8.0.2
+    ports:
+      - '6379:6379'
     volumes:
       - redis_data:/data
     command: ['redis-server', '--appendonly', 'yes']
