@@ -5,45 +5,53 @@ services:
       dockerfile: apps/api-gateway/Dockerfile.dev
     volumes:
       - .:/app
+      - /app/node_modules
   api-gateway-2:
     build:
       context: .
       dockerfile: apps/api-gateway/Dockerfile.dev
     volumes:
       - .:/app
+      - /app/node_modules
   auth:
     build:
       context: .
       dockerfile: apps/auth/Dockerfile.dev
     volumes:
       - .:/app
+      - /app/node_modules
   products:
     build:
       context: .
       dockerfile: apps/products/Dockerfile.dev
     volumes:
       - .:/app
+      - /app/node_modules
   cart-items:
     build:
       context: .
       dockerfile: apps/cart-items/Dockerfile.dev
     volumes:
       - .:/app
+      - /app/node_modules
   checkout:
     build:
       context: .
       dockerfile: apps/checkout/Dockerfile.dev
     volumes:
       - .:/app
+      - /app/node_modules
   events-handler:
     build:
       context: .
       dockerfile: apps/events-handler/Dockerfile.dev
     volumes:
       - .:/app
+      - /app/node_modules
   orders:
     build:
       context: .
       dockerfile: apps/orders/Dockerfile.dev
     volumes:
       - .:/app
+      - /app/node_modules
