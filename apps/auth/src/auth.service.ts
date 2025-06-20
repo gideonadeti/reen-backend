@@ -227,7 +227,10 @@ export class AuthService {
         );
       }
 
-      const [user] = await this.prismaService.$transaction(transactions);
+      const responses = await this.prismaService.$transaction(transactions);
+
+      // If the user is being upgraded to ADMIN, we return the updated user as the second response
+      const user = role === UserRole.ADMIN ? responses[1] : responses[0];
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...rest } = user;
