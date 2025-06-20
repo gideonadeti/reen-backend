@@ -2,4 +2,5 @@ FROM ghcr.io/gideonadeti/reen-backend-build-base-image:latest as build
 WORKDIR /app
 COPY . .
 EXPOSE 5000
-CMD ["npm", "run", "start:dev", "auth"]
+CMD ["sh", "-c", "npx prisma generate --schema=apps/auth/prisma/schema.prisma && npm run start:dev auth"]
+
