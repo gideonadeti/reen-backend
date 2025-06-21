@@ -1,5 +1,4 @@
 FROM ghcr.io/gideonadeti/reen-backend-build-base-image:latest as build
 WORKDIR /app
-COPY . .
 EXPOSE 3000
 CMD [ "npm", "run", "start:dev" ]

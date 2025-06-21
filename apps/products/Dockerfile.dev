@@ -1,6 +1,4 @@
 FROM ghcr.io/gideonadeti/reen-backend-build-base-image:latest as build
 WORKDIR /app
-COPY . .
 EXPOSE 5001
 CMD ["sh", "-c", "npx prisma generate --schema=apps/products/prisma/schema.prisma && npm run start:dev products"]
-
