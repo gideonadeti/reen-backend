@@ -165,19 +165,9 @@ export class ProductsService {
   async updateQuantities({ cartItems, increment }: UpdateQuantitiesRequest) {
     try {
       if (increment) {
-        const response = await this.incrementQuantities(cartItems);
-
-        // Invalidate products cache after incrementing quantities
-        await this.cacheManager.del('/products');
-
-        return response;
+        return await this.incrementQuantities(cartItems);
       } else {
-        const response = await this.decrementQuantities(cartItems);
-
-        // Invalidate products cache after decrementing quantities
-        await this.cacheManager.del('/products');
-
-        return response;
+        return await this.decrementQuantities(cartItems);
       }
     } catch (error) {
       this.handleError(error, 'update quantities');

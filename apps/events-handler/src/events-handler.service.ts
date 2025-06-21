@@ -200,6 +200,9 @@ export class EventsHandlerService
         }),
       );
 
+      // Invalidate products cache after updating quantities
+      await this.cacheManager.del('/products');
+
       this.eventsHandlerClient.emit('update-balances', {
         ...data,
         retryCount: 0,
