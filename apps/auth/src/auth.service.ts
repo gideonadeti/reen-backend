@@ -202,7 +202,7 @@ export class AuthService {
         admins,
       };
     } catch (error) {
-      this.handleError(error, `fetch admins with ids ${adminIds.join(', ')}`);
+      this.handleError(error, `fetch admins`);
     }
   }
 
