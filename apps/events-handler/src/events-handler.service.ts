@@ -237,11 +237,29 @@ export class EventsHandlerService
         (request) => request.idempotencyKey,
       );
 
+      const userId = updateBalancesRequests[0].userId;
+      const adminIds = updateBalancesRequests.map((request) => request.adminId);
+
       await firstValueFrom(
         this.authService.removeIdempotencyRecordsByKeys({
           keys: idempotencyKeys,
         }),
       );
+
+      const user = await firstValueFrom(
+        this.authService.findUser({ id: userId }),
+      );
+
+      const admins = await firstValueFrom(
+        this.authService.findAdmins({ adminIds }),
+      );
+
+      // Invalidate users cache after updating balances
+      await this.cacheManager.del(`/auth/users/${user.clerkId}`);
+
+      for (const admin of admins.admins) {
+        await this.cacheManager.del(`/auth/users/${admin.clerkId}`);
+      }
 
       this.eventsHandlerClient.emit('clear-cart', {
         ...data,
