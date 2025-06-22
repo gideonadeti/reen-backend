@@ -524,11 +524,11 @@ export class EventsHandlerService
           sagaStateId: data.sagaStateId,
           retryCount: retryCount + 1,
         });
-      } else {
-        this.eventsHandlerClient.emit('notify-buyer-failed', {
-          sagaStateId: data.sagaStateId,
-        });
       }
+
+      // No need to emit 'notify-buyer-failed'
+      // It's best to do something about it though
+      // Just not worth it atm... :)
     }
   }
 
@@ -578,11 +578,9 @@ export class EventsHandlerService
           sagaStateId: data.sagaStateId,
           retryCount: retryCount + 1,
         });
-      } else {
-        this.eventsHandlerClient.emit('notify-admins-failed', {
-          sagaStateId: data.sagaStateId,
-        });
       }
+
+      // No need to emit 'notify-admins-failed'
     }
   }
 }
