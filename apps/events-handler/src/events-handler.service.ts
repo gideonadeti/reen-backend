@@ -204,8 +204,7 @@ export class EventsHandlerService
       await this.cacheManager.del('/products');
 
       this.eventsHandlerClient.emit('update-balances', {
-        ...data,
-        retryCount: 0,
+        sagaStateId: data.sagaStateId,
       });
     } catch (error) {
       this.handleError(error, 'update quantities');
@@ -263,8 +262,7 @@ export class EventsHandlerService
       }
 
       this.eventsHandlerClient.emit('clear-cart', {
-        ...data,
-        retryCount: 0,
+        sagaStateId: data.sagaStateId,
       });
     } catch (error) {
       this.handleError(error, 'update balances');
@@ -334,8 +332,7 @@ export class EventsHandlerService
       await firstValueFrom(this.cartItemsService.removeAll({ userId }));
 
       this.eventsHandlerClient.emit('create-order', {
-        ...data,
-        retryCount: 0,
+        sagaStateId: data.sagaStateId,
       });
     } catch (error) {
       this.handleError(error, 'clear cart');
@@ -404,8 +401,7 @@ export class EventsHandlerService
       }
 
       this.eventsHandlerClient.emit('update-balances-failed', {
-        ...data,
-        retryCount: 0,
+        sagaStateId: data.sagaStateId,
       });
     } catch (error) {
       this.handleError(error, 'compensate clear cart');
@@ -438,8 +434,7 @@ export class EventsHandlerService
       );
 
       this.eventsHandlerClient.emit('notify-buyer', {
-        ...data,
-        retryCount: 0,
+        sagaStateId: data.sagaStateId,
       });
     } catch (error) {
       this.handleError(error, 'create order');
@@ -475,8 +470,7 @@ export class EventsHandlerService
       );
 
       this.eventsHandlerClient.emit('notify-admins', {
-        ...data,
-        retryCount: 0,
+        sagaStateId: data.sagaStateId,
       });
     } catch (error) {
       this.handleError(error, 'notify buyer');
