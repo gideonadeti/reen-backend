@@ -17,6 +17,7 @@ import {
   ProductsServiceClient,
 } from '@app/protos/generated/products';
 import {
+  CreateManyRequest,
   CreateRequest,
   FindOneRequest,
   RemoveRequest,
@@ -150,6 +151,22 @@ export class CartItemsService implements OnModuleInit {
       this.handleError(
         error,
         `remove all cart items for user with id ${userId}`,
+      );
+    }
+  }
+
+  async createMany({ createCartItemDtos, userId }: CreateManyRequest) {
+    try {
+      return await this.prismaService.cartItem.createMany({
+        data: createCartItemDtos.map((createCartItemDto) => ({
+          ...createCartItemDto,
+          userId,
+        })),
+      });
+    } catch (error) {
+      this.handleError(
+        error,
+        `create many cart items for user with id ${userId}`,
       );
     }
   }

@@ -4,6 +4,7 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { CartItemsService } from './cart-items.service';
 import {
   CART_ITEMS_SERVICE_NAME,
+  CreateManyRequest,
   CreateRequest,
   FindAllRequest,
   FindOneRequest,
@@ -44,5 +45,10 @@ export class CartItemsController {
   @GrpcMethod(CART_ITEMS_SERVICE_NAME)
   removeAll(data: RemoveAllRequest) {
     return this.cartItemsService.removeAll(data.userId);
+  }
+
+  @GrpcMethod(CART_ITEMS_SERVICE_NAME)
+  createMany(data: CreateManyRequest) {
+    return this.cartItemsService.createMany(data);
   }
 }
