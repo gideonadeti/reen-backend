@@ -239,15 +239,14 @@ export class EventsHandlerService
         (request) => request.idempotencyKey,
       );
 
-      const userId = updateBalancesRequests[0].userId;
-      const adminIds = updateBalancesRequests.map((request) => request.adminId);
-
       await firstValueFrom(
         this.authService.removeIdempotencyRecordsByKeys({
           keys: idempotencyKeys,
         }),
       );
 
+      const userId = updateBalancesRequests[0].userId;
+      const adminIds = updateBalancesRequests.map((request) => request.adminId);
       const user = await firstValueFrom(
         this.authService.findUser({ id: userId }),
       );
@@ -353,6 +352,72 @@ export class EventsHandlerService
       } else {
         this.eventsHandlerClient.emit('clear-cart-failed', {
           sagaStateId: data.sagaStateId,
+        });
+      }
+    }
+  }
+
+  // Undo Update Balances
+  // Undo Update Quantities
+  async handleClearCartFailed(data: SagaFlowProps) {
+    try {
+      const payload = await this.cacheManager.get(data.sagaStateId);
+      const { updateBalancesRequests } =
+        payload as HandleCheckoutSessionCompletedPayload;
+
+      // Reverse userId and adminId
+      for (const request of updateBalancesRequests) {
+        await firstValueFrom(
+          this.authService.updateBalances({
+            ...request,
+            userId: request.adminId,
+            adminId: request.userId,
+          }),
+        );
+      }
+
+      const idempotencyKeys = updateBalancesRequests.map(
+        (request) => request.idempotencyKey,
+      );
+
+      await firstValueFrom(
+        this.authService.removeIdempotencyRecordsByKeys({
+          keys: idempotencyKeys,
+        }),
+      );
+
+      const userId = updateBalancesRequests[0].userId;
+      const adminIds = updateBalancesRequests.map((request) => request.adminId);
+      const user = await firstValueFrom(
+        this.authService.findUser({ id: userId }),
+      );
+
+      const admins = await firstValueFrom(
+        this.authService.findAdmins({ adminIds }),
+      );
+
+      // Invalidate users cache after updating balances
+      await this.cacheManager.del(`/auth/users/${user.clerkId}`);
+
+      for (const admin of admins.admins) {
+        await this.cacheManager.del(`/auth/users/${admin.clerkId}`);
+      }
+
+      this.eventsHandlerClient.emit('update-balances-failed', {
+        ...data,
+        retryCount: 0,
+      });
+    } catch (error) {
+      this.handleError(error, 'compensate clear cart');
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('clear-cart-failed', {
+          sagaStateId: data.sagaStateId,
+          retryCount: retryCount + 1,
         });
       }
     }

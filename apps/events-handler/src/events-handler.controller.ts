@@ -34,6 +34,11 @@ export class EventsHandlerController {
     return this.eventsHandlerService.handleClearCart(data);
   }
 
+  @EventPattern('clear-cart-failed')
+  handleClearCartFailed(@Payload() data: SagaFlowProps) {
+    return this.eventsHandlerService.handleClearCartFailed(data);
+  }
+
   @EventPattern('create-order')
   handleCreateOrder(@Payload() data: SagaFlowProps) {
     return this.eventsHandlerService.handleCreateOrder(data);
