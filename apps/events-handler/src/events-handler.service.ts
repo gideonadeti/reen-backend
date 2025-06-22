@@ -456,6 +456,46 @@ export class EventsHandlerService
     }
   }
 
+  // Undo Clear Cart
+  // Undo Update Balances
+  // Undo Update Quantities
+  async handleCreateOrderFailed(data: SagaFlowProps) {
+    try {
+      const payload = await this.cacheManager.get(data.sagaStateId);
+      const { userId, cartItems } =
+        payload as HandleCheckoutSessionCompletedPayload;
+
+      const createCartItemDtos = cartItems.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      }));
+
+      await firstValueFrom(
+        this.cartItemsService.createMany({
+          createCartItemDtos,
+          userId,
+        }),
+      );
+
+      this.eventsHandlerClient.emit('clear-cart-failed', {
+        sagaStateId: data.sagaStateId,
+      });
+    } catch (error) {
+      this.handleError(error, 'compensate create order');
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('create-order-failed', {
+          sagaStateId: data.sagaStateId,
+          retryCount: retryCount + 1,
+        });
+      }
+    }
+  }
+
   async handleNotifyBuyer(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
