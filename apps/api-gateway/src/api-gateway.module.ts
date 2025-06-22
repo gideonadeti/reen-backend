@@ -1,7 +1,14 @@
 import KeyvRedis from '@keyv/redis';
-import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CacheModule } from '@nestjs/cache-manager';
+import { CACHE_MANAGER, CacheModule } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import {
+  Inject,
+  Logger,
+  MiddlewareConsumer,
+  Module,
+  OnModuleInit,
+} from '@nestjs/common';
 
 import { AuthModule } from './auth/auth.module';
 import { LoggingMiddleware } from './logging/logging.middleware';
@@ -40,7 +47,21 @@ import { OrdersModule } from './orders/orders.module';
   controllers: [],
   providers: [],
 })
-export class ApiGatewayModule {
+export class ApiGatewayModule implements OnModuleInit {
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+
+  private logger = new Logger(ApiGatewayModule.name);
+
+  async onModuleInit() {
+    this.logger.log('Clearing cache...');
+
+    const response = await this.cacheManager.clear();
+
+    if (response) {
+      this.logger.log('Cache cleared successfully');
+    }
+  }
+
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggingMiddleware).forRoutes('*');
   }
