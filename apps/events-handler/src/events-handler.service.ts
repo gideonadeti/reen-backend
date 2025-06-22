@@ -287,6 +287,46 @@ export class EventsHandlerService
     }
   }
 
+  // Undo Update Quantities
+  async handleUpdateBalancesFailed(data: SagaFlowProps) {
+    try {
+      const payload = await this.cacheManager.get(data.sagaStateId);
+      const { cartItems } = payload as HandleCheckoutSessionCompletedPayload;
+
+      const validCartItems = cartItems.map((item) => ({
+        ...item,
+        createdAt: new Date(item.createdAt as Date),
+        updatedAt: new Date(item.updatedAt as Date),
+      }));
+
+      await firstValueFrom(
+        this.productsService.updateQuantities({
+          cartItems: validCartItems,
+          increment: false,
+        }),
+      );
+
+      // Invalidate products cache after updating quantities
+      await this.cacheManager.del('/products');
+    } catch (error) {
+      this.handleError(error, 'compensate update balances');
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('update-balances-failed', {
+          sagaStateId: data.sagaStateId,
+          retryCount: retryCount + 1,
+        });
+      }
+
+      // If the reties fail, just give up...lol
+      // I think it'll be best to send a notification to the admin or something.
+    }
+  }
+
   async handleClearCart(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
