@@ -1,3 +1,5 @@
 FROM ghcr.io/gideonadeti/reen-backend-build-base-image:latest as build
 WORKDIR /app
+COPY . .
+COPY libs/protos/src/*.proto dist/libs/protos/
 CMD ["sh", "-c", "npx prisma generate --schema=apps/events-handler/prisma/schema.prisma && npm run start:dev events-handler"]

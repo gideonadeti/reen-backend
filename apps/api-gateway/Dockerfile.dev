@@ -1,4 +1,6 @@
 FROM ghcr.io/gideonadeti/reen-backend-build-base-image:latest as build
 WORKDIR /app
+COPY . .
+COPY libs/protos/src/*.proto dist/libs/protos/
 EXPOSE 3000
 CMD [ "npm", "run", "start:dev" ]
