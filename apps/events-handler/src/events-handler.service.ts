@@ -330,7 +330,10 @@ export class EventsHandlerService
         }),
       );
 
-      this.eventsHandlerClient.emit('notify-buyer', userId);
+      this.eventsHandlerClient.emit('notify-buyer', {
+        ...data,
+        retryCount: 0,
+      });
     } catch (error) {
       this.handleError(error, 'create order');
 
