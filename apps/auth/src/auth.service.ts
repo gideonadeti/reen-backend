@@ -262,7 +262,9 @@ export class AuthService {
         where: { id: { in: ids } },
       });
 
-      return users;
+      return {
+        users,
+      };
     } catch (error) {
       this.handleError(error, `find users with ids ${ids.join(', ')}`);
     }
