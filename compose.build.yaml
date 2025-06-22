@@ -3,47 +3,31 @@ services:
     build:
       context: .
       dockerfile: apps/api-gateway/Dockerfile
-    volumes:
-      - ./.env:/app/apps/api-gateway/.env
   api-gateway-2:
     build:
       context: .
       dockerfile: apps/api-gateway/Dockerfile
-    volumes:
-      - ./.env:/app/apps/api-gateway/.env
   auth:
     build:
       context: .
       dockerfile: apps/auth/Dockerfile
-    volumes:
-      - ./.env:/app/apps/auth/.env
   products:
     build:
       context: .
       dockerfile: apps/products/Dockerfile
-    volumes:
-      - ./.env:/app/apps/products/.env
   cart-items:
     build:
       context: .
       dockerfile: apps/cart-items/Dockerfile
-    volumes:
-      - ./.env:/app/apps/cart-items/.env
   checkout:
     build:
       context: .
       dockerfile: apps/checkout/Dockerfile
-    volumes:
-      - ./.env:/app/apps/checkout/.env
   events-handler:
     build:
       context: .
       dockerfile: apps/events-handler/Dockerfile
-    volumes:
-      - ./.env:/app/apps/events-handler/.env
   orders:
     build:
       context: .
       dockerfile: apps/orders/Dockerfile
-    volumes:
-      - ./.env:/app/apps/orders/.env
