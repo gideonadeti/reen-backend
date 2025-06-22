@@ -220,6 +220,8 @@ export class EventsHandlerService
           retryCount: retryCount + 1,
         });
       }
+
+      // If the reties fail, it is safe to not emit `update-quantities-failed` since no mutations have been made in the successful checkout flow, thus no compensation is necessary.
     }
   }
 
