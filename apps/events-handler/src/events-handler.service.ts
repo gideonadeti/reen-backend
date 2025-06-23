@@ -131,8 +131,9 @@ export class EventsHandlerService
       for (const orderItem of orderItemsWithProduct) {
         const adminId = orderItem.product.adminId;
 
-        if (!adminOrderItemsMap.has(adminId))
+        if (!adminOrderItemsMap.has(adminId)) {
           adminOrderItemsMap.set(adminId, []);
+        }
 
         adminOrderItemsMap.get(adminId)!.push(orderItem);
       }
