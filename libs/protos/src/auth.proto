@@ -42,6 +42,16 @@ message User {
   optional string clerk_id = 7;
   google.protobuf.Timestamp createdAt = 8;
   google.protobuf.Timestamp updatedAt = 9;
+
+  repeated Balance balances = 10;
+}
+
+message Balance {
+  string id = 1;
+  string user_id = 2;
+  double amount = 3;
+  google.protobuf.Timestamp createdAt = 4;
+  google.protobuf.Timestamp updatedAt = 5;
 }
 
 enum UserRole {

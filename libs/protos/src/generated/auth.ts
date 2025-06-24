@@ -41,6 +41,15 @@ export interface User {
   clerkId?: string | undefined;
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
+  balances: Balance[];
+}
+
+export interface Balance {
+  id: string;
+  userId: string;
+  amount: number;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
 }
 
 export interface ValidateUserRequest {
