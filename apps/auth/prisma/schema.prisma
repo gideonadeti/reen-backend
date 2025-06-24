@@ -51,7 +51,7 @@ model IdempotencyRecord {
 
 model Balance {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @unique @db.ObjectId
+  userId    String   @db.ObjectId
   amount    Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
