@@ -9,17 +9,22 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  email     String   @unique
-  balance   Float    @default(4000000) // 4 million
-  password  String?
-  clerkId   String?  @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  email          String   @unique
+  balance        Float    @default(4000000) // 4 million
+  salesCount     Int      @default(0)
+  purchasesCount Int      @default(0)
+  amountGained   Float    @default(0)
+  amountSpent    Float    @default(0)
+  password       String?
+  clerkId        String?  @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   role         UserRole      @default(NADMIN)
   refreshToken RefreshToken?
+  balances     Balance[]
 }
 
 enum UserRole {
@@ -42,4 +47,14 @@ model IdempotencyRecord {
   key       String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Balance {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @unique @db.ObjectId
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
 }
