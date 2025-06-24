@@ -37,6 +37,10 @@ export interface User {
   email: string;
   role: UserRole;
   balance: number;
+  salesCount: number;
+  purchasesCount: number;
+  amountGained: number;
+  amountSpent: number;
   password?: string | undefined;
   clerkId?: string | undefined;
   createdAt: Date | undefined;

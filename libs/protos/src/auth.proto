@@ -38,12 +38,16 @@ message User {
   string email = 3;
   UserRole role = 4;
   double balance = 5;
-  optional string password = 6;
-  optional string clerk_id = 7;
-  google.protobuf.Timestamp createdAt = 8;
-  google.protobuf.Timestamp updatedAt = 9;
+  int32 sales_count = 6;
+  int32 purchases_count = 7;
+  int32 amount_gained = 8;
+  int32 amount_spent = 9;
+  optional string password = 10;
+  optional string clerk_id = 11;
+  google.protobuf.Timestamp createdAt = 12;
+  google.protobuf.Timestamp updatedAt = 13;
 
-  repeated Balance balances = 10;
+  repeated Balance balances = 14;
 }
 
 message Balance {
