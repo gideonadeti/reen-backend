@@ -15,7 +15,7 @@ service CartItemsService {
 }
 
 message CreateRequest {
-  CreateCartItemDto createCartItemDto = 1;
+  CreateCartItemDto create_cart_item_dto = 1;
   string user_id = 2;
 }
 
@@ -28,13 +28,13 @@ message CartItem {
   string id = 1;
   string product_id = 2;
   int32 quantity = 3;
-  google.protobuf.Timestamp createdAt = 4;
-  google.protobuf.Timestamp updatedAt = 5;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
 }
 
 message FindAllRequest { string user_id = 1; }
 
-message FindAllResponse { repeated CartItem cartItems = 1; }
+message FindAllResponse { repeated CartItem cart_items = 1; }
 
 message FindOneRequest {
   string id = 1;
@@ -43,7 +43,7 @@ message FindOneRequest {
 
 message UpdateRequest {
   string id = 1;
-  UpdateCartItemDto updateCartItemDto = 2;
+  UpdateCartItemDto update_cart_item_dto = 2;
   string user_id = 3;
 }
 
@@ -62,7 +62,7 @@ message RemoveAllRequest { string user_id = 1; }
 message RemoveAllResponse {}
 
 message CreateManyRequest {
-  repeated CreateCartItemDto createCartItemDtos = 1;
+  repeated CreateCartItemDto create_cart_item_dtos = 1;
   string user_id = 2;
 }
 

@@ -27,8 +27,8 @@ message SignUpRequest {
 }
 
 message SignUpInResponse {
-  string refreshToken = 1;
-  string accessToken = 2;
+  string refresh_token = 1;
+  string access_token = 2;
   User user = 3;
 }
 
@@ -44,8 +44,8 @@ message User {
   double amount_spent = 9;
   optional string password = 10;
   optional string clerk_id = 11;
-  google.protobuf.Timestamp createdAt = 12;
-  google.protobuf.Timestamp updatedAt = 13;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
 
   repeated Balance balances = 14;
 }
@@ -54,8 +54,8 @@ message Balance {
   string id = 1;
   string user_id = 2;
   double amount = 3;
-  google.protobuf.Timestamp createdAt = 4;
-  google.protobuf.Timestamp updatedAt = 5;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
 }
 
 enum UserRole {
@@ -70,10 +70,10 @@ message ValidateUserRequest {
 
 message RefreshTokenRequest {
   User user = 1;
-  string refreshToken = 2;
+  string refresh_token = 2;
 }
 
-message RefreshTokenResponse { string accessToken = 1; }
+message RefreshTokenResponse { string access_token = 1; }
 
 message SignOutRequest { string user_id = 1; }
 
@@ -81,8 +81,8 @@ message SignOutResponse {
   string id = 1;
   string user_id = 2;
   string value = 3;
-  google.protobuf.Timestamp createdAt = 4;
-  google.protobuf.Timestamp updatedAt = 5;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
 }
 
 message FindUserRequest { string id = 1; }

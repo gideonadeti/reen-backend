@@ -5,12 +5,12 @@ package orders;
 import "google/protobuf/timestamp.proto";
 
 service OrdersService {
-  rpc Create(CreateRequest) returns (Order);
-  rpc Remove(RemoveRequest) returns (Order);
-  rpc FindAll(FindAllRequest) returns (FindAllResponse);
-  rpc FindOne(FindOneRequest) returns (Order);
+  rpc Create(CreateRequest) returns (Order) {}
+  rpc Remove(RemoveRequest) returns (Order) {}
+  rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
+  rpc FindOne(FindOneRequest) returns (Order) {}
   rpc FindProductOrderCounts(FindProductOrderCountsRequest)
-      returns (FindProductOrderCountsResponse);
+      returns (FindProductOrderCountsResponse) {}
 }
 
 message CreateRequest {
@@ -30,8 +30,8 @@ message Order {
   string user_id = 2;
   double total = 3;
   repeated OrderItem order_items = 4;
-  google.protobuf.Timestamp createdAt = 5;
-  google.protobuf.Timestamp updatedAt = 6;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
 }
 
 message RemoveRequest { string id = 1; }

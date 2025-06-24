@@ -24,7 +24,7 @@ message CreateProductDto {
 }
 
 message CreateRequest {
-  CreateProductDto createProductDto = 1;
+  CreateProductDto create_product_dto = 1;
   string admin_id = 2;
 }
 
@@ -48,8 +48,8 @@ message Product {
   int32 quantity = 5;
   repeated string image_urls = 6;
   string admin_id = 7;
-  google.protobuf.Timestamp createdAt = 8;
-  google.protobuf.Timestamp updatedAt = 9;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
 }
 
 message Meta {
@@ -77,7 +77,7 @@ message UpdateProductDto {
 
 message UpdateRequest {
   string id = 1;
-  UpdateProductDto updateProductDto = 2;
+  UpdateProductDto update_product_dto = 2;
   string admin_id = 3;
 }
 
@@ -94,8 +94,8 @@ message CartItem {
   string id = 1;
   string product_id = 2;
   int32 quantity = 3;
-  google.protobuf.Timestamp createdAt = 4;
-  google.protobuf.Timestamp updatedAt = 5;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
 }
 
 message UpdateQuantitiesRequest {
