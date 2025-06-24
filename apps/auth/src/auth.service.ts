@@ -7,7 +7,7 @@ import { RpcException } from '@nestjs/microservices';
 
 import { PrismaService } from './prisma/prisma.service';
 import { AuthPayload } from '@app/interfaces';
-import { User as PrismaUser } from '../generated/prisma';
+import { Balance, User as PrismaUser } from '../generated/prisma';
 import {
   RefreshTokenRequest,
   SignOutRequest,
@@ -85,11 +85,14 @@ export class AuthService {
 
   async signUp(signUpRequest: SignUpRequest) {
     try {
-      let user: PrismaUser;
+      let user: PrismaUser & { balances: Balance[] };
 
       if (!signUpRequest.password) {
         user = await this.prismaService.user.create({
           data: signUpRequest,
+          include: {
+            balances: true,
+          },
         });
       } else {
         const hashedPassword = await this.hashPassword(signUpRequest.password);
@@ -98,6 +101,9 @@ export class AuthService {
           data: {
             ...signUpRequest,
             password: hashedPassword,
+          },
+          include: {
+            balances: true,
           },
         });
       }
@@ -245,6 +251,9 @@ export class AuthService {
     try {
       const user = await this.prismaService.user.findUnique({
         where: { clerkId },
+        include: {
+          balances: true,
+        },
       });
 
       // Return `{}` if user is not found to avoid gRPC converting null to User
