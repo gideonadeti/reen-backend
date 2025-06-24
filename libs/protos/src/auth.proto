@@ -40,8 +40,8 @@ message User {
   double balance = 5;
   int32 sales_count = 6;
   int32 purchases_count = 7;
-  int32 amount_gained = 8;
-  int32 amount_spent = 9;
+  double amount_gained = 8;
+  double amount_spent = 9;
   optional string password = 10;
   optional string clerk_id = 11;
   google.protobuf.Timestamp createdAt = 12;
