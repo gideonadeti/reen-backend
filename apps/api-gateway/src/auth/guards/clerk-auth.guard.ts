@@ -69,7 +69,7 @@ export class ClerkAuthGuard implements CanActivate, OnModuleInit {
 
       user = signUpResponse.user as User;
 
-      await this.cacheManager.del('/auth/users');
+      await this.cacheManager.del('/auth/find-all');
     }
 
     req['user'] = user;
