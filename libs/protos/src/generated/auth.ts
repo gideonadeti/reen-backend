@@ -128,6 +128,13 @@ export interface RemoveIdempotencyRecordsByKeysRequest {
 export interface RemoveIdempotencyRecordsByKeysResponse {
 }
 
+export interface FindAllRequest {
+}
+
+export interface FindAllResponse {
+  users: User[];
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -165,6 +172,8 @@ export interface AuthServiceClient {
   removeIdempotencyRecordsByKeys(
     request: RemoveIdempotencyRecordsByKeysRequest,
   ): Observable<RemoveIdempotencyRecordsByKeysResponse>;
+
+  findAll(request: FindAllRequest): Observable<FindAllResponse>;
 }
 
 export interface AuthServiceController {
@@ -202,6 +211,8 @@ export interface AuthServiceController {
     | Promise<RemoveIdempotencyRecordsByKeysResponse>
     | Observable<RemoveIdempotencyRecordsByKeysResponse>
     | RemoveIdempotencyRecordsByKeysResponse;
+
+  findAll(request: FindAllRequest): Promise<FindAllResponse> | Observable<FindAllResponse> | FindAllResponse;
 }
 
 export function AuthServiceControllerMethods() {
@@ -219,6 +230,7 @@ export function AuthServiceControllerMethods() {
       "findByIds",
       "updateBalances",
       "removeIdempotencyRecordsByKeys",
+      "findAll",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

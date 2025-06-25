@@ -17,6 +17,7 @@ service AuthService {
   rpc UpdateBalances(UpdateBalancesRequest) returns (UpdateBalancesResponse) {}
   rpc RemoveIdempotencyRecordsByKeys(RemoveIdempotencyRecordsByKeysRequest)
       returns (RemoveIdempotencyRecordsByKeysResponse) {}
+  rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
 }
 
 message SignUpRequest {
@@ -114,3 +115,7 @@ message UpdateBalancesResponse {}
 message RemoveIdempotencyRecordsByKeysRequest { repeated string keys = 1; }
 
 message RemoveIdempotencyRecordsByKeysResponse {}
+
+message FindAllRequest {}
+
+message FindAllResponse { repeated User users = 1; }

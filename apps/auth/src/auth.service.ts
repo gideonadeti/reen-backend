@@ -9,6 +9,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { AuthPayload } from '@app/interfaces';
 import { Balance, User as PrismaUser } from '../generated/prisma';
 import {
+  FindAllRequest,
   RefreshTokenRequest,
   SignOutRequest,
   SignUpRequest,
@@ -325,6 +326,23 @@ export class AuthService {
       return {};
     } catch (error) {
       this.handleError(error, `remove idempotency records by keys`);
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async findAll(data: FindAllRequest) {
+    try {
+      const users = await this.prismaService.user.findMany({
+        include: {
+          balances: true,
+        },
+      });
+
+      return {
+        users,
+      };
+    } catch (error) {
+      this.handleError(error, `fetch all users`);
     }
   }
 }

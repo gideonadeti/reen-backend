@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import {
   AUTH_SERVICE_NAME,
   FindAdminsRequest,
+  FindAllRequest,
   FindByIdsRequest,
   FindUserByClerkIdRequest,
   FindUserRequest,
@@ -80,5 +81,10 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   removeIdempotencyRecordsByKeys(data: RemoveIdempotencyRecordsByKeysRequest) {
     return this.authService.removeIdempotencyRecordsByKeys(data.keys);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  findAll(data: FindAllRequest) {
+    return this.authService.findAll(data);
   }
 }
