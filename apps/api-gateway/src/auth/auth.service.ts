@@ -150,7 +150,8 @@ export class AuthService implements OnModuleInit {
         this.authService.updateUserRole({ id: userId, role }),
       );
 
-      // Invalidate user cache after role update
+      // Invalidate users and user caches after role update
+      await this.cacheManager.del('/auth/users');
       await this.cacheManager.del(`/auth/users/${clerkId}`);
 
       return {

@@ -2,6 +2,8 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { Request } from 'express';
 import { firstValueFrom } from 'rxjs';
 import { clerkClient, getAuth } from '@clerk/express';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import {
   CanActivate,
   ExecutionContext,
@@ -20,7 +22,10 @@ import {
 
 @Injectable()
 export class ClerkAuthGuard implements CanActivate, OnModuleInit {
-  constructor(@Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc) {}
+  constructor(
+    @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   private authService: AuthServiceClient;
   private logger = new Logger(ClerkAuthGuard.name);
@@ -63,6 +68,8 @@ export class ClerkAuthGuard implements CanActivate, OnModuleInit {
       );
 
       user = signUpResponse.user as User;
+
+      await this.cacheManager.del('/auth/users');
     }
 
     req['user'] = user;
