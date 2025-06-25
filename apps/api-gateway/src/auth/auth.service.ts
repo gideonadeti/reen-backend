@@ -161,4 +161,20 @@ export class AuthService implements OnModuleInit {
       this.handleError(error, `update user role for user with id ${userId}`);
     }
   }
+
+  async findAll() {
+    try {
+      const findAllResponse = await firstValueFrom(
+        this.authService.findAll({}),
+      );
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      return findAllResponse.users.map(({ password, ...rest }) => ({
+        ...rest,
+        role: UserRole[rest.role],
+      }));
+    } catch (error) {
+      this.handleError(error, 'fetch users');
+    }
+  }
 }

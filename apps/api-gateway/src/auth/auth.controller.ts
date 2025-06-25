@@ -82,4 +82,11 @@ export class AuthController {
       balances: user.balances || [],
     };
   }
+
+  @UseGuards(ClerkAuthGuard)
+  @UseInterceptors(CacheInterceptor)
+  @Get('find-all')
+  findAll() {
+    return this.authService.findAll();
+  }
 }
