@@ -232,6 +232,16 @@ export class AuthService {
             data: { balance: { decrement: 160000 } },
           }),
         );
+
+        transactions.push(
+          this.prismaService.user.update({
+            where: { id },
+            data: {
+              amountSpent: { increment: 160000 },
+              balances: { create: { amount: 160000 } },
+            },
+          }),
+        );
       }
 
       const responses = await this.prismaService.$transaction(transactions);
