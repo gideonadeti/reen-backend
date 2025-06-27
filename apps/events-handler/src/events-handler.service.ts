@@ -251,16 +251,20 @@ export class EventsHandlerService
         this.authService.findUser({ id: userId }),
       );
 
-      const admins = await firstValueFrom(
+      const findAdminsResponse = await firstValueFrom(
         this.authService.findAdmins({ adminIds }),
       );
+
+      const admins = findAdminsResponse.admins || [];
 
       // Invalidate users cache after updating balances
       await this.cacheManager.del(`/auth/users/${user.clerkId}`);
 
-      for (const admin of admins.admins) {
-        await this.cacheManager.del(`/auth/users/${admin.clerkId}`);
-      }
+      await Promise.all(
+        admins.map((admin) =>
+          this.cacheManager.del(`/auth/users/${admin.clerkId}`),
+        ),
+      );
 
       this.eventsHandlerClient.emit('clear-cart', {
         sagaStateId: data.sagaStateId,
