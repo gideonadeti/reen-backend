@@ -1,5 +1,10 @@
 import * as bcrypt from 'bcryptjs';
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -214,9 +219,16 @@ export class AuthService {
   }
 
   async updateUserRole({ id, role }: UpdateUserRoleRequest) {
+    const roleUpgradeFee = 160000;
     const prismaUserRole = role === UserRole.ADMIN ? 'ADMIN' : 'NADMIN';
 
     try {
+      const user = await this.prismaService.user.findUnique({ where: { id } });
+
+      if (!user) {
+        throw new NotFoundException(`User with id ${id} not found`);
+      }
+
       const transactions = [
         this.prismaService.user.update({
           where: { id },
@@ -224,21 +236,20 @@ export class AuthService {
         }),
       ];
 
-      // NADMIN to ADMIN upgrade fee
       if (role === UserRole.ADMIN) {
-        transactions.push(
-          this.prismaService.user.update({
-            where: { id },
-            data: { balance: { decrement: 160000 } },
-          }),
-        );
+        const newBalance = user?.balance - roleUpgradeFee;
 
         transactions.push(
           this.prismaService.user.update({
             where: { id },
             data: {
-              amountSpent: { increment: 160000 },
-              balances: { create: { amount: 160000 } },
+              balance: { decrement: roleUpgradeFee },
+              amountSpent: { increment: roleUpgradeFee },
+              balances: {
+                create: {
+                  amount: newBalance,
+                },
+              },
             },
           }),
         );
@@ -247,11 +258,10 @@ export class AuthService {
       const responses = await this.prismaService.$transaction(transactions);
 
       // If the user is being upgraded to ADMIN, we return the updated user as the second response
-      const user = role === UserRole.ADMIN ? responses[1] : responses[0];
+      const updatedUser = role === UserRole.ADMIN ? responses[1] : responses[0];
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...rest } = user;
-
+      const { password, ...rest } = updatedUser;
       return rest;
     } catch (error) {
       this.handleError(error, `update user role for user with id ${id}`);
