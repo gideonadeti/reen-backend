@@ -147,15 +147,6 @@ export class EventsHandlerService
         idempotencyKey: uuidv4(),
       }));
 
-      const applyFinancialEffectsRequests = Array.from(
-        adminOrderItemsMap.entries(),
-      ).map(([adminId, orderItems]) => ({
-        userId,
-        adminId,
-        amount: orderItems.reduce((acc, item) => acc + item.price, 0),
-        idempotencyKey: uuidv4(),
-      }));
-
       const adminNotificationPayloads = Array.from(
         adminOrderItemsMap.entries(),
       ).map(([adminId, orderItems]) => ({
@@ -170,7 +161,6 @@ export class EventsHandlerService
         total,
         orderItems,
         updateBalancesRequests,
-        applyFinancialEffectsRequests,
         adminNotificationPayloads,
       };
 
