@@ -276,7 +276,7 @@ export class EventsHandlerService
         ),
       );
 
-      this.eventsHandlerClient.emit('apply-financial-effects', {
+      this.eventsHandlerClient.emit('clear-cart', {
         sagaStateId: data.sagaStateId,
       });
     } catch (error) {
