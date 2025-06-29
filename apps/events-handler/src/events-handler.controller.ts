@@ -49,6 +49,11 @@ export class EventsHandlerController {
     return this.eventsHandlerService.handleCreateOrderFailed(data);
   }
 
+  @EventPattern('update-purchases-and-sales-counts')
+  handleUpdatePurchasesAndSalesCounts(@Payload() data: SagaFlowProps) {
+    return this.eventsHandlerService.handleUpdatePurchasesAndSalesCounts(data);
+  }
+
   @EventPattern('notify-buyer')
   handleNotifyBuyer(@Payload() data: SagaFlowProps) {
     return this.eventsHandlerService.handleNotifyBuyer(data);

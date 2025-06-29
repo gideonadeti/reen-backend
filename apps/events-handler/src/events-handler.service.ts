@@ -462,7 +462,7 @@ export class EventsHandlerService
         }),
       );
 
-      this.eventsHandlerClient.emit('notify-buyer', {
+      this.eventsHandlerClient.emit('update-purchases-and-sales-counts', {
         sagaStateId: data.sagaStateId,
       });
     } catch (error) {
