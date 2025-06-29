@@ -14,9 +14,7 @@ import {
 
 import { ResendService } from './resend/resend.service';
 import { AdminNotificationPayload } from '@app/interfaces/admin-notification-payload/admin-notification-payload.interface';
-import { PrismaService } from './prisma/prisma.service';
 import { HandleCheckoutSessionCompletedPayload } from '@app/interfaces/handle-checkout-session-completed-payload/handle-checkout-session-completed-payload.interface';
-import { InputJsonValue } from '../generated/prisma/runtime/library';
 import { SagaFlowProps } from '@app/interfaces/saga-flow-props/saga-flow-props.interface';
 import {
   CART_ITEMS_PACKAGE_NAME,
@@ -52,7 +50,6 @@ export class EventsHandlerService
     @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly resendService: ResendService,
-    private prismaService: PrismaService,
   ) {}
 
   private cartItemsService: CartItemsServiceClient;
@@ -183,16 +180,12 @@ export class EventsHandlerService
         balanceIds: [],
       };
 
-      const sagaState = await this.prismaService.sagaState.create({
-        data: {
-          payload: JSON.parse(JSON.stringify(payload)) as InputJsonValue,
-        },
-      });
+      const sagaStateId = uuidv4();
 
-      await this.cacheManager.set(sagaState.id, sagaState.payload);
+      await this.cacheManager.set(sagaStateId, payload);
 
       this.eventsHandlerClient.emit('update-quantities', {
-        sagaStateId: sagaState.id,
+        sagaStateId,
       });
     } catch (error) {
       this.handleError(error, 'handle successful checkout');
@@ -584,10 +577,6 @@ export class EventsHandlerService
           );
         }),
       );
-
-      await this.prismaService.sagaState.delete({
-        where: { id: data.sagaStateId },
-      });
 
       await this.cacheManager.del(data.sagaStateId);
     } catch (error) {
