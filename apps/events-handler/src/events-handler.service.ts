@@ -138,12 +138,30 @@ export class EventsHandlerService
         adminOrderItemsMap.get(adminId)!.push(orderItem);
       }
 
-      const updateBalancesRequests = Array.from(
+      const adminIds = Array.from(adminOrderItemsMap.entries()).map(
+        ([adminId]) => adminId,
+      );
+
+      const user = await firstValueFrom(
+        this.authService.findUser({ id: userId }),
+      );
+
+      const findAdminsResponse = await firstValueFrom(
+        this.authService.findAdmins({ adminIds }),
+      );
+
+      const admins = findAdminsResponse.admins || [];
+
+      const updateFinancialInfosRequests = Array.from(
         adminOrderItemsMap.entries(),
       ).map(([adminId, orderItems]) => ({
         userId,
         adminId,
         amount: orderItems.reduce((acc, item) => acc + item.price, 0),
+        userNewBalance: user.balance - total,
+        adminNewBalance:
+          admins.find((a) => a.id === adminId)!.balance +
+          orderItems.reduce((acc, item) => acc + item.price, 0),
         idempotencyKey: uuidv4(),
       }));
 
@@ -160,8 +178,9 @@ export class EventsHandlerService
         userId,
         total,
         orderItems,
-        updateBalancesRequests,
+        updateFinancialInfosRequests,
         adminNotificationPayloads,
+        balanceIds: [],
       };
 
       const sagaState = await this.prismaService.sagaState.create({

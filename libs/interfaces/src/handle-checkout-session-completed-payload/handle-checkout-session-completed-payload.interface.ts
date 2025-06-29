@@ -1,6 +1,6 @@
 import { CartItem } from '@app/protos/generated/cart-items';
 import { OrderItem } from '@app/protos/generated/orders';
-import { UpdateBalancesRequest } from '@app/protos/generated/auth';
+import { UpdateFinancialInfosRequest } from '@app/protos/generated/auth';
 import { AdminNotificationPayload } from '../admin-notification-payload/admin-notification-payload.interface';
 
 export interface HandleCheckoutSessionCompletedPayload {
@@ -8,6 +8,7 @@ export interface HandleCheckoutSessionCompletedPayload {
   userId: string;
   total: number;
   orderItems: OrderItem[];
-  updateBalancesRequests: UpdateBalancesRequest[];
+  updateFinancialInfosRequests: UpdateFinancialInfosRequest[];
   adminNotificationPayloads: AdminNotificationPayload[];
+  balanceIds: string[];
 }
