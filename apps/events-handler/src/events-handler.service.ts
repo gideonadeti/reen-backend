@@ -237,28 +237,30 @@ export class EventsHandlerService
     }
   }
 
-  async handleUpdateBalances(data: SagaFlowProps) {
+  async handleUpdateFinancialInfos(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
-      const { updateBalancesRequests } =
+      const { updateFinancialInfosRequests, balanceIds, userId } =
         payload as HandleCheckoutSessionCompletedPayload;
 
-      for (const request of updateBalancesRequests) {
-        await firstValueFrom(this.authService.updateBalances(request));
+      for (const request of updateFinancialInfosRequests) {
+        const response = await firstValueFrom(
+          this.authService.updateFinancialInfos(request),
+        );
+
+        balanceIds.push(...response.balanceIds);
       }
 
-      const idempotencyKeys = updateBalancesRequests.map(
-        (request) => request.idempotencyKey,
+      // Persist updated balanceIds back to cache
+      await this.cacheManager.set(data.sagaStateId, {
+        ...(payload as HandleCheckoutSessionCompletedPayload),
+        balanceIds,
+      });
+
+      const adminIds = updateFinancialInfosRequests.map(
+        (request) => request.adminId,
       );
 
-      await firstValueFrom(
-        this.authService.removeIdempotencyRecordsByKeys({
-          keys: idempotencyKeys,
-        }),
-      );
-
-      const userId = updateBalancesRequests[0].userId;
-      const adminIds = updateBalancesRequests.map((request) => request.adminId);
       const user = await firstValueFrom(
         this.authService.findUser({ id: userId }),
       );
@@ -281,20 +283,30 @@ export class EventsHandlerService
       this.eventsHandlerClient.emit('clear-cart', {
         sagaStateId: data.sagaStateId,
       });
+
+      const idempotencyKeys = updateFinancialInfosRequests.map(
+        (request) => request.idempotencyKey,
+      );
+
+      await firstValueFrom(
+        this.authService.removeIdempotencyRecordsByKeys({
+          keys: idempotencyKeys,
+        }),
+      );
     } catch (error) {
-      this.handleError(error, 'update balances');
+      this.handleError(error, 'update financial infos');
 
       await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
 
       const retryCount = data.retryCount || 0;
 
       if (retryCount < 2) {
-        this.eventsHandlerClient.emit('update-balances', {
+        this.eventsHandlerClient.emit('update-financial-infos', {
           sagaStateId: data.sagaStateId,
           retryCount: retryCount + 1,
         });
       } else {
-        this.eventsHandlerClient.emit('update-balances-failed', {
+        this.eventsHandlerClient.emit('update-financial-infos-failed', {
           sagaStateId: data.sagaStateId,
         });
       }
