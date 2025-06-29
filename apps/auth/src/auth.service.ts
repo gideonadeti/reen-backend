@@ -316,7 +316,9 @@ export class AuthService {
 
       // If the idempotency record exists, it means the operation has already been processed.
       if (idempotencyRecord !== null) {
-        return {};
+        return {
+          balanceIds: [],
+        };
       }
 
       const transactionResults = await this.prismaService.$transaction([
