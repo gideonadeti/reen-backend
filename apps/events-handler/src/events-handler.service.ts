@@ -204,7 +204,7 @@ export class EventsHandlerService
       // Invalidate products cache after updating quantities
       await this.cacheManager.del('/products');
 
-      this.eventsHandlerClient.emit('update-balances', {
+      this.eventsHandlerClient.emit('update-financial-infos', {
         sagaStateId: data.sagaStateId,
       });
     } catch (error) {

@@ -19,9 +19,9 @@ export class EventsHandlerController {
     return this.eventsHandlerService.handleUpdateQuantities(data);
   }
 
-  @EventPattern('update-balances')
-  handleUpdateBalances(@Payload() data: SagaFlowProps) {
-    return this.eventsHandlerService.handleUpdateBalances(data);
+  @EventPattern('update-financial-infos')
+  handleUpdateFinancialInfos(@Payload() data: SagaFlowProps) {
+    return this.eventsHandlerService.handleUpdateFinancialInfos(data);
   }
 
   @EventPattern('update-balances-failed')
