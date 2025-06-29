@@ -13,7 +13,7 @@ import {
   RemoveIdempotencyRecordsByKeysRequest,
   SignOutRequest,
   SignUpRequest,
-  UpdateBalancesRequest,
+  UpdateFinancialInfosRequest,
   UpdateUserRoleRequest,
   User,
   ValidateUserRequest,
@@ -74,8 +74,8 @@ export class AuthController {
   }
 
   @GrpcMethod(AUTH_SERVICE_NAME)
-  updateBalances(data: UpdateBalancesRequest) {
-    return this.authService.updateBalances(data);
+  updateFinancialInfos(data: UpdateFinancialInfosRequest) {
+    return this.authService.updateFinancialInfos(data);
   }
 
   @GrpcMethod(AUTH_SERVICE_NAME)

@@ -14,7 +14,9 @@ service AuthService {
   rpc UpdateUserRole(UpdateUserRoleRequest) returns (User) {}
   rpc FindUserByClerkId(FindUserByClerkIdRequest) returns (User) {}
   rpc FindByIds(FindByIdsRequest) returns (FindByIdsResponse) {}
-  rpc UpdateBalances(UpdateBalancesRequest) returns (UpdateBalancesResponse) {}
+  rpc UpdateFinancialInfos(UpdateFinancialInfosRequest)
+      returns (UpdateFinancialInfosResponse) {}
+
   rpc RemoveIdempotencyRecordsByKeys(RemoveIdempotencyRecordsByKeysRequest)
       returns (RemoveIdempotencyRecordsByKeysResponse) {}
   rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
@@ -103,14 +105,16 @@ message FindByIdsRequest { repeated string ids = 1; }
 
 message FindByIdsResponse { repeated User users = 1; }
 
-message UpdateBalancesRequest {
+message UpdateFinancialInfosRequest {
   string user_id = 1;
   string admin_id = 2;
   double amount = 3;
-  string idempotency_key = 4;
+  double user_new_balance = 4;
+  double admin_new_balance = 5;
+  string idempotency_key = 6;
 }
 
-message UpdateBalancesResponse {}
+message UpdateFinancialInfosResponse { repeated string balance_ids = 1; }
 
 message RemoveIdempotencyRecordsByKeysRequest { repeated string keys = 1; }
 

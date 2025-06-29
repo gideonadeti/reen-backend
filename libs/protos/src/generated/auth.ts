@@ -111,14 +111,17 @@ export interface FindByIdsResponse {
   users: User[];
 }
 
-export interface UpdateBalancesRequest {
+export interface UpdateFinancialInfosRequest {
   userId: string;
   adminId: string;
   amount: number;
+  userNewBalance: number;
+  adminNewBalance: number;
   idempotencyKey: string;
 }
 
-export interface UpdateBalancesResponse {
+export interface UpdateFinancialInfosResponse {
+  balanceIds: string[];
 }
 
 export interface RemoveIdempotencyRecordsByKeysRequest {
@@ -167,7 +170,7 @@ export interface AuthServiceClient {
 
   findByIds(request: FindByIdsRequest): Observable<FindByIdsResponse>;
 
-  updateBalances(request: UpdateBalancesRequest): Observable<UpdateBalancesResponse>;
+  updateFinancialInfos(request: UpdateFinancialInfosRequest): Observable<UpdateFinancialInfosResponse>;
 
   removeIdempotencyRecordsByKeys(
     request: RemoveIdempotencyRecordsByKeysRequest,
@@ -201,9 +204,9 @@ export interface AuthServiceController {
 
   findByIds(request: FindByIdsRequest): Promise<FindByIdsResponse> | Observable<FindByIdsResponse> | FindByIdsResponse;
 
-  updateBalances(
-    request: UpdateBalancesRequest,
-  ): Promise<UpdateBalancesResponse> | Observable<UpdateBalancesResponse> | UpdateBalancesResponse;
+  updateFinancialInfos(
+    request: UpdateFinancialInfosRequest,
+  ): Promise<UpdateFinancialInfosResponse> | Observable<UpdateFinancialInfosResponse> | UpdateFinancialInfosResponse;
 
   removeIdempotencyRecordsByKeys(
     request: RemoveIdempotencyRecordsByKeysRequest,
@@ -228,7 +231,7 @@ export function AuthServiceControllerMethods() {
       "updateUserRole",
       "findUserByClerkId",
       "findByIds",
-      "updateBalances",
+      "updateFinancialInfos",
       "removeIdempotencyRecordsByKeys",
       "findAll",
     ];

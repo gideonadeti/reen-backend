@@ -1,14 +1,14 @@
 import * as bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { RpcException } from '@nestjs/microservices';
 import {
   Injectable,
   Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { RpcException } from '@nestjs/microservices';
 
 import { PrismaService } from './prisma/prisma.service';
 import { AuthPayload } from '@app/interfaces';
@@ -18,7 +18,7 @@ import {
   RefreshTokenRequest,
   SignOutRequest,
   SignUpRequest,
-  UpdateBalancesRequest,
+  UpdateFinancialInfosRequest,
   UpdateUserRoleRequest,
   User,
   UserRole,
@@ -300,12 +300,14 @@ export class AuthService {
     }
   }
 
-  async updateBalances({
+  async updateFinancialInfos({
     userId,
     adminId,
     amount,
+    userNewBalance,
+    adminNewBalance,
     idempotencyKey,
-  }: UpdateBalancesRequest) {
+  }: UpdateFinancialInfosRequest) {
     try {
       const idempotencyRecord =
         await this.prismaService.idempotencyRecord.findUnique({
@@ -317,21 +319,44 @@ export class AuthService {
         return {};
       }
 
-      await this.prismaService.$transaction([
+      const transactionResults = await this.prismaService.$transaction([
         this.prismaService.user.update({
           where: { id: userId },
-          data: { balance: { decrement: amount } },
+          data: {
+            balance: { decrement: amount },
+            amountSpent: { increment: amount },
+          },
+        }),
+        this.prismaService.balance.create({
+          data: {
+            amount: userNewBalance,
+            userId,
+          },
         }),
         this.prismaService.user.update({
           where: { id: adminId },
-          data: { balance: { increment: amount } },
+          data: {
+            balance: { increment: amount },
+            amountGained: { increment: amount },
+          },
+        }),
+        this.prismaService.balance.create({
+          data: {
+            amount: adminNewBalance,
+            userId: adminId,
+          },
         }),
         this.prismaService.idempotencyRecord.create({
           data: { key: idempotencyKey },
         }),
       ]);
 
-      return {};
+      const userBalanceId = transactionResults[1].id;
+      const adminBalanceId = transactionResults[3].id;
+
+      return {
+        balanceIds: [userBalanceId, adminBalanceId],
+      };
     } catch (error) {
       this.handleError(error, `update balances`);
     }
