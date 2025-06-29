@@ -360,7 +360,7 @@ export class EventsHandlerService
 
       await firstValueFrom(this.cartItemsService.removeAll({ userId }));
 
-      this.eventsHandlerClient.emit('create-order-and-update-counts', {
+      this.eventsHandlerClient.emit('create-order', {
         sagaStateId: data.sagaStateId,
       });
     } catch (error) {
