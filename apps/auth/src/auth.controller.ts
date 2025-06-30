@@ -10,6 +10,7 @@ import {
   FindUserByClerkIdRequest,
   FindUserRequest,
   RefreshTokenRequest,
+  RemoveBalancesByIdsRequest,
   RemoveIdempotencyRecordsByKeysRequest,
   SignOutRequest,
   SignUpRequest,
@@ -97,5 +98,10 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   undoUpdateFinancialInfos(data: UpdateFinancialInfosRequest) {
     return this.authService.undoUpdateFinancialInfos(data);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  removeBalancesByIds(data: RemoveBalancesByIdsRequest) {
+    return this.authService.removeBalancesByIds(data.ids);
   }
 }

@@ -146,6 +146,13 @@ export interface UpdatePurchasesAndSalesCountsRequest {
 export interface UpdatePurchasesAndSalesCountsResponse {
 }
 
+export interface RemoveBalancesByIdsRequest {
+  ids: string[];
+}
+
+export interface RemoveBalancesByIdsResponse {
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -191,6 +198,8 @@ export interface AuthServiceClient {
   ): Observable<UpdatePurchasesAndSalesCountsResponse>;
 
   undoUpdateFinancialInfos(request: UpdateFinancialInfosRequest): Observable<UpdateFinancialInfosResponse>;
+
+  removeBalancesByIds(request: RemoveBalancesByIdsRequest): Observable<RemoveBalancesByIdsResponse>;
 }
 
 export interface AuthServiceController {
@@ -241,6 +250,10 @@ export interface AuthServiceController {
   undoUpdateFinancialInfos(
     request: UpdateFinancialInfosRequest,
   ): Promise<UpdateFinancialInfosResponse> | Observable<UpdateFinancialInfosResponse> | UpdateFinancialInfosResponse;
+
+  removeBalancesByIds(
+    request: RemoveBalancesByIdsRequest,
+  ): Promise<RemoveBalancesByIdsResponse> | Observable<RemoveBalancesByIdsResponse> | RemoveBalancesByIdsResponse;
 }
 
 export function AuthServiceControllerMethods() {
@@ -261,6 +274,7 @@ export function AuthServiceControllerMethods() {
       "findAll",
       "updatePurchasesAndSalesCounts",
       "undoUpdateFinancialInfos",
+      "removeBalancesByIds",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

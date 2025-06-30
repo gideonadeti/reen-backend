@@ -462,4 +462,16 @@ export class AuthService {
       this.handleError(error, 'undo update financial infos');
     }
   }
+
+  async removeBalancesByIds(ids: string[]) {
+    try {
+      await this.prismaService.balance.deleteMany({
+        where: { id: { in: ids } },
+      });
+
+      return {};
+    } catch (error) {
+      this.handleError(error, 'remove balances by ids');
+    }
+  }
 }

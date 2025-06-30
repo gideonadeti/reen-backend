@@ -26,6 +26,9 @@ service AuthService {
 
   rpc UndoUpdateFinancialInfos(UpdateFinancialInfosRequest)
       returns (UpdateFinancialInfosResponse) {}
+
+  rpc RemoveBalancesByIds(RemoveBalancesByIdsRequest)
+      returns (RemoveBalancesByIdsResponse) {}
 }
 
 message SignUpRequest {
@@ -136,3 +139,7 @@ message UpdatePurchasesAndSalesCountsRequest {
 }
 
 message UpdatePurchasesAndSalesCountsResponse {}
+
+message RemoveBalancesByIdsRequest { repeated string ids = 1; }
+
+message RemoveBalancesByIdsResponse {}
