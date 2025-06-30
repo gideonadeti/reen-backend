@@ -12,7 +12,7 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 
-import { ResendService } from './resend/resend.service';
+import { MailersendService } from './mailersend/mailersend.service';
 import { AdminNotificationPayload } from '@app/interfaces/admin-notification-payload/admin-notification-payload.interface';
 import { HandleCheckoutSessionCompletedPayload } from '@app/interfaces/handle-checkout-session-completed-payload/handle-checkout-session-completed-payload.interface';
 import { SagaFlowProps } from '@app/interfaces/saga-flow-props/saga-flow-props.interface';
@@ -49,7 +49,7 @@ export class EventsHandlerService
     @Inject('EVENTS_HANDLER_SERVICE') private eventsHandlerClient: ClientProxy,
     @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private readonly resendService: ResendService,
+    private readonly mailersendService: MailersendService,
   ) {}
 
   private cartItemsService: CartItemsServiceClient;
@@ -622,8 +622,9 @@ export class EventsHandlerService
         this.authService.findUser({ id: userId }),
       );
 
-      await this.resendService.sendOrderConfirmation(
+      await this.mailersendService.notifyBuyer(
         user.email,
+        user.name,
         user.name.split(' ')[0],
       );
 
@@ -670,8 +671,9 @@ export class EventsHandlerService
 
           if (!admin || !buyer) return;
 
-          await this.resendService.sendAdminNotification(
+          await this.mailersendService.notifyAdmin(
             admin.email,
+            admin.name,
             admin.name.split(' ')[0],
             buyer.name,
             payload.orderItems,
