@@ -368,37 +368,30 @@ export class EventsHandlerService
     }
   }
 
-  // Undo Update Balances
+  // Undo Update Financial Infos
   // Undo Update Quantities
   async handleClearCartFailed(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
-      const { updateBalancesRequests } =
+      const { updateFinancialInfosRequests, balanceIds, userId } =
         payload as HandleCheckoutSessionCompletedPayload;
 
-      // Reverse userId and adminId
-      for (const request of updateBalancesRequests) {
+      for (const request of updateFinancialInfosRequests) {
         await firstValueFrom(
-          this.authService.updateBalances({
-            ...request,
-            userId: request.adminId,
-            adminId: request.userId,
-          }),
+          this.authService.undoUpdateFinancialInfos(request),
         );
       }
 
-      const idempotencyKeys = updateBalancesRequests.map(
-        (request) => request.idempotencyKey,
-      );
-
       await firstValueFrom(
-        this.authService.removeIdempotencyRecordsByKeys({
-          keys: idempotencyKeys,
+        this.authService.removeBalancesByIds({
+          ids: balanceIds,
         }),
       );
 
-      const userId = updateBalancesRequests[0].userId;
-      const adminIds = updateBalancesRequests.map((request) => request.adminId);
+      const adminIds = updateFinancialInfosRequests.map(
+        (request) => request.adminId,
+      );
+
       const user = await firstValueFrom(
         this.authService.findUser({ id: userId }),
       );
@@ -414,7 +407,17 @@ export class EventsHandlerService
         await this.cacheManager.del(`/auth/users/${admin.clerkId}`);
       }
 
-      this.eventsHandlerClient.emit('update-balances-failed', {
+      const idempotencyKeys = updateFinancialInfosRequests.map(
+        (request) => request.idempotencyKey,
+      );
+
+      await firstValueFrom(
+        this.authService.removeIdempotencyRecordsByKeys({
+          keys: idempotencyKeys,
+        }),
+      );
+
+      this.eventsHandlerClient.emit('update-financial-infos-failed', {
         sagaStateId: data.sagaStateId,
       });
     } catch (error) {
