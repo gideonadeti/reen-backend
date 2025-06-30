@@ -198,9 +198,18 @@ export class EventsHandlerService
       const payload = await this.cacheManager.get(data.sagaStateId);
       const { cartItems } = payload as HandleCheckoutSessionCompletedPayload;
 
+      // `cartItems` was stringified before being cached, so all `Date` fields (e.g., createdAt)
+      // were converted to ISO strings. To satisfy the gRPC proto contract (useDate=true),
+      // we need to manually convert them back to JS Date objects before making the request.
+      const validCartItems = cartItems.map((item) => ({
+        ...item,
+        createdAt: new Date(item.createdAt as Date),
+        updatedAt: new Date(item.updatedAt as Date),
+      }));
+
       await firstValueFrom(
         this.productsService.updateQuantities({
-          cartItems,
+          cartItems: validCartItems,
           increment: false,
         }),
       );
@@ -311,9 +320,15 @@ export class EventsHandlerService
       const payload = await this.cacheManager.get(data.sagaStateId);
       const { cartItems } = payload as HandleCheckoutSessionCompletedPayload;
 
+      const validCartItems = cartItems.map((item) => ({
+        ...item,
+        createdAt: new Date(item.createdAt as Date),
+        updatedAt: new Date(item.updatedAt as Date),
+      }));
+
       await firstValueFrom(
         this.productsService.updateQuantities({
-          cartItems,
+          cartItems: validCartItems,
           increment: true,
         }),
       );
