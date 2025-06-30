@@ -419,4 +419,47 @@ export class AuthService {
       this.handleError(error, `update purchases and sales counts`);
     }
   }
+
+  async undoUpdateFinancialInfos({
+    userId,
+    adminId,
+    amount,
+    idempotencyKey,
+  }: UpdateFinancialInfosRequest) {
+    try {
+      const idempotencyRecord =
+        await this.prismaService.idempotencyRecord.findUnique({
+          where: { key: idempotencyKey },
+        });
+
+      // If the idempotency record exists, it means the operation has already been processed.
+      if (idempotencyRecord !== null) {
+        return {};
+      }
+
+      await this.prismaService.$transaction([
+        this.prismaService.user.update({
+          where: { id: userId },
+          data: {
+            balance: { increment: amount },
+            amountSpent: { decrement: amount },
+          },
+        }),
+        this.prismaService.user.update({
+          where: { id: adminId },
+          data: {
+            balance: { decrement: amount },
+            amountGained: { decrement: amount },
+          },
+        }),
+        this.prismaService.idempotencyRecord.create({
+          data: { key: idempotencyKey },
+        }),
+      ]);
+
+      return {};
+    } catch (error) {
+      this.handleError(error, 'undo update financial infos');
+    }
+  }
 }

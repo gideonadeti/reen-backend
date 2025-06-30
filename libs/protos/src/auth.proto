@@ -23,6 +23,9 @@ service AuthService {
   rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
   rpc UpdatePurchasesAndSalesCounts(UpdatePurchasesAndSalesCountsRequest)
       returns (UpdatePurchasesAndSalesCountsResponse) {}
+
+  rpc UndoUpdateFinancialInfos(UpdateFinancialInfosRequest)
+      returns (UpdateFinancialInfosResponse) {}
 }
 
 message SignUpRequest {

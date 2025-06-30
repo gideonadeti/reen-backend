@@ -189,6 +189,8 @@ export interface AuthServiceClient {
   updatePurchasesAndSalesCounts(
     request: UpdatePurchasesAndSalesCountsRequest,
   ): Observable<UpdatePurchasesAndSalesCountsResponse>;
+
+  undoUpdateFinancialInfos(request: UpdateFinancialInfosRequest): Observable<UpdateFinancialInfosResponse>;
 }
 
 export interface AuthServiceController {
@@ -235,6 +237,10 @@ export interface AuthServiceController {
     | Promise<UpdatePurchasesAndSalesCountsResponse>
     | Observable<UpdatePurchasesAndSalesCountsResponse>
     | UpdatePurchasesAndSalesCountsResponse;
+
+  undoUpdateFinancialInfos(
+    request: UpdateFinancialInfosRequest,
+  ): Promise<UpdateFinancialInfosResponse> | Observable<UpdateFinancialInfosResponse> | UpdateFinancialInfosResponse;
 }
 
 export function AuthServiceControllerMethods() {
@@ -254,6 +260,7 @@ export function AuthServiceControllerMethods() {
       "removeIdempotencyRecordsByKeys",
       "findAll",
       "updatePurchasesAndSalesCounts",
+      "undoUpdateFinancialInfos",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

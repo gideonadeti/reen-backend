@@ -93,4 +93,9 @@ export class AuthController {
   updatePurchasesAndSalesCounts(data: UpdatePurchasesAndSalesCountsRequest) {
     return this.authService.updatePurchasesAndSalesCounts(data);
   }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  undoUpdateFinancialInfos(data: UpdateFinancialInfosRequest) {
+    return this.authService.undoUpdateFinancialInfos(data);
+  }
 }
