@@ -272,9 +272,9 @@ export class EventsHandlerService
 
       const admins = findAdminsResponse.admins || [];
 
-      // Invalidate users cache after updating balances
+      // Invalidate caches after updating balances
+      await this.cacheManager.del('/auth/find-all');
       await this.cacheManager.del(`/auth/users/${user.clerkId}`);
-
       await Promise.all(
         admins.map((admin) =>
           this.cacheManager.del(`/auth/users/${admin.clerkId}`),
@@ -416,9 +416,9 @@ export class EventsHandlerService
         this.authService.findAdmins({ adminIds }),
       );
 
-      // Invalidate users cache after updating balances
+      // Invalidate caches after updating balances
+      await this.cacheManager.del('/auth/find-all');
       await this.cacheManager.del(`/auth/users/${user.clerkId}`);
-
       for (const admin of admins.admins) {
         await this.cacheManager.del(`/auth/users/${admin.clerkId}`);
       }
