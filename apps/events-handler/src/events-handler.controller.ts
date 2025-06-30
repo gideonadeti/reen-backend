@@ -24,9 +24,9 @@ export class EventsHandlerController {
     return this.eventsHandlerService.handleUpdateFinancialInfos(data);
   }
 
-  @EventPattern('update-balances-failed')
-  handleUpdateBalancesFailed(@Payload() data: SagaFlowProps) {
-    return this.eventsHandlerService.handleUpdateBalancesFailed(data);
+  @EventPattern('update-financial-infos-failed')
+  handleUpdateFinancialInfosFailed(@Payload() data: SagaFlowProps) {
+    return this.eventsHandlerService.handleUpdateFinancialInfosFailed(data);
   }
 
   @EventPattern('clear-cart')

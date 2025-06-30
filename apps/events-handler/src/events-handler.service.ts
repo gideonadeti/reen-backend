@@ -314,35 +314,29 @@ export class EventsHandlerService
   }
 
   // Undo Update Quantities
-  async handleUpdateBalancesFailed(data: SagaFlowProps) {
+  async handleUpdateFinancialInfosFailed(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
       const { cartItems } = payload as HandleCheckoutSessionCompletedPayload;
 
-      const validCartItems = cartItems.map((item) => ({
-        ...item,
-        createdAt: new Date(item.createdAt as Date),
-        updatedAt: new Date(item.updatedAt as Date),
-      }));
-
       await firstValueFrom(
         this.productsService.updateQuantities({
-          cartItems: validCartItems,
-          increment: false,
+          cartItems,
+          increment: true,
         }),
       );
 
       // Invalidate products cache after updating quantities
       await this.cacheManager.del('/products');
     } catch (error) {
-      this.handleError(error, 'compensate update balances');
+      this.handleError(error, 'compensate update financial infos');
 
       await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
 
       const retryCount = data.retryCount || 0;
 
       if (retryCount < 2) {
-        this.eventsHandlerClient.emit('update-balances-failed', {
+        this.eventsHandlerClient.emit('update-financial-infos-failed', {
           sagaStateId: data.sagaStateId,
           retryCount: retryCount + 1,
         });
