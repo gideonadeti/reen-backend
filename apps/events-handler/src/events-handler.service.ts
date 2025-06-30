@@ -271,10 +271,6 @@ export class EventsHandlerService
         ),
       );
 
-      this.eventsHandlerClient.emit('clear-cart', {
-        sagaStateId: data.sagaStateId,
-      });
-
       const idempotencyKeys = updateFinancialInfosRequests.map(
         (request) => request.idempotencyKey,
       );
@@ -284,6 +280,10 @@ export class EventsHandlerService
           keys: idempotencyKeys,
         }),
       );
+
+      this.eventsHandlerClient.emit('clear-cart', {
+        sagaStateId: data.sagaStateId,
+      });
     } catch (error) {
       this.handleError(error, 'update financial infos');
 
