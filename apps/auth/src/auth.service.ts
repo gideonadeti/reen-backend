@@ -14,6 +14,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { AuthPayload } from '@app/interfaces';
 import { Balance, User as PrismaUser } from '../generated/prisma';
 import {
+  ChargeFeeRequest,
   FindAllRequest,
   RefreshTokenRequest,
   SignOutRequest,
@@ -472,6 +473,22 @@ export class AuthService {
       return {};
     } catch (error) {
       this.handleError(error, 'remove balances by ids');
+    }
+  }
+
+  async chargeFee({ userId, amount }: ChargeFeeRequest) {
+    try {
+      await this.prismaService.user.update({
+        where: { id: userId },
+        data: {
+          balance: { decrement: amount },
+          amountSpent: { increment: amount },
+        },
+      });
+
+      return {};
+    } catch (error) {
+      this.handleError(error, 'charge fee');
     }
   }
 }

@@ -4,6 +4,7 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import {
   AUTH_SERVICE_NAME,
+  ChargeFeeRequest,
   FindAdminsRequest,
   FindAllRequest,
   FindByIdsRequest,
@@ -103,5 +104,10 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   removeBalancesByIds(data: RemoveBalancesByIdsRequest) {
     return this.authService.removeBalancesByIds(data.ids);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  chargeFee(data: ChargeFeeRequest) {
+    return this.authService.chargeFee(data);
   }
 }

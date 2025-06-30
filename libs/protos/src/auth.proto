@@ -29,6 +29,8 @@ service AuthService {
 
   rpc RemoveBalancesByIds(RemoveBalancesByIdsRequest)
       returns (RemoveBalancesByIdsResponse) {}
+
+  rpc ChargeFee(ChargeFeeRequest) returns (ChargeFeeResponse) {}
 }
 
 message SignUpRequest {
@@ -143,3 +145,10 @@ message UpdatePurchasesAndSalesCountsResponse {}
 message RemoveBalancesByIdsRequest { repeated string ids = 1; }
 
 message RemoveBalancesByIdsResponse {}
+
+message ChargeFeeRequest {
+  string user_id = 1;
+  double amount = 2;
+}
+
+message ChargeFeeResponse {}
