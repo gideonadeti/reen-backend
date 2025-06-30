@@ -525,6 +525,49 @@ export class EventsHandlerService
     }
   }
 
+  async handleUpdatePurchasesAndSalesCounts(data: SagaFlowProps) {
+    try {
+      const payload = await this.cacheManager.get(data.sagaStateId);
+      const { userId, updateFinancialInfosRequests } =
+        payload as HandleCheckoutSessionCompletedPayload;
+
+      const adminIds = updateFinancialInfosRequests.map(
+        (request) => request.adminId,
+      );
+
+      await firstValueFrom(
+        this.authService.updatePurchasesAndSalesCounts({
+          userId,
+          adminIds,
+        }),
+      );
+
+      this.eventsHandlerClient.emit('notify-buyer', {
+        sagaStateId: data.sagaStateId,
+      });
+    } catch (error) {
+      this.handleError(error, 'update purchases and sales counts');
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('update-purchases-and-sales-count', {
+          sagaStateId: data.sagaStateId,
+          retryCount: retryCount + 1,
+        });
+      } else {
+        this.eventsHandlerClient.emit(
+          'update-purchases-and-sales-count-failed',
+          {
+            sagaStateId: data.sagaStateId,
+          },
+        );
+      }
+    }
+  }
+
   async handleNotifyBuyer(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
