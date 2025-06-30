@@ -178,6 +178,7 @@ export class EventsHandlerService
         updateFinancialInfosRequests,
         adminNotificationPayloads,
         balanceIds: [],
+        orderId: '',
       };
 
       const sagaStateId = uuidv4();
@@ -442,13 +443,18 @@ export class EventsHandlerService
       const { userId, total, orderItems } =
         payload as HandleCheckoutSessionCompletedPayload;
 
-      await firstValueFrom(
+      const order = await firstValueFrom(
         this.ordersService.create({
           userId,
           total,
           orderItems,
         }),
       );
+
+      await this.cacheManager.set(data.sagaStateId, {
+        ...(payload as HandleCheckoutSessionCompletedPayload),
+        orderId: order.id,
+      });
 
       this.eventsHandlerClient.emit('update-purchases-and-sales-counts', {
         sagaStateId: data.sagaStateId,
@@ -550,6 +556,43 @@ export class EventsHandlerService
           'update-purchases-and-sales-count-failed',
           {
             sagaStateId: data.sagaStateId,
+          },
+        );
+      }
+    }
+  }
+
+  // Undo Create Order
+  // Undo Clear Cart
+  // Undo Update Balances
+  // Undo Update Quantities
+  async handleUpdatePurchasesAndSalesCountsFailed(data: SagaFlowProps) {
+    try {
+      const payload = await this.cacheManager.get(data.sagaStateId);
+      const { orderId } = payload as HandleCheckoutSessionCompletedPayload;
+
+      await firstValueFrom(
+        this.ordersService.remove({
+          id: orderId,
+        }),
+      );
+
+      this.eventsHandlerClient.emit('create-order-failed', {
+        sagaStateId: data.sagaStateId,
+      });
+    } catch (error) {
+      this.handleError(error, 'compensate update purchases and sales counts');
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit(
+          'update-purchases-and-sales-count-failed',
+          {
+            sagaStateId: data.sagaStateId,
+            retryCount: retryCount + 1,
           },
         );
       }
