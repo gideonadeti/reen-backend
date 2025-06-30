@@ -138,6 +138,14 @@ export interface FindAllResponse {
   users: User[];
 }
 
+export interface UpdatePurchasesAndSalesCountsRequest {
+  userId: string;
+  adminIds: string[];
+}
+
+export interface UpdatePurchasesAndSalesCountsResponse {
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -177,6 +185,10 @@ export interface AuthServiceClient {
   ): Observable<RemoveIdempotencyRecordsByKeysResponse>;
 
   findAll(request: FindAllRequest): Observable<FindAllResponse>;
+
+  updatePurchasesAndSalesCounts(
+    request: UpdatePurchasesAndSalesCountsRequest,
+  ): Observable<UpdatePurchasesAndSalesCountsResponse>;
 }
 
 export interface AuthServiceController {
@@ -216,6 +228,13 @@ export interface AuthServiceController {
     | RemoveIdempotencyRecordsByKeysResponse;
 
   findAll(request: FindAllRequest): Promise<FindAllResponse> | Observable<FindAllResponse> | FindAllResponse;
+
+  updatePurchasesAndSalesCounts(
+    request: UpdatePurchasesAndSalesCountsRequest,
+  ):
+    | Promise<UpdatePurchasesAndSalesCountsResponse>
+    | Observable<UpdatePurchasesAndSalesCountsResponse>
+    | UpdatePurchasesAndSalesCountsResponse;
 }
 
 export function AuthServiceControllerMethods() {
@@ -234,6 +253,7 @@ export function AuthServiceControllerMethods() {
       "updateFinancialInfos",
       "removeIdempotencyRecordsByKeys",
       "findAll",
+      "updatePurchasesAndSalesCounts",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

@@ -19,7 +19,10 @@ service AuthService {
 
   rpc RemoveIdempotencyRecordsByKeys(RemoveIdempotencyRecordsByKeysRequest)
       returns (RemoveIdempotencyRecordsByKeysResponse) {}
+
   rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
+  rpc UpdatePurchasesAndSalesCounts(UpdatePurchasesAndSalesCountsRequest)
+      returns (UpdatePurchasesAndSalesCountsResponse) {}
 }
 
 message SignUpRequest {
@@ -123,3 +126,10 @@ message RemoveIdempotencyRecordsByKeysResponse {}
 message FindAllRequest {}
 
 message FindAllResponse { repeated User users = 1; }
+
+message UpdatePurchasesAndSalesCountsRequest {
+  string user_id = 1;
+  repeated string admin_ids = 2;
+}
+
+message UpdatePurchasesAndSalesCountsResponse {}

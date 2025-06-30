@@ -19,6 +19,7 @@ import {
   SignOutRequest,
   SignUpRequest,
   UpdateFinancialInfosRequest,
+  UpdatePurchasesAndSalesCountsRequest,
   UpdateUserRoleRequest,
   User,
   UserRole,
@@ -390,6 +391,32 @@ export class AuthService {
       };
     } catch (error) {
       this.handleError(error, `fetch all users`);
+    }
+  }
+
+  async updatePurchasesAndSalesCounts({
+    userId,
+    adminIds,
+  }: UpdatePurchasesAndSalesCountsRequest) {
+    try {
+      await this.prismaService.$transaction([
+        this.prismaService.user.update({
+          where: { id: userId },
+          data: {
+            purchasesCount: { increment: 1 },
+          },
+        }),
+        this.prismaService.user.updateMany({
+          where: { id: { in: adminIds } },
+          data: {
+            salesCount: { increment: 1 },
+          },
+        }),
+      ]);
+
+      return {};
+    } catch (error) {
+      this.handleError(error, `update purchases and sales counts`);
     }
   }
 }

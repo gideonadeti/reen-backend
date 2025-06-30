@@ -14,6 +14,7 @@ import {
   SignOutRequest,
   SignUpRequest,
   UpdateFinancialInfosRequest,
+  UpdatePurchasesAndSalesCountsRequest,
   UpdateUserRoleRequest,
   User,
   ValidateUserRequest,
@@ -86,5 +87,10 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   findAll(data: FindAllRequest) {
     return this.authService.findAll(data);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  updatePurchasesAndSalesCounts(data: UpdatePurchasesAndSalesCountsRequest) {
+    return this.authService.updatePurchasesAndSalesCounts(data);
   }
 }
