@@ -15,6 +15,7 @@ export enum UserRole {
   /** NADMIN - Non-Admin */
   NADMIN = 0,
   ADMIN = 1,
+  ANONYMOUS = 2,
   UNRECOGNIZED = -1,
 }
 

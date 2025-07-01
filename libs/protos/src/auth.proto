@@ -78,6 +78,7 @@ message Balance {
 enum UserRole {
   NADMIN = 0; // Non-Admin
   ADMIN = 1;
+  ANONYMOUS = 2;
 }
 
 message ValidateUserRequest {
