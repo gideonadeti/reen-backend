@@ -16,6 +16,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { GrpcError, MicroserviceError } from '@app/interfaces';
 import { FindAllProductsDto } from './dto/find-all-products.dto';
 import {
+  Product,
   PRODUCTS_PACKAGE_NAME,
   PRODUCTS_SERVICE_NAME,
   ProductsServiceClient,
@@ -30,6 +31,12 @@ import {
   ORDERS_SERVICE_NAME,
   OrdersServiceClient,
 } from '@app/protos/generated/orders';
+import {
+  CART_ITEMS_PACKAGE_NAME,
+  CART_ITEMS_SERVICE_NAME,
+  CartItem,
+  CartItemsServiceClient,
+} from '@app/protos/generated/cart-items';
 
 @Injectable()
 export class ProductsService implements OnModuleInit {
@@ -37,12 +44,14 @@ export class ProductsService implements OnModuleInit {
     @Inject(PRODUCTS_PACKAGE_NAME) private productsClient: ClientGrpc,
     @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
     @Inject(ORDERS_PACKAGE_NAME) private ordersClient: ClientGrpc,
+    @Inject(CART_ITEMS_PACKAGE_NAME) private cartItemsClient: ClientGrpc,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   private productsService: ProductsServiceClient;
   private authService: AuthServiceClient;
   private ordersService: OrdersServiceClient;
+  private cartItemsService: CartItemsServiceClient;
   private logger = new Logger(ProductsService.name);
 
   onModuleInit() {
@@ -50,6 +59,10 @@ export class ProductsService implements OnModuleInit {
     this.ordersService = this.ordersClient.getService(ORDERS_SERVICE_NAME);
     this.productsService = this.productsClient.getService(
       PRODUCTS_SERVICE_NAME,
+    );
+
+    this.cartItemsService = this.cartItemsClient.getService(
+      CART_ITEMS_SERVICE_NAME,
     );
   }
 
@@ -246,17 +259,73 @@ export class ProductsService implements OnModuleInit {
     }
   }
 
+  // Remove all related cart items
+  // If there are no related order items, delete product
+  // Else, anonymize product admin
   async remove(userId: string, id: string) {
+    let cartItems: CartItem[] = [];
+    let hasRemovedCartItems = false;
+    let product: Product;
+
     try {
-      const product = await firstValueFrom(
-        this.productsService.remove({ adminId: userId, id }),
+      const findByProductIdResponse = await firstValueFrom(
+        this.cartItemsService.findByProductId({
+          productId: id,
+        }),
       );
+
+      cartItems = findByProductIdResponse.cartItems || [];
+
+      await firstValueFrom(
+        this.cartItemsService.removeByProductId({
+          productId: id,
+        }),
+      );
+
+      hasRemovedCartItems = true;
+
+      const findOrderItemsByProductIdResponse = await firstValueFrom(
+        this.ordersService.findOrderItemsByProductId({
+          productId: id,
+        }),
+      );
+
+      const orderItems = findOrderItemsByProductIdResponse.orderItems || [];
+
+      if (orderItems.length === 0) {
+        product = await firstValueFrom(
+          this.productsService.remove({ adminId: userId, id }),
+        );
+      } else {
+        const anonymousUser = await firstValueFrom(
+          this.authService.findOrCreateAnonymousUser({}),
+        );
+
+        product = await firstValueFrom(
+          this.productsService.updateAdminId({
+            id,
+            newAdminId: anonymousUser.id,
+          }),
+        );
+      }
 
       // Invalidate products cache after product deletion
       await this.cacheManager.del('/products');
 
       return product;
     } catch (error) {
+      if (hasRemovedCartItems) {
+        await firstValueFrom(
+          this.cartItemsService.createMany({
+            createCartItemDtos: cartItems.map((cartItem) => ({
+              productId: cartItem.productId,
+              quantity: cartItem.quantity,
+            })),
+            userId,
+          }),
+        );
+      }
+
       this.handleError(error, `delete product with id ${id}`);
     }
   }
