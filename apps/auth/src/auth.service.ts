@@ -233,41 +233,43 @@ export class AuthService {
         throw new NotFoundException(`User with id ${id} not found`);
       }
 
-      const transactions = [
-        this.prismaService.user.update({
-          where: { id },
-          data: { role: prismaUserRole },
-          include: { balances: true },
-        }),
-      ];
-
+      // If upgrading to ADMIN
       if (role === UserRole.ADMIN) {
-        const newBalance = user?.balance - roleUpgradeFee;
+        const newBalance = user.balance - roleUpgradeFee;
 
-        transactions.push(
-          this.prismaService.user.update({
-            where: { id },
-            data: {
-              balance: { decrement: roleUpgradeFee },
-              amountSpent: { increment: roleUpgradeFee },
-              balances: {
-                create: {
-                  amount: newBalance,
-                },
+        const updatedUser = await this.prismaService.user.update({
+          where: { id },
+          data: {
+            role: prismaUserRole,
+            balance: { decrement: roleUpgradeFee },
+            amountSpent: { increment: roleUpgradeFee },
+            balances: {
+              create: {
+                amount: newBalance,
               },
             },
-            include: { balances: true },
-          }),
-        );
+          },
+          include: { balances: true },
+        });
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password, ...rest } = updatedUser;
+
+        return rest;
       }
 
-      const responses = await this.prismaService.$transaction(transactions);
-
-      // If the user is being upgraded to ADMIN, we return the updated user as the second response
-      const updatedUser = role === UserRole.ADMIN ? responses[1] : responses[0];
+      // If just changing role (e.g., demoting to NADMIN)
+      const updatedUser = await this.prismaService.user.update({
+        where: { id },
+        data: {
+          role: prismaUserRole,
+        },
+        include: { balances: true },
+      });
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...rest } = updatedUser;
+
       return rest;
     } catch (error) {
       this.handleError(error, `update user role for user with id ${id}`);
