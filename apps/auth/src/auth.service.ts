@@ -478,15 +478,35 @@ export class AuthService {
 
   async chargeFee({ userId, amount }: ChargeFeeRequest) {
     try {
-      await this.prismaService.user.update({
+      const user = await this.prismaService.user.findUnique({
         where: { id: userId },
-        data: {
-          balance: { decrement: amount },
-          amountSpent: { increment: amount },
-        },
       });
 
-      return {};
+      if (!user) {
+        throw new NotFoundException(`User with id ${userId} not found`);
+      }
+
+      const transactionResults = await this.prismaService.$transaction([
+        this.prismaService.user.update({
+          where: { id: userId },
+          data: {
+            balance: { decrement: amount },
+            amountSpent: { increment: amount },
+          },
+        }),
+        this.prismaService.balance.create({
+          data: {
+            amount: user.balance - amount,
+            userId,
+          },
+        }),
+      ]);
+
+      const balanceId = transactionResults[1].id;
+
+      return {
+        balanceId,
+      };
     } catch (error) {
       this.handleError(error, 'charge fee');
     }
