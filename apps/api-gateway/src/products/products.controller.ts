@@ -61,11 +61,16 @@ export class ProductsController {
   @Roles(UserRole.ADMIN)
   @Patch(':id')
   update(
-    @UserId() userId: string,
+    @Req() req: Request & { user: User },
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
   ) {
-    return this.productsService.update(userId, id, updateProductDto);
+    return this.productsService.update(
+      req.user.id,
+      id,
+      updateProductDto,
+      req.user.clerkId as string,
+    );
   }
 
   @ApiBearerAuth()

@@ -177,8 +177,43 @@ export class ProductsService implements OnModuleInit {
     }
   }
 
-  async update(userId: string, id: string, updateProductDto: UpdateProductDto) {
+  async update(
+    userId: string,
+    id: string,
+    updateProductDto: UpdateProductDto,
+    clerkId: string,
+  ) {
+    let updateProductFee = 0;
+    let wasCharged = false;
+    let balanceId: string | null = null;
+
     try {
+      const existingProduct = await firstValueFrom(
+        this.productsService.findOne({
+          id,
+        }),
+      );
+
+      const priceDiff = Number(updateProductDto.price) - existingProduct.price;
+      const quantityDiff =
+        Number(updateProductDto.quantity) - existingProduct.quantity;
+
+      updateProductFee =
+        0.04 * Math.max(priceDiff, 1) * Math.max(quantityDiff, 1);
+
+      // Only charge fee if there is a price or quantity change
+      if (updateProductFee > 0) {
+        const chargeFeeResponse = await firstValueFrom(
+          this.authService.chargeFee({
+            amount: updateProductFee,
+            userId,
+          }),
+        );
+
+        wasCharged = true;
+        balanceId = chargeFeeResponse.balanceId;
+      }
+
       const product = await firstValueFrom(
         this.productsService.update({
           adminId: userId,
@@ -190,11 +225,23 @@ export class ProductsService implements OnModuleInit {
         }),
       );
 
-      // Invalidate products cache after product update
+      // Invalidate caches after product update
       await this.cacheManager.del('/products');
+      await this.cacheManager.del('/auth/find-all');
+      await this.cacheManager.del(`/auth/users/${clerkId}`);
 
       return product;
     } catch (error) {
+      if (wasCharged) {
+        await firstValueFrom(
+          this.authService.undoChargeFee({
+            amount: updateProductFee,
+            userId,
+            balanceId: balanceId as string,
+          }),
+        );
+      }
+
       this.handleError(error, `update product with id ${id}`);
     }
   }
