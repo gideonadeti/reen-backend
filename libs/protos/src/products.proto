@@ -13,6 +13,8 @@ service ProductsService {
   rpc Remove(RemoveRequest) returns (Product) {}
   rpc UpdateQuantities(UpdateQuantitiesRequest)
       returns (UpdateQuantitiesResponse) {}
+
+  rpc UpdateAdminId(UpdateAdminIdRequest) returns (Product) {}
 }
 
 message CreateProductDto {
@@ -104,3 +106,8 @@ message UpdateQuantitiesRequest {
 }
 
 message UpdateQuantitiesResponse {}
+
+message UpdateAdminIdRequest {
+  string id = 1;
+  string new_admin_id = 2;
+}

@@ -9,6 +9,7 @@ import {
   FindOneRequest,
   PRODUCTS_SERVICE_NAME,
   RemoveRequest,
+  UpdateAdminIdRequest,
   UpdateQuantitiesRequest,
   UpdateRequest,
 } from '@app/protos/generated/products';
@@ -50,5 +51,10 @@ export class ProductsController {
   @GrpcMethod(PRODUCTS_SERVICE_NAME)
   updateQuantities(data: UpdateQuantitiesRequest) {
     return this.productsService.updateQuantities(data);
+  }
+
+  @GrpcMethod(PRODUCTS_SERVICE_NAME)
+  updateAdminId(data: UpdateAdminIdRequest) {
+    return this.productsService.updateAdminId(data);
   }
 }

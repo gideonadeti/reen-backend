@@ -11,6 +11,7 @@ import {
   CreateRequest,
   FindAllRequest,
   RemoveRequest,
+  UpdateAdminIdRequest,
   UpdateProductDto,
   UpdateQuantitiesRequest,
   UpdateRequest,
@@ -218,6 +219,19 @@ export class ProductsService {
       return {};
     } catch (error) {
       this.handleError(error, 'increment quantities');
+    }
+  }
+
+  async updateAdminId({ id, newAdminId }: UpdateAdminIdRequest) {
+    try {
+      return await this.prismaService.product.update({
+        where: { id },
+        data: {
+          adminId: newAdminId,
+        },
+      });
+    } catch (error) {
+      this.handleError(error, `update adminId for product with id ${id}`);
     }
   }
 }
