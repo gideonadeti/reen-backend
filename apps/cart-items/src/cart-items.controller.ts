@@ -7,6 +7,7 @@ import {
   CreateManyRequest,
   CreateRequest,
   FindAllRequest,
+  FindByProductIdRequest,
   FindOneRequest,
   RemoveAllRequest,
   RemoveRequest,
@@ -50,5 +51,10 @@ export class CartItemsController {
   @GrpcMethod(CART_ITEMS_SERVICE_NAME)
   createMany(data: CreateManyRequest) {
     return this.cartItemsService.createMany(data);
+  }
+
+  @GrpcMethod(CART_ITEMS_SERVICE_NAME)
+  findByProductId(data: FindByProductIdRequest) {
+    return this.cartItemsService.findByProductId(data.productId);
   }
 }

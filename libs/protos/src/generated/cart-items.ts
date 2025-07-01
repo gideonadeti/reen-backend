@@ -73,6 +73,14 @@ export interface CreateManyRequest {
 export interface CreateManyResponse {
 }
 
+export interface FindByProductIdRequest {
+  productId: string;
+}
+
+export interface FindByProductIdResponse {
+  cartItems: CartItem[];
+}
+
 export const CART_ITEMS_PACKAGE_NAME = "cart_items";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -98,6 +106,8 @@ export interface CartItemsServiceClient {
   removeAll(request: RemoveAllRequest): Observable<RemoveAllResponse>;
 
   createMany(request: CreateManyRequest): Observable<CreateManyResponse>;
+
+  findByProductId(request: FindByProductIdRequest): Observable<FindByProductIdResponse>;
 }
 
 export interface CartItemsServiceController {
@@ -116,11 +126,24 @@ export interface CartItemsServiceController {
   createMany(
     request: CreateManyRequest,
   ): Promise<CreateManyResponse> | Observable<CreateManyResponse> | CreateManyResponse;
+
+  findByProductId(
+    request: FindByProductIdRequest,
+  ): Promise<FindByProductIdResponse> | Observable<FindByProductIdResponse> | FindByProductIdResponse;
 }
 
 export function CartItemsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["create", "findAll", "findOne", "update", "remove", "removeAll", "createMany"];
+    const grpcMethods: string[] = [
+      "create",
+      "findAll",
+      "findOne",
+      "update",
+      "remove",
+      "removeAll",
+      "createMany",
+      "findByProductId",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("CartItemsService", method)(constructor.prototype[method], method, descriptor);

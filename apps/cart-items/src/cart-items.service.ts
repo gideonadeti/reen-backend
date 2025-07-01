@@ -170,4 +170,18 @@ export class CartItemsService implements OnModuleInit {
       );
     }
   }
+
+  async findByProductId(productId: string) {
+    try {
+      const cartItems = await this.prismaService.cartItem.findMany({
+        where: {
+          productId,
+        },
+      });
+
+      return { cartItems };
+    } catch (error) {
+      this.handleError(error, `find cart items by product id ${productId}`);
+    }
+  }
 }
