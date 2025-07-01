@@ -8,6 +8,7 @@ import {
   FindAdminsRequest,
   FindAllRequest,
   FindByIdsRequest,
+  FindOrCreateAnonymousUserRequest,
   FindUserByClerkIdRequest,
   FindUserRequest,
   RefreshTokenRequest,
@@ -115,5 +116,10 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   undoChargeFee(data: UndoChargeFeeRequest) {
     return this.authService.undoChargeFee(data);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  findOrCreateAnonymousUser(data: FindOrCreateAnonymousUserRequest) {
+    return this.authService.findOrCreateAnonymousUser(data);
   }
 }

@@ -16,6 +16,7 @@ import { Balance, User as PrismaUser } from '../generated/prisma';
 import {
   ChargeFeeRequest,
   FindAllRequest,
+  FindOrCreateAnonymousUserRequest,
   RefreshTokenRequest,
   SignOutRequest,
   SignUpRequest,
@@ -529,6 +530,29 @@ export class AuthService {
       ]);
     } catch (error) {
       this.handleError(error, 'undo charge fee');
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async findOrCreateAnonymousUser(data: FindOrCreateAnonymousUserRequest) {
+    try {
+      let user = await this.prismaService.user.findFirst({
+        where: { role: 'ANONYMOUS' },
+      });
+
+      if (!user) {
+        user = await this.prismaService.user.create({
+          data: {
+            email: '',
+            name: '',
+            role: 'ANONYMOUS',
+          },
+        });
+      }
+
+      return user;
+    } catch (error) {
+      this.handleError(error, 'find or create anonymous user');
     }
   }
 }
