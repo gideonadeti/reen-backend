@@ -67,8 +67,28 @@ export class ProductsService implements OnModuleInit {
     throw new InternalServerErrorException(`Failed to ${action}`);
   }
 
-  async create(userId: string, createProductDto: CreateProductDto) {
+  async create(
+    userId: string,
+    createProductDto: CreateProductDto,
+    clerkId: string,
+  ) {
+    const createProductFee =
+      0.04 * createProductDto.price * createProductDto.quantity;
+
+    let wasCharged = false;
+    let balanceId: string | null = null;
+
     try {
+      const chargeFeeResponse = await firstValueFrom(
+        this.authService.chargeFee({
+          userId,
+          amount: createProductFee,
+        }),
+      );
+
+      wasCharged = true;
+      balanceId = chargeFeeResponse.balanceId;
+
       const product = await firstValueFrom(
         this.productsService.create({
           adminId: userId,
@@ -76,11 +96,23 @@ export class ProductsService implements OnModuleInit {
         }),
       );
 
-      // Invalidate products cache after product creation
+      // Invalidate caches after product creation
       await this.cacheManager.del('/products');
+      await this.cacheManager.del('/auth/find-all');
+      await this.cacheManager.del(`/auth/users/${clerkId}`);
 
       return product;
     } catch (error) {
+      if (wasCharged) {
+        await firstValueFrom(
+          this.authService.undoChargeFee({
+            amount: createProductFee,
+            userId,
+            balanceId: balanceId as string,
+          }),
+        );
+      }
+
       this.handleError(error, 'create product');
     }
   }

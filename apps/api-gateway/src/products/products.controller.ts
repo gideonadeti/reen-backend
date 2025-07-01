@@ -1,5 +1,6 @@
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { CacheInterceptor } from '@nestjs/cache-manager';
+import { Request } from 'express';
 import {
   Controller,
   Get,
@@ -11,13 +12,14 @@ import {
   UseGuards,
   Query,
   UseInterceptors,
+  Req,
 } from '@nestjs/common';
 
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { UserRole } from '@app/protos/generated/auth';
+import { User, UserRole } from '@app/protos/generated/auth';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserId } from '../auth/decorators/user-id.decorator';
 import { FindAllProductsDto } from './dto/find-all-products.dto';
@@ -32,8 +34,15 @@ export class ProductsController {
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   @Post()
-  create(@UserId() userId: string, @Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(userId, createProductDto);
+  create(
+    @Req() req: Request & { user: User },
+    @Body() createProductDto: CreateProductDto,
+  ) {
+    return this.productsService.create(
+      req.user.id,
+      createProductDto,
+      req.user.clerkId as string,
+    );
   }
 
   @UseInterceptors(CacheInterceptor)
