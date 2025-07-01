@@ -30,6 +30,7 @@ model User {
 enum UserRole {
   ADMIN
   NADMIN
+  ANONYMOUS
 }
 
 model RefreshToken {
