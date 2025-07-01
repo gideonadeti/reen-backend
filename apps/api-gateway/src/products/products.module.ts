@@ -8,6 +8,7 @@ import { ProductsController } from './products.controller';
 import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
 import { AUTH_PACKAGE_NAME } from '@app/protos/generated/auth';
 import { ORDERS_PACKAGE_NAME } from '@app/protos/generated/orders';
+import { CART_ITEMS_PACKAGE_NAME } from '@app/protos/generated/cart-items';
 
 @Module({
   imports: [
@@ -51,6 +52,21 @@ import { ORDERS_PACKAGE_NAME } from '@app/protos/generated/orders';
             package: ORDERS_PACKAGE_NAME,
             protoPath: join(__dirname, '../../libs/protos/orders.proto'),
             url: configService.get('ORDERS_SERVICE_URL') as string,
+          },
+        }),
+        inject: [ConfigService],
+      },
+    ]),
+    ClientsModule.registerAsync([
+      {
+        imports: [ConfigModule],
+        name: CART_ITEMS_PACKAGE_NAME,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: CART_ITEMS_PACKAGE_NAME,
+            protoPath: join(__dirname, '../../libs/protos/cart-items.proto'),
+            url: configService.get('CART-ITEMS_SERVICE_URL') as string,
           },
         }),
         inject: [ConfigService],
