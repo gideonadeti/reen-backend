@@ -10,6 +10,7 @@ import {
   FindByProductIdRequest,
   FindOneRequest,
   RemoveAllRequest,
+  RemoveByProductIdRequest,
   RemoveRequest,
   UpdateRequest,
 } from '@app/protos/generated/cart-items';
@@ -56,5 +57,10 @@ export class CartItemsController {
   @GrpcMethod(CART_ITEMS_SERVICE_NAME)
   findByProductId(data: FindByProductIdRequest) {
     return this.cartItemsService.findByProductId(data.productId);
+  }
+
+  @GrpcMethod(CART_ITEMS_SERVICE_NAME)
+  removeByProductId(data: RemoveByProductIdRequest) {
+    return this.cartItemsService.removeByProductId(data.productId);
   }
 }

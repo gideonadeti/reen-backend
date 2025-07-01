@@ -184,4 +184,18 @@ export class CartItemsService implements OnModuleInit {
       this.handleError(error, `find cart items by product id ${productId}`);
     }
   }
+
+  async removeByProductId(productId: string) {
+    try {
+      await this.prismaService.cartItem.deleteMany({
+        where: {
+          productId,
+        },
+      });
+
+      return {};
+    } catch (error) {
+      this.handleError(error, `remove cart items by product id ${productId}`);
+    }
+  }
 }
