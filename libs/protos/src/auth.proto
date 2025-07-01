@@ -31,6 +31,7 @@ service AuthService {
       returns (RemoveBalancesByIdsResponse) {}
 
   rpc ChargeFee(ChargeFeeRequest) returns (ChargeFeeResponse) {}
+  rpc UndoChargeFee(UndoChargeFeeRequest) returns (UndoChargeFeeResponse) {}
 }
 
 message SignUpRequest {
@@ -151,4 +152,12 @@ message ChargeFeeRequest {
   double amount = 2;
 }
 
-message ChargeFeeResponse {}
+message ChargeFeeResponse { string balance_id = 1; }
+
+message UndoChargeFeeRequest {
+  string user_id = 1;
+  double amount = 2;
+  string balance_id = 3;
+}
+
+message UndoChargeFeeResponse {}

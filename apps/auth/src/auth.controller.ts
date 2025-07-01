@@ -15,6 +15,7 @@ import {
   RemoveIdempotencyRecordsByKeysRequest,
   SignOutRequest,
   SignUpRequest,
+  UndoChargeFeeRequest,
   UpdateFinancialInfosRequest,
   UpdatePurchasesAndSalesCountsRequest,
   UpdateUserRoleRequest,
@@ -109,5 +110,10 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   chargeFee(data: ChargeFeeRequest) {
     return this.authService.chargeFee(data);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  undoChargeFee(data: UndoChargeFeeRequest) {
+    return this.authService.undoChargeFee(data);
   }
 }

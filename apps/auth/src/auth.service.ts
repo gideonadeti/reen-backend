@@ -19,6 +19,7 @@ import {
   RefreshTokenRequest,
   SignOutRequest,
   SignUpRequest,
+  UndoChargeFeeRequest,
   UpdateFinancialInfosRequest,
   UpdatePurchasesAndSalesCountsRequest,
   UpdateUserRoleRequest,
@@ -509,6 +510,25 @@ export class AuthService {
       };
     } catch (error) {
       this.handleError(error, 'charge fee');
+    }
+  }
+
+  async undoChargeFee({ userId, amount, balanceId }: UndoChargeFeeRequest) {
+    try {
+      await this.prismaService.$transaction([
+        this.prismaService.user.update({
+          where: { id: userId },
+          data: {
+            balance: { increment: amount },
+            amountSpent: { decrement: amount },
+          },
+        }),
+        this.prismaService.balance.delete({
+          where: { id: balanceId },
+        }),
+      ]);
+    } catch (error) {
+      this.handleError(error, 'undo charge fee');
     }
   }
 }

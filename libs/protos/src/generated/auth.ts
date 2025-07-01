@@ -159,6 +159,16 @@ export interface ChargeFeeRequest {
 }
 
 export interface ChargeFeeResponse {
+  balanceId: string;
+}
+
+export interface UndoChargeFeeRequest {
+  userId: string;
+  amount: number;
+  balanceId: string;
+}
+
+export interface UndoChargeFeeResponse {
 }
 
 export const AUTH_PACKAGE_NAME = "auth";
@@ -210,6 +220,8 @@ export interface AuthServiceClient {
   removeBalancesByIds(request: RemoveBalancesByIdsRequest): Observable<RemoveBalancesByIdsResponse>;
 
   chargeFee(request: ChargeFeeRequest): Observable<ChargeFeeResponse>;
+
+  undoChargeFee(request: UndoChargeFeeRequest): Observable<UndoChargeFeeResponse>;
 }
 
 export interface AuthServiceController {
@@ -266,6 +278,10 @@ export interface AuthServiceController {
   ): Promise<RemoveBalancesByIdsResponse> | Observable<RemoveBalancesByIdsResponse> | RemoveBalancesByIdsResponse;
 
   chargeFee(request: ChargeFeeRequest): Promise<ChargeFeeResponse> | Observable<ChargeFeeResponse> | ChargeFeeResponse;
+
+  undoChargeFee(
+    request: UndoChargeFeeRequest,
+  ): Promise<UndoChargeFeeResponse> | Observable<UndoChargeFeeResponse> | UndoChargeFeeResponse;
 }
 
 export function AuthServiceControllerMethods() {
@@ -288,6 +304,7 @@ export function AuthServiceControllerMethods() {
       "undoUpdateFinancialInfos",
       "removeBalancesByIds",
       "chargeFee",
+      "undoChargeFee",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
