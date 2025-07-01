@@ -237,6 +237,7 @@ export class AuthService {
         this.prismaService.user.update({
           where: { id },
           data: { role: prismaUserRole },
+          include: { balances: true },
         }),
       ];
 
@@ -255,6 +256,7 @@ export class AuthService {
                 },
               },
             },
+            include: { balances: true },
           }),
         );
       }
