@@ -113,4 +113,20 @@ export class OrdersService {
       this.handleError(error, 'fetch product order counts');
     }
   }
+
+  async findOrderItemsByProductId(productId: string) {
+    try {
+      const orderItems = await this.prismaService.orderItem.findMany({
+        where: {
+          productId,
+        },
+      });
+
+      return {
+        orderItems,
+      };
+    } catch (error) {
+      this.handleError(error, `fetch order items by product id ${productId}`);
+    }
+  }
 }

@@ -6,6 +6,7 @@ import {
   CreateRequest,
   FindAllRequest,
   FindOneRequest,
+  FindOrderItemsByProductIdRequest,
   FindProductOrderCountsRequest,
   ORDERS_SERVICE_NAME,
   RemoveRequest,
@@ -38,5 +39,10 @@ export class OrdersController {
   @GrpcMethod(ORDERS_SERVICE_NAME)
   findProductOrderCounts(data: FindProductOrderCountsRequest) {
     return this.ordersService.findProductOrderCounts(data.productIds);
+  }
+
+  @GrpcMethod(ORDERS_SERVICE_NAME)
+  findOrderItemsByProductId(data: FindOrderItemsByProductIdRequest) {
+    return this.ordersService.findOrderItemsByProductId(data.productId);
   }
 }

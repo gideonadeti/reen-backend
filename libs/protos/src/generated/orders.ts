@@ -61,6 +61,14 @@ export interface ProductOrderCount {
   count: number;
 }
 
+export interface FindOrderItemsByProductIdRequest {
+  productId: string;
+}
+
+export interface FindOrderItemsByProductIdResponse {
+  orderItems: OrderItem[];
+}
+
 export const ORDERS_PACKAGE_NAME = "orders";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -82,6 +90,8 @@ export interface OrdersServiceClient {
   findOne(request: FindOneRequest): Observable<Order>;
 
   findProductOrderCounts(request: FindProductOrderCountsRequest): Observable<FindProductOrderCountsResponse>;
+
+  findOrderItemsByProductId(request: FindOrderItemsByProductIdRequest): Observable<FindOrderItemsByProductIdResponse>;
 }
 
 export interface OrdersServiceController {
@@ -99,11 +109,25 @@ export interface OrdersServiceController {
     | Promise<FindProductOrderCountsResponse>
     | Observable<FindProductOrderCountsResponse>
     | FindProductOrderCountsResponse;
+
+  findOrderItemsByProductId(
+    request: FindOrderItemsByProductIdRequest,
+  ):
+    | Promise<FindOrderItemsByProductIdResponse>
+    | Observable<FindOrderItemsByProductIdResponse>
+    | FindOrderItemsByProductIdResponse;
 }
 
 export function OrdersServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["create", "remove", "findAll", "findOne", "findProductOrderCounts"];
+    const grpcMethods: string[] = [
+      "create",
+      "remove",
+      "findAll",
+      "findOne",
+      "findProductOrderCounts",
+      "findOrderItemsByProductId",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("OrdersService", method)(constructor.prototype[method], method, descriptor);
