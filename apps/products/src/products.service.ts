@@ -1,7 +1,5 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
 
 import { PrismaService } from './prisma/prisma.service';
 import { Prisma } from '../generated/prisma';
@@ -19,10 +17,7 @@ import {
 
 @Injectable()
 export class ProductsService {
-  constructor(
-    private prismaService: PrismaService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  constructor(private prismaService: PrismaService) {}
 
   private logger = new Logger(ProductsService.name);
 
