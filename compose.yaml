@@ -1,4 +1,12 @@
 services:
+  # build-base-image:
+  #   container_name: build-base-image
+  # prod-base-image:
+  #   container_name: prod-base-image
+  # api-gateway:
+  #   container_name: api-gateway
+  #   volumes:
+  #     - ./.env:/app/apps/api-gateway/.env
   api-gateway-1:
     container_name: api-gateway-1
     volumes:
