@@ -8,6 +8,7 @@ import {
   FindOneRequest,
   FindOrderItemsByProductIdRequest,
   FindProductOrderCountsRequest,
+  FindReferencedProductIdsRequest,
   ORDERS_SERVICE_NAME,
   RemoveAllRequest,
   RemoveRequest,
@@ -50,5 +51,10 @@ export class OrdersController {
   @GrpcMethod(ORDERS_SERVICE_NAME)
   removeAll(data: RemoveAllRequest) {
     return this.ordersService.removeAll(data.userId);
+  }
+
+  @GrpcMethod(ORDERS_SERVICE_NAME)
+  findReferencedProductIds(data: FindReferencedProductIdsRequest) {
+    return this.ordersService.findReferencedProductIds(data.productIds);
   }
 }

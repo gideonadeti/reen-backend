@@ -141,4 +141,27 @@ export class OrdersService {
       this.handleError(error, `delete all orders for user with id ${userId}`);
     }
   }
+
+  async findReferencedProductIds(productIds: string[]) {
+    try {
+      const response = await this.prismaService.orderItem.findMany({
+        where: {
+          productId: {
+            in: productIds,
+          },
+        },
+        select: {
+          productId: true,
+        },
+      });
+
+      const productIdsSet = new Set(response.map((item) => item.productId));
+
+      return {
+        productIds: Array.from(productIdsSet),
+      };
+    } catch (error) {
+      this.handleError(error, 'find referenced product ids');
+    }
+  }
 }

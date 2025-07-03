@@ -76,6 +76,14 @@ export interface RemoveAllRequest {
 export interface RemoveAllResponse {
 }
 
+export interface FindReferencedProductIdsRequest {
+  productIds: string[];
+}
+
+export interface FindReferencedProductIdsResponse {
+  productIds: string[];
+}
+
 export const ORDERS_PACKAGE_NAME = "orders";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -101,6 +109,8 @@ export interface OrdersServiceClient {
   findOrderItemsByProductId(request: FindOrderItemsByProductIdRequest): Observable<FindOrderItemsByProductIdResponse>;
 
   removeAll(request: RemoveAllRequest): Observable<RemoveAllResponse>;
+
+  findReferencedProductIds(request: FindReferencedProductIdsRequest): Observable<FindReferencedProductIdsResponse>;
 }
 
 export interface OrdersServiceController {
@@ -127,6 +137,13 @@ export interface OrdersServiceController {
     | FindOrderItemsByProductIdResponse;
 
   removeAll(request: RemoveAllRequest): Promise<RemoveAllResponse> | Observable<RemoveAllResponse> | RemoveAllResponse;
+
+  findReferencedProductIds(
+    request: FindReferencedProductIdsRequest,
+  ):
+    | Promise<FindReferencedProductIdsResponse>
+    | Observable<FindReferencedProductIdsResponse>
+    | FindReferencedProductIdsResponse;
 }
 
 export function OrdersServiceControllerMethods() {
@@ -139,6 +156,7 @@ export function OrdersServiceControllerMethods() {
       "findProductOrderCounts",
       "findOrderItemsByProductId",
       "removeAll",
+      "findReferencedProductIds",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
