@@ -198,19 +198,18 @@ export class ProductsService implements OnModuleInit {
 
     try {
       const existingProduct = await firstValueFrom(
-        this.productsService.findOne({
-          id,
-        }),
+        this.productsService.findOne({ id }),
       );
 
-      const priceDiff = Number(updateProductDto.price) - existingProduct.price;
-      const quantityDiff =
-        Number(updateProductDto.quantity) - existingProduct.quantity;
+      const oldPrice = existingProduct.price;
+      const oldQty = existingProduct.quantity;
+      const newPrice = Number(updateProductDto.price);
+      const newQty = Number(updateProductDto.quantity);
+      const oldTotalValue = oldPrice * oldQty;
+      const newTotalValue = newPrice * newQty;
+      const addedValue = Math.max(0, newTotalValue - oldTotalValue);
+      updateProductFee = 0.04 * addedValue;
 
-      updateProductFee =
-        0.04 * Math.max(priceDiff, 1) * Math.max(quantityDiff, 1);
-
-      // Only charge fee if there is a price or quantity change
       if (updateProductFee > 0) {
         await firstValueFrom(
           this.authService.chargeFee({
@@ -233,7 +232,7 @@ export class ProductsService implements OnModuleInit {
         }),
       );
 
-      // Invalidate caches after product update
+      // Invalidate caches
       await this.cacheManager.del('/products');
       await this.cacheManager.del('/auth/find-all');
       await this.cacheManager.del(`/auth/users/${clerkId}`);
