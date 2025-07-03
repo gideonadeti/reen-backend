@@ -14,6 +14,7 @@ import {
   RefreshTokenRequest,
   RemoveBalancesByIdsRequest,
   RemoveIdempotencyRecordsByKeysRequest,
+  RemoveRequest,
   SignOutRequest,
   SignUpRequest,
   UndoChargeFeeRequest,
@@ -127,5 +128,10 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   updateNameAndEmail(data: UpdateNameAndEmailRequest) {
     return this.authService.updateNameAndEmail(data);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  remove(data: RemoveRequest) {
+    return this.authService.remove(data.id);
   }
 }

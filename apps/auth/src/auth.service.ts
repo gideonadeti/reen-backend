@@ -571,4 +571,14 @@ export class AuthService {
       this.handleError(error, 'update name and email');
     }
   }
+
+  async remove(id: string) {
+    try {
+      await this.prismaService.user.delete({ where: { id } });
+
+      return {};
+    } catch (error) {
+      this.handleError(error, `delete user with id ${id}`);
+    }
+  }
 }

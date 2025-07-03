@@ -36,6 +36,8 @@ service AuthService {
       returns (User) {}
   rpc UpdateNameAndEmail(UpdateNameAndEmailRequest)
       returns (UpdateNameAndEmailResponse) {}
+
+  rpc Remove(RemoveRequest) returns (RemoveResponse) {}
 }
 
 message SignUpRequest {
@@ -176,3 +178,7 @@ message UpdateNameAndEmailRequest {
 }
 
 message UpdateNameAndEmailResponse {}
+
+message RemoveRequest { string id = 1; }
+
+message RemoveResponse {}
