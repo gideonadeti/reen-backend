@@ -305,7 +305,7 @@ export class AuthService {
         users,
       };
     } catch (error) {
-      this.handleError(error, `find users with ids ${ids.join(', ')}`);
+      this.handleError(error, `find users with ids in ${JSON.stringify(ids)}`);
     }
   }
 

@@ -134,7 +134,10 @@ export class ProductsService {
         products,
       };
     } catch (error) {
-      this.handleError(error, `fetch products with ids ${ids.join(', ')}`);
+      this.handleError(
+        error,
+        `fetch products with ids in ${JSON.stringify(ids)}`,
+      );
     }
   }
 
@@ -249,7 +252,10 @@ export class ProductsService {
 
       return {};
     } catch (error) {
-      this.handleError(error, `delete products with ids ${ids.join(', ')}`);
+      this.handleError(
+        error,
+        `delete products with ids in ${JSON.stringify(ids)}`,
+      );
     }
   }
 
@@ -266,7 +272,7 @@ export class ProductsService {
     } catch (error) {
       this.handleError(
         error,
-        `update adminId for products with ids ${ids.join(', ')}`,
+        `update adminId for products with ids in ${JSON.stringify(ids)}`,
       );
     }
   }
