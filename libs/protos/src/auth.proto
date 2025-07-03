@@ -34,6 +34,8 @@ service AuthService {
   rpc UndoChargeFee(UndoChargeFeeRequest) returns (UndoChargeFeeResponse) {}
   rpc FindOrCreateAnonymousUser(FindOrCreateAnonymousUserRequest)
       returns (User) {}
+  rpc UpdateNameAndEmail(UpdateNameAndEmailRequest)
+      returns (UpdateNameAndEmailResponse) {}
 }
 
 message SignUpRequest {
@@ -166,3 +168,11 @@ message UndoChargeFeeRequest {
 message UndoChargeFeeResponse {}
 
 message FindOrCreateAnonymousUserRequest {}
+
+message UpdateNameAndEmailRequest {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+}
+
+message UpdateNameAndEmailResponse {}

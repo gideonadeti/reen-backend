@@ -18,6 +18,7 @@ import {
   SignUpRequest,
   UndoChargeFeeRequest,
   UpdateFinancialInfosRequest,
+  UpdateNameAndEmailRequest,
   UpdatePurchasesAndSalesCountsRequest,
   UpdateUserRoleRequest,
   User,
@@ -121,5 +122,10 @@ export class AuthController {
   @GrpcMethod(AUTH_SERVICE_NAME)
   findOrCreateAnonymousUser(data: FindOrCreateAnonymousUserRequest) {
     return this.authService.findOrCreateAnonymousUser(data);
+  }
+
+  @GrpcMethod(AUTH_SERVICE_NAME)
+  updateNameAndEmail(data: UpdateNameAndEmailRequest) {
+    return this.authService.updateNameAndEmail(data);
   }
 }

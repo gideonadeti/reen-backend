@@ -175,6 +175,15 @@ export interface UndoChargeFeeResponse {
 export interface FindOrCreateAnonymousUserRequest {
 }
 
+export interface UpdateNameAndEmailRequest {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface UpdateNameAndEmailResponse {
+}
+
 export const AUTH_PACKAGE_NAME = "auth";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -228,6 +237,8 @@ export interface AuthServiceClient {
   undoChargeFee(request: UndoChargeFeeRequest): Observable<UndoChargeFeeResponse>;
 
   findOrCreateAnonymousUser(request: FindOrCreateAnonymousUserRequest): Observable<User>;
+
+  updateNameAndEmail(request: UpdateNameAndEmailRequest): Observable<UpdateNameAndEmailResponse>;
 }
 
 export interface AuthServiceController {
@@ -290,6 +301,10 @@ export interface AuthServiceController {
   ): Promise<UndoChargeFeeResponse> | Observable<UndoChargeFeeResponse> | UndoChargeFeeResponse;
 
   findOrCreateAnonymousUser(request: FindOrCreateAnonymousUserRequest): Promise<User> | Observable<User> | User;
+
+  updateNameAndEmail(
+    request: UpdateNameAndEmailRequest,
+  ): Promise<UpdateNameAndEmailResponse> | Observable<UpdateNameAndEmailResponse> | UpdateNameAndEmailResponse;
 }
 
 export function AuthServiceControllerMethods() {
@@ -314,6 +329,7 @@ export function AuthServiceControllerMethods() {
       "chargeFee",
       "undoChargeFee",
       "findOrCreateAnonymousUser",
+      "updateNameAndEmail",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

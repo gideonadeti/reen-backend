@@ -22,6 +22,7 @@ import {
   SignUpRequest,
   UndoChargeFeeRequest,
   UpdateFinancialInfosRequest,
+  UpdateNameAndEmailRequest,
   UpdatePurchasesAndSalesCountsRequest,
   UpdateUserRoleRequest,
   User,
@@ -557,6 +558,17 @@ export class AuthService {
       return user;
     } catch (error) {
       this.handleError(error, 'find or create anonymous user');
+    }
+  }
+
+  async updateNameAndEmail({ id, name, email }: UpdateNameAndEmailRequest) {
+    try {
+      return await this.prismaService.user.update({
+        where: { id },
+        data: { name, email },
+      });
+    } catch (error) {
+      this.handleError(error, 'update name and email');
     }
   }
 }
