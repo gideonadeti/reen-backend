@@ -895,7 +895,9 @@ export class EventsHandlerService
       await this.cacheManager.del('/auth/find-all');
       await this.cacheManager.del(`/auth/users/${user.clerkId}`);
 
-      this.eventsHandlerClient.emit('remove-orphaned-products', null);
+      this.eventsHandlerClient.emit('remove-orphaned-products', {
+        userId: data.userId,
+      });
     } catch (error) {
       this.handleError(error, `remove user with id ${data.userId}`);
 
