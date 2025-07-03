@@ -3,6 +3,7 @@ import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import { clerkClient } from '@clerk/express';
+import { firstValueFrom } from 'rxjs';
 import {
   Inject,
   Injectable,
@@ -76,10 +77,32 @@ export class WebhooksService implements OnModuleInit {
   }
 
   async handleUserUpdated(clerkId: string) {
-    const clerkUser = await clerkClient.users.getUser(clerkId);
+    try {
+      const clerkUser = await clerkClient.users.getUser(clerkId);
+      const user = await firstValueFrom(
+        this.authService.findUserByClerkId({ clerkId }),
+      );
 
-    return {
-      clerkUser,
-    };
+      if (Object.keys(user).length === 0) {
+        this.logger.warn(
+          `User with clerkId ${clerkId} not found. Skipping update...`,
+        );
+
+        return;
+      }
+
+      const name = clerkUser.fullName as string;
+      const email = clerkUser.primaryEmailAddress!.emailAddress;
+
+      await firstValueFrom(
+        this.authService.updateNameAndEmail({ id: user.id, name, email }),
+      );
+
+      return {
+        received: true,
+      };
+    } catch (error) {
+      this.handleError(error, 'handle user updated');
+    }
   }
 }
