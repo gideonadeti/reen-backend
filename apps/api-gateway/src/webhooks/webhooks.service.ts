@@ -76,7 +76,7 @@ export class WebhooksService implements OnModuleInit {
   }
 
   private handleUserDeleted(clerkId: string) {
-    this.eventsHandlerClient.emit('user-deleted', clerkId);
+    this.eventsHandlerClient.emit('user-deleted', { clerkId });
 
     return {
       received: true,
@@ -104,7 +104,9 @@ export class WebhooksService implements OnModuleInit {
       if (event.type === 'checkout.session.completed') {
         const session = event.data.object;
 
-        this.eventsHandlerClient.emit('checkout-session-completed', session);
+        this.eventsHandlerClient.emit('checkout-session-completed', {
+          session,
+        });
       }
 
       return { received: true };

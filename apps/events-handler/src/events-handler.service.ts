@@ -89,15 +89,18 @@ export class EventsHandlerService
     return Array.from(userIdSet);
   }
 
-  async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+  async handleCheckoutSessionCompleted(data: {
+    session: Stripe.Checkout.Session;
+    retryCount?: number;
+  }) {
     try {
-      const userId = session.metadata!.userId;
+      const userId = data.session.metadata!.userId;
       const findAllResponse = await firstValueFrom(
         this.cartItemsService.findAll({ userId }),
       );
 
       const cartItems = findAllResponse.cartItems || [];
-      const total = session.amount_total! / 100;
+      const total = data.session.amount_total! / 100;
       const productIds = cartItems.map((cartItem) => cartItem.productId);
       const findByIdsResponse = await firstValueFrom(
         this.productsService.findByIds({ ids: productIds }),
@@ -190,6 +193,19 @@ export class EventsHandlerService
       });
     } catch (error) {
       this.handleError(error, 'handle successful checkout');
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('checkout-session-completed', {
+          session: data.session,
+          retryCount: retryCount + 1,
+        });
+      }
+
+      // Give up after retries
     }
   }
 
@@ -729,15 +745,15 @@ export class EventsHandlerService
   // Clear orders (order items will be deleted via cascade)
   // Deletes or anonymizes products depending on whether they’re still linked to other order items
   // Delete user (refresh token and balances will be deleted via cascade)
-  async handleUserDeleted(clerkId: string) {
+  async handleUserDeleted(data: { clerkId: string; retryCount?: number }) {
     try {
       const user = await firstValueFrom(
-        this.authService.findUserByClerkId({ clerkId }),
+        this.authService.findUserByClerkId({ clerkId: data.clerkId }),
       );
 
       if (Object.keys(user).length === 0) {
         this.logger.warn(
-          `User with clerkId ${clerkId} not found. Skipping delete...`,
+          `User with clerkId ${data.clerkId} not found. Skipping delete...`,
         );
 
         return;
@@ -748,6 +764,19 @@ export class EventsHandlerService
       });
     } catch (error) {
       this.handleError(error, 'user deleted');
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('user-deleted', {
+          clerkId: data.clerkId,
+          retryCount: retryCount + 1,
+        });
+      }
+
+      // Give up after retries
     }
   }
 

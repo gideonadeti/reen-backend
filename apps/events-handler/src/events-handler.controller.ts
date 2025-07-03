@@ -10,7 +10,9 @@ export class EventsHandlerController {
   constructor(private readonly eventsHandlerService: EventsHandlerService) {}
 
   @EventPattern('checkout-session-completed')
-  handleCheckoutSessionCompleted(@Payload() data: Stripe.Checkout.Session) {
+  handleCheckoutSessionCompleted(
+    @Payload() data: { session: Stripe.Checkout.Session; retryCount?: number },
+  ) {
     return this.eventsHandlerService.handleCheckoutSessionCompleted(data);
   }
 
@@ -72,7 +74,7 @@ export class EventsHandlerController {
   }
 
   @EventPattern('user-deleted')
-  handleUserDeleted(@Payload() data: string) {
+  handleUserDeleted(@Payload() data: { clerkId: string; retryCount?: number }) {
     return this.eventsHandlerService.handleUserDeleted(data);
   }
 
