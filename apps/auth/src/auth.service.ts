@@ -431,15 +431,13 @@ export class AuthService {
         throw new NotFoundException(`User with id ${userId} not found`);
       }
 
-      await this.prismaService.$transaction([
-        this.prismaService.user.update({
-          where: { id: userId },
-          data: {
-            balance: { decrement: amount },
-            amountSpent: { increment: amount },
-          },
-        }),
-      ]);
+      await this.prismaService.user.update({
+        where: { id: userId },
+        data: {
+          balance: { decrement: amount },
+          amountSpent: { increment: amount },
+        },
+      });
 
       return {};
     } catch (error) {
@@ -449,15 +447,13 @@ export class AuthService {
 
   async undoChargeFee({ userId, amount }: ChargeFeeRequest) {
     try {
-      await this.prismaService.$transaction([
-        this.prismaService.user.update({
-          where: { id: userId },
-          data: {
-            balance: { increment: amount },
-            amountSpent: { decrement: amount },
-          },
-        }),
-      ]);
+      await this.prismaService.user.update({
+        where: { id: userId },
+        data: {
+          balance: { increment: amount },
+          amountSpent: { decrement: amount },
+        },
+      });
     } catch (error) {
       this.handleError(error, 'undo charge fee');
     }
