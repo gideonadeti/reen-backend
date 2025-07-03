@@ -793,6 +793,20 @@ export class EventsHandlerService
       });
     } catch (error) {
       this.handleError(error, `remove orders for user with id ${data.userId}`);
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('remove-orders', {
+          userId: data.userId,
+          retryCount: retryCount + 1,
+        });
+      }
+
+      // No need to undo cart-clearing as user is already deleted at Clerk's end
+      // Best will probably be to manually intervene and finish the process
     }
   }
 }
