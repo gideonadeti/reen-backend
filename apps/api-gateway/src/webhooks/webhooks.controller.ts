@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { verifyWebhook } from '@clerk/express/webhooks';
 import {
+  BadRequestException,
   Controller,
   Headers,
   Logger,
   Post,
   RawBodyRequest,
   Req,
-  Res,
 } from '@nestjs/common';
 
 import { WebhooksService } from './webhooks.service';
@@ -27,33 +27,31 @@ export class WebhooksController {
   }
 
   @Post('clerk')
-  async handleClerkWebhook(@Req() req: Request, @Res() res: Response) {
+  async handleClerkWebhook(@Req() req: Request) {
     try {
       const event = await verifyWebhook(req);
       const clerkId = event.data?.id;
 
       if (!clerkId) {
-        this.logger.error('Missing user ID');
-
-        return res.sendStatus(400);
+        throw new BadRequestException('Clerk id not found');
       }
 
       switch (event.type) {
         case 'user.deleted':
           return this.webhooksService.handleUserDeleted(clerkId);
-          break;
+
         case 'user.updated':
-          await this.webhooksService.handleUserUpdated(clerkId);
-          break;
+          return this.webhooksService.handleUserUpdated(clerkId);
+
         default:
           this.logger.warn(`Unhandled event: ${event.type}`);
+
+          throw new BadRequestException('Invalid event type');
       }
-
-      return res.sendStatus(204);
     } catch (error) {
-      this.logger.error('Error verifying webhook:', (error as Error).stack);
+      this.logger.error('Error verifying webhook', (error as Error).stack);
 
-      return res.sendStatus(400);
+      throw new BadRequestException('Webhook verification failed');
     }
   }
 }
