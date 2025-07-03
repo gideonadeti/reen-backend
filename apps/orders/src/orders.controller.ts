@@ -9,6 +9,7 @@ import {
   FindOrderItemsByProductIdRequest,
   FindProductOrderCountsRequest,
   ORDERS_SERVICE_NAME,
+  RemoveAllRequest,
   RemoveRequest,
 } from '@app/protos/generated/orders';
 
@@ -44,5 +45,10 @@ export class OrdersController {
   @GrpcMethod(ORDERS_SERVICE_NAME)
   findOrderItemsByProductId(data: FindOrderItemsByProductIdRequest) {
     return this.ordersService.findOrderItemsByProductId(data.productId);
+  }
+
+  @GrpcMethod(ORDERS_SERVICE_NAME)
+  removeAll(data: RemoveAllRequest) {
+    return this.ordersService.removeAll(data.userId);
   }
 }

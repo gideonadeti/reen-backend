@@ -129,4 +129,16 @@ export class OrdersService {
       this.handleError(error, `fetch order items by product id ${productId}`);
     }
   }
+
+  async removeAll(userId: string) {
+    try {
+      return await this.prismaService.order.deleteMany({
+        where: {
+          userId,
+        },
+      });
+    } catch (error) {
+      this.handleError(error, `delete all orders for user with id ${userId}`);
+    }
+  }
 }
