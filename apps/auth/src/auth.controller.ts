@@ -5,8 +5,8 @@ import { AuthService } from './auth.service';
 import {
   AUTH_SERVICE_NAME,
   ChargeFeeRequest,
+  Empty,
   FindAdminsRequest,
-  FindAllRequest,
   FindByIdsRequest,
   FindOrCreateAnonymousUserRequest,
   FindUserByClerkIdRequest,
@@ -89,7 +89,7 @@ export class AuthController {
   }
 
   @GrpcMethod(AUTH_SERVICE_NAME)
-  findAll(data: FindAllRequest) {
+  findAll(data: Empty) {
     return this.authService.findAll(data);
   }
 

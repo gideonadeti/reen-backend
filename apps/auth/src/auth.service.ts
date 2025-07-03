@@ -15,7 +15,7 @@ import { AuthPayload } from '@app/interfaces';
 import { User as PrismaUser } from '../generated/prisma';
 import {
   ChargeFeeRequest,
-  FindAllRequest,
+  Empty,
   FindOrCreateAnonymousUserRequest,
   RefreshTokenRequest,
   SignOutRequest,
@@ -221,12 +221,6 @@ export class AuthService {
     const prismaUserRole = role === UserRole.ADMIN ? 'ADMIN' : 'NADMIN';
 
     try {
-      const user = await this.prismaService.user.findUnique({ where: { id } });
-
-      if (!user) {
-        throw new NotFoundException(`User with id ${id} not found`);
-      }
-
       // If upgrading to ADMIN
       if (role === UserRole.ADMIN) {
         const updatedUser = await this.prismaService.user.update({
@@ -346,7 +340,7 @@ export class AuthService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async findAll(data: FindAllRequest) {
+  async findAll(data: Empty) {
     try {
       const users = await this.prismaService.user.findMany();
 
