@@ -6,7 +6,9 @@ import { clerkClient } from '@clerk/express';
 import { firstValueFrom } from 'rxjs';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { verifyWebhook } from '@clerk/express/webhooks';
 import {
+  BadRequestException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -43,6 +45,42 @@ export class WebhooksService implements OnModuleInit {
     throw new InternalServerErrorException(`Failed to ${action}`);
   }
 
+  private async handleUserUpdated(clerkId: string) {
+    const clerkUser = await clerkClient.users.getUser(clerkId);
+    const user = await firstValueFrom(
+      this.authService.findUserByClerkId({ clerkId }),
+    );
+
+    if (Object.keys(user).length === 0) {
+      this.logger.warn(
+        `User with clerkId ${clerkId} not found. Skipping update...`,
+      );
+
+      return;
+    }
+
+    const name = clerkUser.fullName as string;
+    const email = clerkUser.primaryEmailAddress!.emailAddress;
+
+    await firstValueFrom(
+      this.authService.updateNameAndEmail({ id: user.id, name, email }),
+    );
+
+    // Invalidate users and user caches after user update
+    await this.cacheManager.del('/auth/find-all');
+    await this.cacheManager.del(`/auth/users/${clerkId}`);
+
+    return {
+      received: true,
+    };
+  }
+
+  private handleUserDeleted(clerkId: string) {
+    return {
+      clerkId,
+    };
+  }
+
   handleCheckoutSessionCompleted(req: RawBodyRequest<Request>, sig: string) {
     const webhookSecret = this.configService.get(
       'STRIPE_WEBHOOK_SIGNING_SECRET',
@@ -73,43 +111,29 @@ export class WebhooksService implements OnModuleInit {
     }
   }
 
-  handleUserDeleted(clerkId: string) {
-    return {
-      clerkId,
-    };
-  }
-
-  async handleUserUpdated(clerkId: string) {
+  async handleClerkWebhook(req: Request) {
     try {
-      const clerkUser = await clerkClient.users.getUser(clerkId);
-      const user = await firstValueFrom(
-        this.authService.findUserByClerkId({ clerkId }),
-      );
+      const event = await verifyWebhook(req);
+      const clerkId = event.data?.id;
 
-      if (Object.keys(user).length === 0) {
-        this.logger.warn(
-          `User with clerkId ${clerkId} not found. Skipping update...`,
-        );
-
-        return;
+      if (!clerkId) {
+        throw new BadRequestException('Clerk id not found');
       }
 
-      const name = clerkUser.fullName as string;
-      const email = clerkUser.primaryEmailAddress!.emailAddress;
+      this.logger.log(`Clerk event received: ${event.type}`);
 
-      await firstValueFrom(
-        this.authService.updateNameAndEmail({ id: user.id, name, email }),
-      );
+      switch (event.type) {
+        case 'user.deleted':
+          return this.handleUserDeleted(clerkId);
 
-      // Invalidate users and user caches after user update
-      await this.cacheManager.del('/auth/find-all');
-      await this.cacheManager.del(`/auth/users/${clerkId}`);
+        case 'user.updated':
+          return this.handleUserUpdated(clerkId);
 
-      return {
-        received: true,
-      };
+        default:
+          throw new BadRequestException('Invalid event type');
+      }
     } catch (error) {
-      this.handleError(error, 'handle user updated');
+      this.handleError(error, 'handle clerk webhook');
     }
   }
 }
