@@ -239,4 +239,16 @@ export class ProductsService {
       this.handleError(error, `fetch products by adminId ${adminId}`);
     }
   }
+
+  async removeByIds(ids: string[]) {
+    try {
+      await this.prismaService.product.deleteMany({
+        where: { id: { in: ids } },
+      });
+
+      return {};
+    } catch (error) {
+      this.handleError(error, `delete products with ids ${ids.join(', ')}`);
+    }
+  }
 }

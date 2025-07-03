@@ -9,6 +9,7 @@ import {
   FindByIdsRequest,
   FindOneRequest,
   PRODUCTS_SERVICE_NAME,
+  RemoveByIdsRequest,
   RemoveRequest,
   UpdateAdminIdRequest,
   UpdateQuantitiesRequest,
@@ -62,5 +63,10 @@ export class ProductsController {
   @GrpcMethod(PRODUCTS_SERVICE_NAME)
   findAllByAdminId(data: FindAllByAdminIdRequest) {
     return this.productsService.findAllByAdminId(data.adminId);
+  }
+
+  @GrpcMethod(PRODUCTS_SERVICE_NAME)
+  removeByIds(data: RemoveByIdsRequest) {
+    return this.productsService.removeByIds(data.ids);
   }
 }
