@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import { clerkClient } from '@clerk/express';
 import { firstValueFrom } from 'rxjs';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import {
   Inject,
   Injectable,
@@ -24,6 +26,7 @@ export class WebhooksService implements OnModuleInit {
   constructor(
     @Inject('EVENTS_HANDLER_SERVICE') private eventsHandlerClient: ClientProxy,
     @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly configService: ConfigService,
   ) {}
 
@@ -97,6 +100,10 @@ export class WebhooksService implements OnModuleInit {
       await firstValueFrom(
         this.authService.updateNameAndEmail({ id: user.id, name, email }),
       );
+
+      // Invalidate users and user caches after user update
+      await this.cacheManager.del('/auth/find-all');
+      await this.cacheManager.del(`/auth/users/${clerkId}`);
 
       return {
         received: true,
