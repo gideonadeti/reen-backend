@@ -79,7 +79,6 @@ export class AuthController {
     return {
       ...user,
       role: UserRole[user.role],
-      balances: user.balances || [],
     };
   }
 

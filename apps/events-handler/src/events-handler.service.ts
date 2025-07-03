@@ -180,7 +180,6 @@ export class EventsHandlerService
         orderItems,
         updateFinancialInfosRequests,
         adminNotificationPayloads,
-        balanceIds: [],
         orderId: '',
       };
 
@@ -257,22 +256,12 @@ export class EventsHandlerService
   async handleUpdateFinancialInfos(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId!);
-      const { updateFinancialInfosRequests, balanceIds, userId } =
+      const { updateFinancialInfosRequests, userId } =
         payload as HandleCheckoutSessionCompletedPayload;
 
       for (const request of updateFinancialInfosRequests) {
-        const response = await firstValueFrom(
-          this.authService.updateFinancialInfos(request),
-        );
-
-        balanceIds.push(...response.balanceIds);
+        await firstValueFrom(this.authService.updateFinancialInfos(request));
       }
-
-      // Persist updated balanceIds back to cache
-      await this.cacheManager.set(data.sagaStateId!, {
-        ...(payload as HandleCheckoutSessionCompletedPayload),
-        balanceIds,
-      });
 
       const adminIds = updateFinancialInfosRequests.map(
         (request) => request.adminId,
@@ -288,7 +277,7 @@ export class EventsHandlerService
 
       const admins = findAdminsResponse.admins || [];
 
-      // Invalidate caches after updating balances
+      // Invalidate caches after updating financial infos
       await this.cacheManager.del('/auth/find-all');
       await this.cacheManager.del(`/auth/users/${user.clerkId}`);
       await Promise.all(
@@ -430,7 +419,7 @@ export class EventsHandlerService
 
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
-      const { updateFinancialInfosRequests, balanceIds, userId } =
+      const { updateFinancialInfosRequests, userId } =
         payload as HandleCheckoutSessionCompletedPayload;
 
       for (const request of updateFinancialInfosRequests) {
@@ -438,12 +427,6 @@ export class EventsHandlerService
           this.authService.undoUpdateFinancialInfos(request),
         );
       }
-
-      await firstValueFrom(
-        this.authService.removeBalancesByIds({
-          ids: balanceIds,
-        }),
-      );
 
       const adminIds = updateFinancialInfosRequests.map(
         (request) => request.adminId,
@@ -457,9 +440,10 @@ export class EventsHandlerService
         this.authService.findAdmins({ adminIds }),
       );
 
-      // Invalidate caches after updating balances
+      // Invalidate caches after updating financial infos
       await this.cacheManager.del('/auth/find-all');
       await this.cacheManager.del(`/auth/users/${user.clerkId}`);
+
       for (const admin of admins.admins) {
         await this.cacheManager.del(`/auth/users/${admin.clerkId}`);
       }
@@ -536,7 +520,7 @@ export class EventsHandlerService
   }
 
   // Undo Clear Cart
-  // Undo Update Balances
+  // Undo Update Financial Infos
   // Undo Update Quantities
   async handleCreateOrderFailed(data: SagaFlowProps) {
     try {
@@ -620,7 +604,7 @@ export class EventsHandlerService
 
   // Undo Create Order
   // Undo Clear Cart
-  // Undo Update Balances
+  // Undo Update Financial Infos
   // Undo Update Quantities
   async handleUpdatePurchasesAndSalesCountsFailed(data: SagaFlowProps) {
     try {
@@ -744,7 +728,7 @@ export class EventsHandlerService
   // Clear cart items
   // Clear orders (order items will be deleted via cascade)
   // Deletes or anonymizes products depending on whether they’re still linked to other order items
-  // Delete user (refresh token and balances will be deleted via cascade)
+  // Delete user (refresh token will be deleted via cascade)
   async handleUserDeleted(data: { clerkId: string; retryCount?: number }) {
     try {
       const user = await firstValueFrom(

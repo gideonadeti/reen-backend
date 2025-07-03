@@ -27,11 +27,8 @@ service AuthService {
   rpc UndoUpdateFinancialInfos(UpdateFinancialInfosRequest)
       returns (UpdateFinancialInfosResponse) {}
 
-  rpc RemoveBalancesByIds(RemoveBalancesByIdsRequest)
-      returns (RemoveBalancesByIdsResponse) {}
-
   rpc ChargeFee(ChargeFeeRequest) returns (ChargeFeeResponse) {}
-  rpc UndoChargeFee(UndoChargeFeeRequest) returns (UndoChargeFeeResponse) {}
+  rpc UndoChargeFee(ChargeFeeRequest) returns (UndoChargeFeeResponse) {}
   rpc FindOrCreateAnonymousUser(FindOrCreateAnonymousUserRequest)
       returns (User) {}
   rpc UpdateNameAndEmail(UpdateNameAndEmailRequest)
@@ -67,8 +64,6 @@ message User {
   optional string clerk_id = 11;
   google.protobuf.Timestamp created_at = 12;
   google.protobuf.Timestamp updated_at = 13;
-
-  repeated Balance balances = 14;
 }
 
 message Balance {
@@ -133,7 +128,7 @@ message UpdateFinancialInfosRequest {
   string idempotency_key = 6;
 }
 
-message UpdateFinancialInfosResponse { repeated string balance_ids = 1; }
+message UpdateFinancialInfosResponse {}
 
 message RemoveIdempotencyRecordsByKeysRequest { repeated string keys = 1; }
 
@@ -150,22 +145,12 @@ message UpdatePurchasesAndSalesCountsRequest {
 
 message UpdatePurchasesAndSalesCountsResponse {}
 
-message RemoveBalancesByIdsRequest { repeated string ids = 1; }
-
-message RemoveBalancesByIdsResponse {}
-
 message ChargeFeeRequest {
   string user_id = 1;
   double amount = 2;
 }
 
-message ChargeFeeResponse { string balance_id = 1; }
-
-message UndoChargeFeeRequest {
-  string user_id = 1;
-  double amount = 2;
-  string balance_id = 3;
-}
+message ChargeFeeResponse {}
 
 message UndoChargeFeeResponse {}
 

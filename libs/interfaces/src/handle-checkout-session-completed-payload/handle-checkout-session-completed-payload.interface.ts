@@ -10,6 +10,5 @@ export interface HandleCheckoutSessionCompletedPayload {
   orderItems: OrderItem[];
   updateFinancialInfosRequests: UpdateFinancialInfosRequest[];
   adminNotificationPayloads: AdminNotificationPayload[];
-  balanceIds: string[];
   orderId: string;
 }

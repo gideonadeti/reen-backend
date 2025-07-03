@@ -24,7 +24,6 @@ model User {
 
   role         UserRole      @default(NADMIN)
   refreshToken RefreshToken?
-  balances     Balance[]
 }
 
 enum UserRole {
@@ -50,12 +49,3 @@ model IdempotencyRecord {
   updatedAt DateTime @updatedAt
 }
 
-model Balance {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  amount    Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}

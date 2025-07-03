@@ -12,7 +12,7 @@ import {
 
 import { PrismaService } from './prisma/prisma.service';
 import { AuthPayload } from '@app/interfaces';
-import { Balance, User as PrismaUser } from '../generated/prisma';
+import { User as PrismaUser } from '../generated/prisma';
 import {
   ChargeFeeRequest,
   FindAllRequest,
@@ -20,7 +20,6 @@ import {
   RefreshTokenRequest,
   SignOutRequest,
   SignUpRequest,
-  UndoChargeFeeRequest,
   UpdateFinancialInfosRequest,
   UpdateNameAndEmailRequest,
   UpdatePurchasesAndSalesCountsRequest,
@@ -96,14 +95,11 @@ export class AuthService {
 
   async signUp(signUpRequest: SignUpRequest) {
     try {
-      let user: PrismaUser & { balances: Balance[] };
+      let user: PrismaUser;
 
       if (!signUpRequest.password) {
         user = await this.prismaService.user.create({
           data: signUpRequest,
-          include: {
-            balances: true,
-          },
         });
       } else {
         const hashedPassword = await this.hashPassword(signUpRequest.password);
@@ -112,9 +108,6 @@ export class AuthService {
           data: {
             ...signUpRequest,
             password: hashedPassword,
-          },
-          include: {
-            balances: true,
           },
         });
       }
@@ -236,21 +229,13 @@ export class AuthService {
 
       // If upgrading to ADMIN
       if (role === UserRole.ADMIN) {
-        const newBalance = user.balance - roleUpgradeFee;
-
         const updatedUser = await this.prismaService.user.update({
           where: { id },
           data: {
             role: prismaUserRole,
             balance: { decrement: roleUpgradeFee },
             amountSpent: { increment: roleUpgradeFee },
-            balances: {
-              create: {
-                amount: newBalance,
-              },
-            },
           },
-          include: { balances: true },
         });
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -265,7 +250,6 @@ export class AuthService {
         data: {
           role: prismaUserRole,
         },
-        include: { balances: true },
       });
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -281,9 +265,6 @@ export class AuthService {
     try {
       const user = await this.prismaService.user.findUnique({
         where: { clerkId },
-        include: {
-          balances: true,
-        },
       });
 
       // Return `{}` if user is not found to avoid gRPC converting null to User
@@ -313,8 +294,6 @@ export class AuthService {
     userId,
     adminId,
     amount,
-    userNewBalance,
-    adminNewBalance,
     idempotencyKey,
   }: UpdateFinancialInfosRequest) {
     try {
@@ -325,23 +304,15 @@ export class AuthService {
 
       // If the idempotency record exists, it means the operation has already been processed.
       if (idempotencyRecord !== null) {
-        return {
-          balanceIds: [],
-        };
+        return {};
       }
 
-      const transactionResults = await this.prismaService.$transaction([
+      await this.prismaService.$transaction([
         this.prismaService.user.update({
           where: { id: userId },
           data: {
             balance: { decrement: amount },
             amountSpent: { increment: amount },
-          },
-        }),
-        this.prismaService.balance.create({
-          data: {
-            amount: userNewBalance,
-            userId,
           },
         }),
         this.prismaService.user.update({
@@ -351,25 +322,14 @@ export class AuthService {
             amountGained: { increment: amount },
           },
         }),
-        this.prismaService.balance.create({
-          data: {
-            amount: adminNewBalance,
-            userId: adminId,
-          },
-        }),
         this.prismaService.idempotencyRecord.create({
           data: { key: idempotencyKey },
         }),
       ]);
 
-      const userBalanceId = transactionResults[1].id;
-      const adminBalanceId = transactionResults[3].id;
-
-      return {
-        balanceIds: [userBalanceId, adminBalanceId],
-      };
+      return {};
     } catch (error) {
-      this.handleError(error, `update balances`);
+      this.handleError(error, `update financial infos`);
     }
   }
 
@@ -388,11 +348,7 @@ export class AuthService {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async findAll(data: FindAllRequest) {
     try {
-      const users = await this.prismaService.user.findMany({
-        include: {
-          balances: true,
-        },
-      });
+      const users = await this.prismaService.user.findMany();
 
       return {
         users,
@@ -471,18 +427,6 @@ export class AuthService {
     }
   }
 
-  async removeBalancesByIds(ids: string[]) {
-    try {
-      await this.prismaService.balance.deleteMany({
-        where: { id: { in: ids } },
-      });
-
-      return {};
-    } catch (error) {
-      this.handleError(error, 'remove balances by ids');
-    }
-  }
-
   async chargeFee({ userId, amount }: ChargeFeeRequest) {
     try {
       const user = await this.prismaService.user.findUnique({
@@ -493,7 +437,7 @@ export class AuthService {
         throw new NotFoundException(`User with id ${userId} not found`);
       }
 
-      const transactionResults = await this.prismaService.$transaction([
+      await this.prismaService.$transaction([
         this.prismaService.user.update({
           where: { id: userId },
           data: {
@@ -501,25 +445,15 @@ export class AuthService {
             amountSpent: { increment: amount },
           },
         }),
-        this.prismaService.balance.create({
-          data: {
-            amount: user.balance - amount,
-            userId,
-          },
-        }),
       ]);
 
-      const balanceId = transactionResults[1].id;
-
-      return {
-        balanceId,
-      };
+      return {};
     } catch (error) {
       this.handleError(error, 'charge fee');
     }
   }
 
-  async undoChargeFee({ userId, amount, balanceId }: UndoChargeFeeRequest) {
+  async undoChargeFee({ userId, amount }: ChargeFeeRequest) {
     try {
       await this.prismaService.$transaction([
         this.prismaService.user.update({
@@ -528,9 +462,6 @@ export class AuthService {
             balance: { increment: amount },
             amountSpent: { decrement: amount },
           },
-        }),
-        this.prismaService.balance.delete({
-          where: { id: balanceId },
         }),
       ]);
     } catch (error) {

@@ -12,12 +12,10 @@ import {
   FindUserByClerkIdRequest,
   FindUserRequest,
   RefreshTokenRequest,
-  RemoveBalancesByIdsRequest,
   RemoveIdempotencyRecordsByKeysRequest,
   RemoveRequest,
   SignOutRequest,
   SignUpRequest,
-  UndoChargeFeeRequest,
   UpdateFinancialInfosRequest,
   UpdateNameAndEmailRequest,
   UpdatePurchasesAndSalesCountsRequest,
@@ -106,17 +104,12 @@ export class AuthController {
   }
 
   @GrpcMethod(AUTH_SERVICE_NAME)
-  removeBalancesByIds(data: RemoveBalancesByIdsRequest) {
-    return this.authService.removeBalancesByIds(data.ids);
-  }
-
-  @GrpcMethod(AUTH_SERVICE_NAME)
   chargeFee(data: ChargeFeeRequest) {
     return this.authService.chargeFee(data);
   }
 
   @GrpcMethod(AUTH_SERVICE_NAME)
-  undoChargeFee(data: UndoChargeFeeRequest) {
+  undoChargeFee(data: ChargeFeeRequest) {
     return this.authService.undoChargeFee(data);
   }
 

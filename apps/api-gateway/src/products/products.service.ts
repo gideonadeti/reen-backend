@@ -89,10 +89,9 @@ export class ProductsService implements OnModuleInit {
       0.04 * createProductDto.price * createProductDto.quantity;
 
     let wasCharged = false;
-    let balanceId: string | null = null;
 
     try {
-      const chargeFeeResponse = await firstValueFrom(
+      await firstValueFrom(
         this.authService.chargeFee({
           userId,
           amount: createProductFee,
@@ -100,7 +99,6 @@ export class ProductsService implements OnModuleInit {
       );
 
       wasCharged = true;
-      balanceId = chargeFeeResponse.balanceId;
 
       const product = await firstValueFrom(
         this.productsService.create({
@@ -121,7 +119,6 @@ export class ProductsService implements OnModuleInit {
           this.authService.undoChargeFee({
             amount: createProductFee,
             userId,
-            balanceId: balanceId as string,
           }),
         );
       }
@@ -198,7 +195,6 @@ export class ProductsService implements OnModuleInit {
   ) {
     let updateProductFee = 0;
     let wasCharged = false;
-    let balanceId: string | null = null;
 
     try {
       const existingProduct = await firstValueFrom(
@@ -216,7 +212,7 @@ export class ProductsService implements OnModuleInit {
 
       // Only charge fee if there is a price or quantity change
       if (updateProductFee > 0) {
-        const chargeFeeResponse = await firstValueFrom(
+        await firstValueFrom(
           this.authService.chargeFee({
             amount: updateProductFee,
             userId,
@@ -224,7 +220,6 @@ export class ProductsService implements OnModuleInit {
         );
 
         wasCharged = true;
-        balanceId = chargeFeeResponse.balanceId;
       }
 
       const product = await firstValueFrom(
@@ -250,7 +245,6 @@ export class ProductsService implements OnModuleInit {
           this.authService.undoChargeFee({
             amount: updateProductFee,
             userId,
-            balanceId: balanceId as string,
           }),
         );
       }

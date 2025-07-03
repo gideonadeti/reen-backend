@@ -46,7 +46,6 @@ export interface User {
   clerkId?: string | undefined;
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
-  balances: Balance[];
 }
 
 export interface Balance {
@@ -122,7 +121,6 @@ export interface UpdateFinancialInfosRequest {
 }
 
 export interface UpdateFinancialInfosResponse {
-  balanceIds: string[];
 }
 
 export interface RemoveIdempotencyRecordsByKeysRequest {
@@ -147,26 +145,12 @@ export interface UpdatePurchasesAndSalesCountsRequest {
 export interface UpdatePurchasesAndSalesCountsResponse {
 }
 
-export interface RemoveBalancesByIdsRequest {
-  ids: string[];
-}
-
-export interface RemoveBalancesByIdsResponse {
-}
-
 export interface ChargeFeeRequest {
   userId: string;
   amount: number;
 }
 
 export interface ChargeFeeResponse {
-  balanceId: string;
-}
-
-export interface UndoChargeFeeRequest {
-  userId: string;
-  amount: number;
-  balanceId: string;
 }
 
 export interface UndoChargeFeeResponse {
@@ -237,11 +221,9 @@ export interface AuthServiceClient {
 
   undoUpdateFinancialInfos(request: UpdateFinancialInfosRequest): Observable<UpdateFinancialInfosResponse>;
 
-  removeBalancesByIds(request: RemoveBalancesByIdsRequest): Observable<RemoveBalancesByIdsResponse>;
-
   chargeFee(request: ChargeFeeRequest): Observable<ChargeFeeResponse>;
 
-  undoChargeFee(request: UndoChargeFeeRequest): Observable<UndoChargeFeeResponse>;
+  undoChargeFee(request: ChargeFeeRequest): Observable<UndoChargeFeeResponse>;
 
   findOrCreateAnonymousUser(request: FindOrCreateAnonymousUserRequest): Observable<User>;
 
@@ -299,14 +281,10 @@ export interface AuthServiceController {
     request: UpdateFinancialInfosRequest,
   ): Promise<UpdateFinancialInfosResponse> | Observable<UpdateFinancialInfosResponse> | UpdateFinancialInfosResponse;
 
-  removeBalancesByIds(
-    request: RemoveBalancesByIdsRequest,
-  ): Promise<RemoveBalancesByIdsResponse> | Observable<RemoveBalancesByIdsResponse> | RemoveBalancesByIdsResponse;
-
   chargeFee(request: ChargeFeeRequest): Promise<ChargeFeeResponse> | Observable<ChargeFeeResponse> | ChargeFeeResponse;
 
   undoChargeFee(
-    request: UndoChargeFeeRequest,
+    request: ChargeFeeRequest,
   ): Promise<UndoChargeFeeResponse> | Observable<UndoChargeFeeResponse> | UndoChargeFeeResponse;
 
   findOrCreateAnonymousUser(request: FindOrCreateAnonymousUserRequest): Promise<User> | Observable<User> | User;
@@ -336,7 +314,6 @@ export function AuthServiceControllerMethods() {
       "findAll",
       "updatePurchasesAndSalesCounts",
       "undoUpdateFinancialInfos",
-      "removeBalancesByIds",
       "chargeFee",
       "undoChargeFee",
       "findOrCreateAnonymousUser",
