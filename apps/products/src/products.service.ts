@@ -236,9 +236,13 @@ export class ProductsService {
 
   async findAllByAdminId(adminId: string) {
     try {
-      return await this.prismaService.product.findMany({
+      const products = await this.prismaService.product.findMany({
         where: { adminId },
       });
+
+      return {
+        products,
+      };
     } catch (error) {
       this.handleError(error, `fetch products by adminId ${adminId}`);
     }
