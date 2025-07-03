@@ -120,17 +120,8 @@ export interface UpdateFinancialInfosRequest {
   idempotencyKey: string;
 }
 
-export interface UpdateFinancialInfosResponse {
-}
-
 export interface RemoveIdempotencyRecordsByKeysRequest {
   keys: string[];
-}
-
-export interface RemoveIdempotencyRecordsByKeysResponse {
-}
-
-export interface FindAllRequest {
 }
 
 export interface FindAllResponse {
@@ -142,18 +133,9 @@ export interface UpdatePurchasesAndSalesCountsRequest {
   adminIds: string[];
 }
 
-export interface UpdatePurchasesAndSalesCountsResponse {
-}
-
 export interface ChargeFeeRequest {
   userId: string;
   amount: number;
-}
-
-export interface ChargeFeeResponse {
-}
-
-export interface UndoChargeFeeResponse {
 }
 
 export interface FindOrCreateAnonymousUserRequest {
@@ -165,14 +147,11 @@ export interface UpdateNameAndEmailRequest {
   email: string;
 }
 
-export interface UpdateNameAndEmailResponse {
-}
-
 export interface RemoveRequest {
   id: string;
 }
 
-export interface RemoveResponse {
+export interface Empty {
 }
 
 export const AUTH_PACKAGE_NAME = "auth";
@@ -207,29 +186,25 @@ export interface AuthServiceClient {
 
   findByIds(request: FindByIdsRequest): Observable<FindByIdsResponse>;
 
-  updateFinancialInfos(request: UpdateFinancialInfosRequest): Observable<UpdateFinancialInfosResponse>;
+  updateFinancialInfos(request: UpdateFinancialInfosRequest): Observable<Empty>;
 
-  removeIdempotencyRecordsByKeys(
-    request: RemoveIdempotencyRecordsByKeysRequest,
-  ): Observable<RemoveIdempotencyRecordsByKeysResponse>;
+  removeIdempotencyRecordsByKeys(request: RemoveIdempotencyRecordsByKeysRequest): Observable<Empty>;
 
-  findAll(request: FindAllRequest): Observable<FindAllResponse>;
+  findAll(request: Empty): Observable<FindAllResponse>;
 
-  updatePurchasesAndSalesCounts(
-    request: UpdatePurchasesAndSalesCountsRequest,
-  ): Observable<UpdatePurchasesAndSalesCountsResponse>;
+  updatePurchasesAndSalesCounts(request: UpdatePurchasesAndSalesCountsRequest): Observable<Empty>;
 
-  undoUpdateFinancialInfos(request: UpdateFinancialInfosRequest): Observable<UpdateFinancialInfosResponse>;
+  undoUpdateFinancialInfos(request: UpdateFinancialInfosRequest): Observable<Empty>;
 
-  chargeFee(request: ChargeFeeRequest): Observable<ChargeFeeResponse>;
+  chargeFee(request: ChargeFeeRequest): Observable<Empty>;
 
-  undoChargeFee(request: ChargeFeeRequest): Observable<UndoChargeFeeResponse>;
+  undoChargeFee(request: ChargeFeeRequest): Observable<Empty>;
 
   findOrCreateAnonymousUser(request: FindOrCreateAnonymousUserRequest): Observable<User>;
 
-  updateNameAndEmail(request: UpdateNameAndEmailRequest): Observable<UpdateNameAndEmailResponse>;
+  updateNameAndEmail(request: UpdateNameAndEmailRequest): Observable<Empty>;
 
-  remove(request: RemoveRequest): Observable<RemoveResponse>;
+  remove(request: RemoveRequest): Observable<Empty>;
 }
 
 export interface AuthServiceController {
@@ -257,43 +232,29 @@ export interface AuthServiceController {
 
   findByIds(request: FindByIdsRequest): Promise<FindByIdsResponse> | Observable<FindByIdsResponse> | FindByIdsResponse;
 
-  updateFinancialInfos(
-    request: UpdateFinancialInfosRequest,
-  ): Promise<UpdateFinancialInfosResponse> | Observable<UpdateFinancialInfosResponse> | UpdateFinancialInfosResponse;
+  updateFinancialInfos(request: UpdateFinancialInfosRequest): Promise<Empty> | Observable<Empty> | Empty;
 
   removeIdempotencyRecordsByKeys(
     request: RemoveIdempotencyRecordsByKeysRequest,
-  ):
-    | Promise<RemoveIdempotencyRecordsByKeysResponse>
-    | Observable<RemoveIdempotencyRecordsByKeysResponse>
-    | RemoveIdempotencyRecordsByKeysResponse;
+  ): Promise<Empty> | Observable<Empty> | Empty;
 
-  findAll(request: FindAllRequest): Promise<FindAllResponse> | Observable<FindAllResponse> | FindAllResponse;
+  findAll(request: Empty): Promise<FindAllResponse> | Observable<FindAllResponse> | FindAllResponse;
 
   updatePurchasesAndSalesCounts(
     request: UpdatePurchasesAndSalesCountsRequest,
-  ):
-    | Promise<UpdatePurchasesAndSalesCountsResponse>
-    | Observable<UpdatePurchasesAndSalesCountsResponse>
-    | UpdatePurchasesAndSalesCountsResponse;
+  ): Promise<Empty> | Observable<Empty> | Empty;
 
-  undoUpdateFinancialInfos(
-    request: UpdateFinancialInfosRequest,
-  ): Promise<UpdateFinancialInfosResponse> | Observable<UpdateFinancialInfosResponse> | UpdateFinancialInfosResponse;
+  undoUpdateFinancialInfos(request: UpdateFinancialInfosRequest): Promise<Empty> | Observable<Empty> | Empty;
 
-  chargeFee(request: ChargeFeeRequest): Promise<ChargeFeeResponse> | Observable<ChargeFeeResponse> | ChargeFeeResponse;
+  chargeFee(request: ChargeFeeRequest): Promise<Empty> | Observable<Empty> | Empty;
 
-  undoChargeFee(
-    request: ChargeFeeRequest,
-  ): Promise<UndoChargeFeeResponse> | Observable<UndoChargeFeeResponse> | UndoChargeFeeResponse;
+  undoChargeFee(request: ChargeFeeRequest): Promise<Empty> | Observable<Empty> | Empty;
 
   findOrCreateAnonymousUser(request: FindOrCreateAnonymousUserRequest): Promise<User> | Observable<User> | User;
 
-  updateNameAndEmail(
-    request: UpdateNameAndEmailRequest,
-  ): Promise<UpdateNameAndEmailResponse> | Observable<UpdateNameAndEmailResponse> | UpdateNameAndEmailResponse;
+  updateNameAndEmail(request: UpdateNameAndEmailRequest): Promise<Empty> | Observable<Empty> | Empty;
 
-  remove(request: RemoveRequest): Promise<RemoveResponse> | Observable<RemoveResponse> | RemoveResponse;
+  remove(request: RemoveRequest): Promise<Empty> | Observable<Empty> | Empty;
 }
 
 export function AuthServiceControllerMethods() {

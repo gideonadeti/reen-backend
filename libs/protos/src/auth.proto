@@ -14,27 +14,25 @@ service AuthService {
   rpc UpdateUserRole(UpdateUserRoleRequest) returns (User) {}
   rpc FindUserByClerkId(FindUserByClerkIdRequest) returns (User) {}
   rpc FindByIds(FindByIdsRequest) returns (FindByIdsResponse) {}
-  rpc UpdateFinancialInfos(UpdateFinancialInfosRequest)
-      returns (UpdateFinancialInfosResponse) {}
+  rpc UpdateFinancialInfos(UpdateFinancialInfosRequest) returns (Empty) {}
 
   rpc RemoveIdempotencyRecordsByKeys(RemoveIdempotencyRecordsByKeysRequest)
-      returns (RemoveIdempotencyRecordsByKeysResponse) {}
+      returns (Empty) {}
 
-  rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
+  rpc FindAll(Empty) returns (FindAllResponse) {}
   rpc UpdatePurchasesAndSalesCounts(UpdatePurchasesAndSalesCountsRequest)
-      returns (UpdatePurchasesAndSalesCountsResponse) {}
+      returns (Empty) {}
 
-  rpc UndoUpdateFinancialInfos(UpdateFinancialInfosRequest)
-      returns (UpdateFinancialInfosResponse) {}
+  rpc UndoUpdateFinancialInfos(UpdateFinancialInfosRequest) returns (Empty) {}
 
-  rpc ChargeFee(ChargeFeeRequest) returns (ChargeFeeResponse) {}
-  rpc UndoChargeFee(ChargeFeeRequest) returns (UndoChargeFeeResponse) {}
+  rpc ChargeFee(ChargeFeeRequest) returns (Empty) {}
+  rpc UndoChargeFee(ChargeFeeRequest) returns (Empty) {}
   rpc FindOrCreateAnonymousUser(FindOrCreateAnonymousUserRequest)
       returns (User) {}
-  rpc UpdateNameAndEmail(UpdateNameAndEmailRequest)
-      returns (UpdateNameAndEmailResponse) {}
 
-  rpc Remove(RemoveRequest) returns (RemoveResponse) {}
+  rpc UpdateNameAndEmail(UpdateNameAndEmailRequest) returns (Empty) {}
+
+  rpc Remove(RemoveRequest) returns (Empty) {}
 }
 
 message SignUpRequest {
@@ -128,13 +126,7 @@ message UpdateFinancialInfosRequest {
   string idempotency_key = 6;
 }
 
-message UpdateFinancialInfosResponse {}
-
 message RemoveIdempotencyRecordsByKeysRequest { repeated string keys = 1; }
-
-message RemoveIdempotencyRecordsByKeysResponse {}
-
-message FindAllRequest {}
 
 message FindAllResponse { repeated User users = 1; }
 
@@ -143,16 +135,10 @@ message UpdatePurchasesAndSalesCountsRequest {
   repeated string admin_ids = 2;
 }
 
-message UpdatePurchasesAndSalesCountsResponse {}
-
 message ChargeFeeRequest {
   string user_id = 1;
   double amount = 2;
 }
-
-message ChargeFeeResponse {}
-
-message UndoChargeFeeResponse {}
 
 message FindOrCreateAnonymousUserRequest {}
 
@@ -162,8 +148,6 @@ message UpdateNameAndEmailRequest {
   string email = 3;
 }
 
-message UpdateNameAndEmailResponse {}
-
 message RemoveRequest { string id = 1; }
 
-message RemoveResponse {}
+message Empty {}

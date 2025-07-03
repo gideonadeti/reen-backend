@@ -11,16 +11,13 @@ service ProductsService {
   rpc FindByIds(FindByIdsRequest) returns (FindByIdsResponse) {}
   rpc Update(UpdateRequest) returns (Product) {}
   rpc Remove(RemoveRequest) returns (Product) {}
-  rpc UpdateQuantities(UpdateQuantitiesRequest)
-      returns (UpdateQuantitiesResponse) {}
-
+  rpc UpdateQuantities(UpdateQuantitiesRequest) returns (Empty) {}
   rpc UpdateAdminId(UpdateAdminIdRequest) returns (Product) {}
   rpc FindAllByAdminId(FindAllByAdminIdRequest)
       returns (FindAllByAdminIdResponse) {}
 
-  rpc RemoveByIds(RemoveByIdsRequest) returns (RemoveByIdsResponse) {}
-  rpc UpdateAdminIdByIds(UpdateAdminIdByIdsRequest)
-      returns (UpdateAdminIdByIdsResponse) {}
+  rpc RemoveByIds(RemoveByIdsRequest) returns (Empty) {}
+  rpc UpdateAdminIdByIds(UpdateAdminIdByIdsRequest) returns (Empty) {}
 }
 
 message CreateProductDto {
@@ -111,8 +108,6 @@ message UpdateQuantitiesRequest {
   bool increment = 2;
 }
 
-message UpdateQuantitiesResponse {}
-
 message UpdateAdminIdRequest {
   string id = 1;
   string new_admin_id = 2;
@@ -124,11 +119,9 @@ message FindAllByAdminIdResponse { repeated Product products = 1; }
 
 message RemoveByIdsRequest { repeated string ids = 1; }
 
-message RemoveByIdsResponse {}
-
 message UpdateAdminIdByIdsRequest {
   repeated string ids = 1;
   string new_admin_id = 2;
 }
 
-message UpdateAdminIdByIdsResponse {}
+message Empty {}

@@ -62,15 +62,9 @@ export interface RemoveAllRequest {
   userId: string;
 }
 
-export interface RemoveAllResponse {
-}
-
 export interface CreateManyRequest {
   createCartItemDtos: CreateCartItemDto[];
   userId: string;
-}
-
-export interface CreateManyResponse {
 }
 
 export interface FindByProductIdRequest {
@@ -85,7 +79,7 @@ export interface RemoveByProductIdRequest {
   productId: string;
 }
 
-export interface RemoveByProductIdResponse {
+export interface Empty {
 }
 
 export const CART_ITEMS_PACKAGE_NAME = "cart_items";
@@ -110,13 +104,13 @@ export interface CartItemsServiceClient {
 
   remove(request: RemoveRequest): Observable<CartItem>;
 
-  removeAll(request: RemoveAllRequest): Observable<RemoveAllResponse>;
+  removeAll(request: RemoveAllRequest): Observable<Empty>;
 
-  createMany(request: CreateManyRequest): Observable<CreateManyResponse>;
+  createMany(request: CreateManyRequest): Observable<Empty>;
 
   findByProductId(request: FindByProductIdRequest): Observable<FindByProductIdResponse>;
 
-  removeByProductId(request: RemoveByProductIdRequest): Observable<RemoveByProductIdResponse>;
+  removeByProductId(request: RemoveByProductIdRequest): Observable<Empty>;
 }
 
 export interface CartItemsServiceController {
@@ -130,19 +124,15 @@ export interface CartItemsServiceController {
 
   remove(request: RemoveRequest): Promise<CartItem> | Observable<CartItem> | CartItem;
 
-  removeAll(request: RemoveAllRequest): Promise<RemoveAllResponse> | Observable<RemoveAllResponse> | RemoveAllResponse;
+  removeAll(request: RemoveAllRequest): Promise<Empty> | Observable<Empty> | Empty;
 
-  createMany(
-    request: CreateManyRequest,
-  ): Promise<CreateManyResponse> | Observable<CreateManyResponse> | CreateManyResponse;
+  createMany(request: CreateManyRequest): Promise<Empty> | Observable<Empty> | Empty;
 
   findByProductId(
     request: FindByProductIdRequest,
   ): Promise<FindByProductIdResponse> | Observable<FindByProductIdResponse> | FindByProductIdResponse;
 
-  removeByProductId(
-    request: RemoveByProductIdRequest,
-  ): Promise<RemoveByProductIdResponse> | Observable<RemoveByProductIdResponse> | RemoveByProductIdResponse;
+  removeByProductId(request: RemoveByProductIdRequest): Promise<Empty> | Observable<Empty> | Empty;
 }
 
 export function CartItemsServiceControllerMethods() {

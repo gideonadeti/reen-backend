@@ -73,7 +73,7 @@ export interface RemoveAllRequest {
   userId: string;
 }
 
-export interface RemoveAllResponse {
+export interface Empty {
 }
 
 export interface FindReferencedProductIdsRequest {
@@ -108,7 +108,7 @@ export interface OrdersServiceClient {
 
   findOrderItemsByProductId(request: FindOrderItemsByProductIdRequest): Observable<FindOrderItemsByProductIdResponse>;
 
-  removeAll(request: RemoveAllRequest): Observable<RemoveAllResponse>;
+  removeAll(request: RemoveAllRequest): Observable<Empty>;
 
   findReferencedProductIds(request: FindReferencedProductIdsRequest): Observable<FindReferencedProductIdsResponse>;
 }
@@ -136,7 +136,7 @@ export interface OrdersServiceController {
     | Observable<FindOrderItemsByProductIdResponse>
     | FindOrderItemsByProductIdResponse;
 
-  removeAll(request: RemoveAllRequest): Promise<RemoveAllResponse> | Observable<RemoveAllResponse> | RemoveAllResponse;
+  removeAll(request: RemoveAllRequest): Promise<Empty> | Observable<Empty> | Empty;
 
   findReferencedProductIds(
     request: FindReferencedProductIdsRequest,

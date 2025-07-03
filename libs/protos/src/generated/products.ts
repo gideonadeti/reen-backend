@@ -105,9 +105,6 @@ export interface UpdateQuantitiesRequest {
   increment: boolean;
 }
 
-export interface UpdateQuantitiesResponse {
-}
-
 export interface UpdateAdminIdRequest {
   id: string;
   newAdminId: string;
@@ -125,15 +122,12 @@ export interface RemoveByIdsRequest {
   ids: string[];
 }
 
-export interface RemoveByIdsResponse {
-}
-
 export interface UpdateAdminIdByIdsRequest {
   ids: string[];
   newAdminId: string;
 }
 
-export interface UpdateAdminIdByIdsResponse {
+export interface Empty {
 }
 
 export const PRODUCTS_PACKAGE_NAME = "products";
@@ -160,15 +154,15 @@ export interface ProductsServiceClient {
 
   remove(request: RemoveRequest): Observable<Product>;
 
-  updateQuantities(request: UpdateQuantitiesRequest): Observable<UpdateQuantitiesResponse>;
+  updateQuantities(request: UpdateQuantitiesRequest): Observable<Empty>;
 
   updateAdminId(request: UpdateAdminIdRequest): Observable<Product>;
 
   findAllByAdminId(request: FindAllByAdminIdRequest): Observable<FindAllByAdminIdResponse>;
 
-  removeByIds(request: RemoveByIdsRequest): Observable<RemoveByIdsResponse>;
+  removeByIds(request: RemoveByIdsRequest): Observable<Empty>;
 
-  updateAdminIdByIds(request: UpdateAdminIdByIdsRequest): Observable<UpdateAdminIdByIdsResponse>;
+  updateAdminIdByIds(request: UpdateAdminIdByIdsRequest): Observable<Empty>;
 }
 
 export interface ProductsServiceController {
@@ -184,9 +178,7 @@ export interface ProductsServiceController {
 
   remove(request: RemoveRequest): Promise<Product> | Observable<Product> | Product;
 
-  updateQuantities(
-    request: UpdateQuantitiesRequest,
-  ): Promise<UpdateQuantitiesResponse> | Observable<UpdateQuantitiesResponse> | UpdateQuantitiesResponse;
+  updateQuantities(request: UpdateQuantitiesRequest): Promise<Empty> | Observable<Empty> | Empty;
 
   updateAdminId(request: UpdateAdminIdRequest): Promise<Product> | Observable<Product> | Product;
 
@@ -194,13 +186,9 @@ export interface ProductsServiceController {
     request: FindAllByAdminIdRequest,
   ): Promise<FindAllByAdminIdResponse> | Observable<FindAllByAdminIdResponse> | FindAllByAdminIdResponse;
 
-  removeByIds(
-    request: RemoveByIdsRequest,
-  ): Promise<RemoveByIdsResponse> | Observable<RemoveByIdsResponse> | RemoveByIdsResponse;
+  removeByIds(request: RemoveByIdsRequest): Promise<Empty> | Observable<Empty> | Empty;
 
-  updateAdminIdByIds(
-    request: UpdateAdminIdByIdsRequest,
-  ): Promise<UpdateAdminIdByIdsResponse> | Observable<UpdateAdminIdByIdsResponse> | UpdateAdminIdByIdsResponse;
+  updateAdminIdByIds(request: UpdateAdminIdByIdsRequest): Promise<Empty> | Observable<Empty> | Empty;
 }
 
 export function ProductsServiceControllerMethods() {

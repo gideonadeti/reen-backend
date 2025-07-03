@@ -10,13 +10,12 @@ service CartItemsService {
   rpc FindOne(FindOneRequest) returns (CartItem) {}
   rpc Update(UpdateRequest) returns (CartItem) {}
   rpc Remove(RemoveRequest) returns (CartItem) {}
-  rpc RemoveAll(RemoveAllRequest) returns (RemoveAllResponse) {}
-  rpc CreateMany(CreateManyRequest) returns (CreateManyResponse) {}
+  rpc RemoveAll(RemoveAllRequest) returns (Empty) {}
+  rpc CreateMany(CreateManyRequest) returns (Empty) {}
   rpc FindByProductId(FindByProductIdRequest)
       returns (FindByProductIdResponse) {}
 
-  rpc RemoveByProductId(RemoveByProductIdRequest)
-      returns (RemoveByProductIdResponse) {}
+  rpc RemoveByProductId(RemoveByProductIdRequest) returns (Empty) {}
 }
 
 message CreateRequest {
@@ -64,14 +63,10 @@ message RemoveRequest {
 
 message RemoveAllRequest { string user_id = 1; }
 
-message RemoveAllResponse {}
-
 message CreateManyRequest {
   repeated CreateCartItemDto create_cart_item_dtos = 1;
   string user_id = 2;
 }
-
-message CreateManyResponse {}
 
 message FindByProductIdRequest { string product_id = 1; }
 
@@ -79,4 +74,4 @@ message FindByProductIdResponse { repeated CartItem cart_items = 1; }
 
 message RemoveByProductIdRequest { string product_id = 1; }
 
-message RemoveByProductIdResponse {}
+message Empty {}
