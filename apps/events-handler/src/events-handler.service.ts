@@ -750,4 +750,20 @@ export class EventsHandlerService
       this.handleError(error, 'user deleted');
     }
   }
+
+  async handleRemoveOrders(data: SagaFlowProps) {
+    try {
+      await firstValueFrom(
+        this.ordersService.removeAll({
+          userId: data.userId!,
+        }),
+      );
+
+      this.eventsHandlerClient.emit('remove-or-anonymize-products', {
+        userId: data.userId,
+      });
+    } catch (error) {
+      this.handleError(error, `remove orders for user with id ${data.userId}`);
+    }
+  }
 }

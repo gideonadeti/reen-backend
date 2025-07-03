@@ -75,4 +75,9 @@ export class EventsHandlerController {
   handleUserDeleted(@Payload() data: string) {
     return this.eventsHandlerService.handleUserDeleted(data);
   }
+
+  @EventPattern('remove-orders')
+  handleRemoveOrders(@Payload() data: SagaFlowProps) {
+    return this.eventsHandlerService.handleRemoveOrders(data);
+  }
 }
