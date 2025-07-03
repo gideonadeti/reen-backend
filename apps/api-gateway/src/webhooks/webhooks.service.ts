@@ -1,24 +1,37 @@
 import Stripe from 'stripe';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import { clerkClient } from '@clerk/express';
 import {
   Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
+  OnModuleInit,
   RawBodyRequest,
 } from '@nestjs/common';
 
+import {
+  AUTH_PACKAGE_NAME,
+  AUTH_SERVICE_NAME,
+  AuthServiceClient,
+} from '@app/protos/generated/auth';
+
 @Injectable()
-export class WebhooksService {
+export class WebhooksService implements OnModuleInit {
   constructor(
     @Inject('EVENTS_HANDLER_SERVICE') private eventsHandlerClient: ClientProxy,
+    @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
     private readonly configService: ConfigService,
   ) {}
 
   private logger = new Logger(WebhooksService.name);
+  private authService: AuthServiceClient;
+
+  onModuleInit() {
+    this.authService = this.authClient.getService(AUTH_SERVICE_NAME);
+  }
 
   private handleError(error: any, action: string) {
     this.logger.error(`Failed to ${action}`, (error as Error).stack);
