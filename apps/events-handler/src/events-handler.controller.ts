@@ -70,4 +70,9 @@ export class EventsHandlerController {
   handleNotifyAdmins(@Payload() data: SagaFlowProps) {
     return this.eventsHandlerService.handleNotifyAdmins(data);
   }
+
+  @EventPattern('user-deleted')
+  handleUserDeleted(@Payload() data: string) {
+    return this.eventsHandlerService.handleUserDeleted(data);
+  }
 }

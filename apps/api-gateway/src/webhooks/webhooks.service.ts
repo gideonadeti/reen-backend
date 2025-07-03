@@ -76,8 +76,10 @@ export class WebhooksService implements OnModuleInit {
   }
 
   private handleUserDeleted(clerkId: string) {
+    this.eventsHandlerClient.emit('user-deleted', clerkId);
+
     return {
-      clerkId,
+      received: true,
     };
   }
 

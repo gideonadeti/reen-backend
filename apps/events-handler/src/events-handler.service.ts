@@ -699,4 +699,9 @@ export class EventsHandlerService
       // No need to emit 'notify-admins-failed'
     }
   }
+
+  async handleUserDeleted(clerkId: string) {
+    try {
+    } catch (error) {}
+  }
 }
