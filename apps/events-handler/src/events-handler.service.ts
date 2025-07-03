@@ -913,4 +913,53 @@ export class EventsHandlerService
       }
     }
   }
+
+  async handleRemoveOrphanedProducts(data: SagaFlowProps) {
+    try {
+      const anonymousUser = await firstValueFrom(
+        this.authService.findOrCreateAnonymousUser({}),
+      );
+
+      const { products } = await firstValueFrom(
+        this.productsService.findAllByAdminId({
+          adminId: anonymousUser.id,
+        }),
+      );
+
+      if (products.length === 0) return;
+
+      const productIds = products.map((product) => product.id);
+
+      const { productIds: referencedProductIds } = await firstValueFrom(
+        this.ordersService.findReferencedProductIds({
+          productIds,
+        }),
+      );
+
+      // Remove products that are not linked to other order items
+      const toBeDeletedProductIds = productIds.filter(
+        (id) => !referencedProductIds.includes(id),
+      );
+
+      await firstValueFrom(
+        this.productsService.removeByIds({
+          ids: toBeDeletedProductIds,
+        }),
+      );
+
+      await this.cacheManager.del('/products');
+    } catch (error) {
+      this.handleError(error, 'remove orphaned products');
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('remove-orphaned-products', {
+          retryCount: retryCount + 1,
+        });
+      }
+    }
+  }
 }
