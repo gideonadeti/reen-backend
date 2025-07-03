@@ -82,4 +82,9 @@ export class EventsHandlerController {
   handleRemoveOrders(@Payload() data: SagaFlowProps) {
     return this.eventsHandlerService.handleRemoveOrders(data);
   }
+
+  @EventPattern('remove-or-anonymize-products')
+  handleRemoveOrAnonymizeProducts(@Payload() data: SagaFlowProps) {
+    return this.eventsHandlerService.handleRemoveOrAnonymizeProducts(data);
+  }
 }

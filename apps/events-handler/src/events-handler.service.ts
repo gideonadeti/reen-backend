@@ -809,4 +809,74 @@ export class EventsHandlerService
       // Best will probably be to manually intervene and finish the process
     }
   }
+
+  async handleRemoveOrAnonymizeProducts(data: SagaFlowProps) {
+    try {
+      const { products } = await firstValueFrom(
+        this.productsService.findAllByAdminId({
+          adminId: data.userId!,
+        }),
+      );
+
+      if (products.length === 0) {
+        this.eventsHandlerClient.emit('remove-user', { userId: data.userId });
+
+        return;
+      }
+
+      const productIds = products.map((product) => product.id);
+
+      const { productIds: referencedProductIds } = await firstValueFrom(
+        this.ordersService.findReferencedProductIds({
+          productIds,
+        }),
+      );
+
+      // Remove products that are not linked to other order items
+      const toBeDeletedProductIds = productIds.filter(
+        (id) => !referencedProductIds.includes(id),
+      );
+
+      await firstValueFrom(
+        this.productsService.removeByIds({
+          ids: toBeDeletedProductIds,
+        }),
+      );
+
+      if (referencedProductIds.length > 0) {
+        const anonymousUser = await firstValueFrom(
+          this.authService.findOrCreateAnonymousUser({}),
+        );
+
+        await firstValueFrom(
+          this.productsService.updateAdminIdByIds({
+            ids: referencedProductIds,
+            newAdminId: anonymousUser.id,
+          }),
+        );
+      }
+
+      await this.cacheManager.del('/products');
+
+      this.eventsHandlerClient.emit('remove-user', {
+        userId: data.userId,
+      });
+    } catch (error) {
+      this.handleError(
+        error,
+        `remove or anonymize products for user with id ${data.userId}`,
+      );
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('remove-or-anonymize-products', {
+          userId: data.userId,
+          retryCount: retryCount + 1,
+        });
+      }
+    }
+  }
 }
