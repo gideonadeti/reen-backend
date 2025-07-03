@@ -128,6 +128,14 @@ export interface RemoveByIdsRequest {
 export interface RemoveByIdsResponse {
 }
 
+export interface UpdateAdminIdByIdsRequest {
+  ids: string[];
+  newAdminId: string;
+}
+
+export interface UpdateAdminIdByIdsResponse {
+}
+
 export const PRODUCTS_PACKAGE_NAME = "products";
 
 wrappers[".google.protobuf.Timestamp"] = {
@@ -159,6 +167,8 @@ export interface ProductsServiceClient {
   findAllByAdminId(request: FindAllByAdminIdRequest): Observable<FindAllByAdminIdResponse>;
 
   removeByIds(request: RemoveByIdsRequest): Observable<RemoveByIdsResponse>;
+
+  updateAdminIdByIds(request: UpdateAdminIdByIdsRequest): Observable<UpdateAdminIdByIdsResponse>;
 }
 
 export interface ProductsServiceController {
@@ -187,6 +197,10 @@ export interface ProductsServiceController {
   removeByIds(
     request: RemoveByIdsRequest,
   ): Promise<RemoveByIdsResponse> | Observable<RemoveByIdsResponse> | RemoveByIdsResponse;
+
+  updateAdminIdByIds(
+    request: UpdateAdminIdByIdsRequest,
+  ): Promise<UpdateAdminIdByIdsResponse> | Observable<UpdateAdminIdByIdsResponse> | UpdateAdminIdByIdsResponse;
 }
 
 export function ProductsServiceControllerMethods() {
@@ -202,6 +216,7 @@ export function ProductsServiceControllerMethods() {
       "updateAdminId",
       "findAllByAdminId",
       "removeByIds",
+      "updateAdminIdByIds",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

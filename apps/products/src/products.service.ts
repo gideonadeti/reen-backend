@@ -9,6 +9,7 @@ import {
   CreateRequest,
   FindAllRequest,
   RemoveRequest,
+  UpdateAdminIdByIdsRequest,
   UpdateAdminIdRequest,
   UpdateProductDto,
   UpdateQuantitiesRequest,
@@ -249,6 +250,24 @@ export class ProductsService {
       return {};
     } catch (error) {
       this.handleError(error, `delete products with ids ${ids.join(', ')}`);
+    }
+  }
+
+  async updateAdminIdByIds({ ids, newAdminId }: UpdateAdminIdByIdsRequest) {
+    try {
+      await this.prismaService.product.updateMany({
+        where: { id: { in: ids } },
+        data: {
+          adminId: newAdminId,
+        },
+      });
+
+      return {};
+    } catch (error) {
+      this.handleError(
+        error,
+        `update adminId for products with ids ${ids.join(', ')}`,
+      );
     }
   }
 }

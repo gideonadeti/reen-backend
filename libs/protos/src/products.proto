@@ -19,6 +19,8 @@ service ProductsService {
       returns (FindAllByAdminIdResponse) {}
 
   rpc RemoveByIds(RemoveByIdsRequest) returns (RemoveByIdsResponse) {}
+  rpc UpdateAdminIdByIds(UpdateAdminIdByIdsRequest)
+      returns (UpdateAdminIdByIdsResponse) {}
 }
 
 message CreateProductDto {
@@ -123,3 +125,10 @@ message FindAllByAdminIdResponse { repeated Product products = 1; }
 message RemoveByIdsRequest { repeated string ids = 1; }
 
 message RemoveByIdsResponse {}
+
+message UpdateAdminIdByIdsRequest {
+  repeated string ids = 1;
+  string new_admin_id = 2;
+}
+
+message UpdateAdminIdByIdsResponse {}

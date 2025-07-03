@@ -11,6 +11,7 @@ import {
   PRODUCTS_SERVICE_NAME,
   RemoveByIdsRequest,
   RemoveRequest,
+  UpdateAdminIdByIdsRequest,
   UpdateAdminIdRequest,
   UpdateQuantitiesRequest,
   UpdateRequest,
@@ -68,5 +69,10 @@ export class ProductsController {
   @GrpcMethod(PRODUCTS_SERVICE_NAME)
   removeByIds(data: RemoveByIdsRequest) {
     return this.productsService.removeByIds(data.ids);
+  }
+
+  @GrpcMethod(PRODUCTS_SERVICE_NAME)
+  updateAdminIdByIds(data: UpdateAdminIdByIdsRequest) {
+    return this.productsService.updateAdminIdByIds(data);
   }
 }
