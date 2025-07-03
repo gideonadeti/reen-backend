@@ -1,4 +1,5 @@
 import * as cookieParser from 'cookie-parser';
+import * as express from 'express';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -33,6 +34,7 @@ const bootstrap = async () => {
 
   app.use(cookieParser());
   app.use(clerkMiddleware());
+  app.use('/webhooks/clerk', express.raw({ type: 'application/json' }));
 
   const config = new DocumentBuilder()
     .setTitle('API Gateway')

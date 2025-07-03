@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
+import { clerkClient } from '@clerk/express';
 import {
   Inject,
   Injectable,
@@ -53,5 +54,19 @@ export class WebhooksService {
     } catch (error) {
       this.handleError(error, 'handle checkout session completed');
     }
+  }
+
+  handleUserDeleted(clerkId: string) {
+    return {
+      clerkId,
+    };
+  }
+
+  async handleUserUpdated(clerkId: string) {
+    const clerkUser = await clerkClient.users.getUser(clerkId);
+
+    return {
+      clerkUser,
+    };
   }
 }
