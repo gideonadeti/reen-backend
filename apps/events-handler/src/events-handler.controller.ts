@@ -87,4 +87,9 @@ export class EventsHandlerController {
   handleRemoveOrAnonymizeProducts(@Payload() data: SagaFlowProps) {
     return this.eventsHandlerService.handleRemoveOrAnonymizeProducts(data);
   }
+
+  @EventPattern('remove-user')
+  handleRemoveUser(@Payload() data: SagaFlowProps) {
+    return this.eventsHandlerService.handleRemoveUser(data);
+  }
 }

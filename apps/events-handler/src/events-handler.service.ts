@@ -879,4 +879,38 @@ export class EventsHandlerService
       }
     }
   }
+
+  async handleRemoveUser(data: SagaFlowProps) {
+    try {
+      const user = await firstValueFrom(
+        this.authService.findUser({ id: data.userId! }),
+      );
+
+      await firstValueFrom(
+        this.authService.remove({
+          id: data.userId!,
+        }),
+      );
+
+      await this.cacheManager.del('/auth/find-all');
+      await this.cacheManager.del(`/auth/users/${user.clerkId}`);
+
+      this.eventsHandlerClient.emit('remove-orphaned-products', {
+        userId: data.userId,
+      });
+    } catch (error) {
+      this.handleError(error, `remove user with id ${data.userId}`);
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('remove-user', {
+          userId: data.userId,
+          retryCount: retryCount + 1,
+        });
+      }
+    }
+  }
 }
