@@ -229,4 +229,14 @@ export class ProductsService {
       this.handleError(error, `update adminId for product with id ${id}`);
     }
   }
+
+  async findAllByAdminId(adminId: string) {
+    try {
+      return await this.prismaService.product.findMany({
+        where: { adminId },
+      });
+    } catch (error) {
+      this.handleError(error, `fetch products by adminId ${adminId}`);
+    }
+  }
 }

@@ -4,6 +4,7 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { ProductsService } from './products.service';
 import {
   CreateRequest,
+  FindAllByAdminIdRequest,
   FindAllRequest,
   FindByIdsRequest,
   FindOneRequest,
@@ -56,5 +57,10 @@ export class ProductsController {
   @GrpcMethod(PRODUCTS_SERVICE_NAME)
   updateAdminId(data: UpdateAdminIdRequest) {
     return this.productsService.updateAdminId(data);
+  }
+
+  @GrpcMethod(PRODUCTS_SERVICE_NAME)
+  findAllByAdminId(data: FindAllByAdminIdRequest) {
+    return this.productsService.findAllByAdminId(data.adminId);
   }
 }
