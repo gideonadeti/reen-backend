@@ -195,7 +195,7 @@ export class EventsHandlerService
 
   async handleUpdateQuantities(data: SagaFlowProps) {
     try {
-      const payload = await this.cacheManager.get(data.sagaStateId);
+      const payload = await this.cacheManager.get(data.sagaStateId!);
       const { cartItems } = payload as HandleCheckoutSessionCompletedPayload;
 
       // `cartItems` was stringified before being cached, so all `Date` fields (e.g., createdAt)
@@ -240,7 +240,7 @@ export class EventsHandlerService
 
   async handleUpdateFinancialInfos(data: SagaFlowProps) {
     try {
-      const payload = await this.cacheManager.get(data.sagaStateId);
+      const payload = await this.cacheManager.get(data.sagaStateId!);
       const { updateFinancialInfosRequests, balanceIds, userId } =
         payload as HandleCheckoutSessionCompletedPayload;
 
@@ -253,7 +253,7 @@ export class EventsHandlerService
       }
 
       // Persist updated balanceIds back to cache
-      await this.cacheManager.set(data.sagaStateId, {
+      await this.cacheManager.set(data.sagaStateId!, {
         ...(payload as HandleCheckoutSessionCompletedPayload),
         balanceIds,
       });
@@ -317,7 +317,7 @@ export class EventsHandlerService
   // Undo Update Quantities
   async handleUpdateFinancialInfosFailed(data: SagaFlowProps) {
     try {
-      const payload = await this.cacheManager.get(data.sagaStateId);
+      const payload = await this.cacheManager.get(data.sagaStateId!);
       const { cartItems } = payload as HandleCheckoutSessionCompletedPayload;
 
       const validCartItems = cartItems.map((item) => ({
@@ -356,14 +356,31 @@ export class EventsHandlerService
 
   async handleClearCart(data: SagaFlowProps) {
     try {
-      const payload = await this.cacheManager.get(data.sagaStateId);
-      const { userId } = payload as HandleCheckoutSessionCompletedPayload;
+      const { sagaStateId, userId } = data;
 
-      await firstValueFrom(this.cartItemsService.removeAll({ userId }));
+      // If there is a sagaStateId, it means userId is in the payload
+      // And this is the checkout-session-completed flow
+      if (sagaStateId) {
+        const payload = await this.cacheManager.get(sagaStateId);
+        const { userId } = payload as HandleCheckoutSessionCompletedPayload;
 
-      this.eventsHandlerClient.emit('create-order', {
-        sagaStateId: data.sagaStateId,
-      });
+        await firstValueFrom(this.cartItemsService.removeAll({ userId }));
+
+        this.eventsHandlerClient.emit('create-order', {
+          sagaStateId: data.sagaStateId,
+        });
+      } else {
+        // If there is no sagaStateId, it means userId is in data
+        // And this is a separate flow
+        // Specifically the user-deleted flow
+        await firstValueFrom(
+          this.cartItemsService.removeAll({ userId: userId as string }),
+        );
+
+        this.eventsHandlerClient.emit('remove-orders', {
+          userId,
+        });
+      }
     } catch (error) {
       this.handleError(error, 'clear cart');
 
@@ -387,6 +404,14 @@ export class EventsHandlerService
   // Undo Update Financial Infos
   // Undo Update Quantities
   async handleClearCartFailed(data: SagaFlowProps) {
+    // If there is no sagaStateId, it means this is a separate flow
+    // Specifically the user-deleted flow
+    // This is first operation after the user is deleted
+    // So, safe to just return
+    if (!data.sagaStateId) {
+      return;
+    }
+
     try {
       const payload = await this.cacheManager.get(data.sagaStateId);
       const { updateFinancialInfosRequests, balanceIds, userId } =
@@ -454,7 +479,7 @@ export class EventsHandlerService
 
   async handleCreateOrder(data: SagaFlowProps) {
     try {
-      const payload = await this.cacheManager.get(data.sagaStateId);
+      const payload = await this.cacheManager.get(data.sagaStateId!);
       const { userId, total, orderItems } =
         payload as HandleCheckoutSessionCompletedPayload;
 
@@ -466,7 +491,7 @@ export class EventsHandlerService
         }),
       );
 
-      await this.cacheManager.set(data.sagaStateId, {
+      await this.cacheManager.set(data.sagaStateId!, {
         ...(payload as HandleCheckoutSessionCompletedPayload),
         orderId: order.id,
       });
@@ -499,7 +524,7 @@ export class EventsHandlerService
   // Undo Update Quantities
   async handleCreateOrderFailed(data: SagaFlowProps) {
     try {
-      const payload = await this.cacheManager.get(data.sagaStateId);
+      const payload = await this.cacheManager.get(data.sagaStateId!);
       const { userId, cartItems } =
         payload as HandleCheckoutSessionCompletedPayload;
 
@@ -536,7 +561,7 @@ export class EventsHandlerService
 
   async handleUpdatePurchasesAndSalesCounts(data: SagaFlowProps) {
     try {
-      const payload = await this.cacheManager.get(data.sagaStateId);
+      const payload = await this.cacheManager.get(data.sagaStateId!);
       const { userId, updateFinancialInfosRequests } =
         payload as HandleCheckoutSessionCompletedPayload;
 
@@ -583,7 +608,7 @@ export class EventsHandlerService
   // Undo Update Quantities
   async handleUpdatePurchasesAndSalesCountsFailed(data: SagaFlowProps) {
     try {
-      const payload = await this.cacheManager.get(data.sagaStateId);
+      const payload = await this.cacheManager.get(data.sagaStateId!);
       const { orderId } = payload as HandleCheckoutSessionCompletedPayload;
 
       await firstValueFrom(
@@ -616,7 +641,7 @@ export class EventsHandlerService
 
   async handleNotifyBuyer(data: SagaFlowProps) {
     try {
-      const payload = await this.cacheManager.get(data.sagaStateId);
+      const payload = await this.cacheManager.get(data.sagaStateId!);
       const { userId } = payload as HandleCheckoutSessionCompletedPayload;
       const user = await firstValueFrom(
         this.authService.findUser({ id: userId }),
@@ -653,7 +678,7 @@ export class EventsHandlerService
 
   async handleNotifyAdmins(data: SagaFlowProps) {
     try {
-      const payload = await this.cacheManager.get(data.sagaStateId);
+      const payload = await this.cacheManager.get(data.sagaStateId!);
       const { adminNotificationPayloads } =
         payload as HandleCheckoutSessionCompletedPayload;
 
@@ -681,7 +706,7 @@ export class EventsHandlerService
         }),
       );
 
-      await this.cacheManager.del(data.sagaStateId);
+      await this.cacheManager.del(data.sagaStateId!);
     } catch (error) {
       this.handleError(error, 'notify admins');
 
@@ -700,8 +725,29 @@ export class EventsHandlerService
     }
   }
 
+  // Clear cart items
+  // Clear orders (order items will be deleted via cascade)
+  // Deletes or anonymizes products depending on whether they’re still linked to other order items
+  // Delete user (refresh token and balances will be deleted via cascade)
   async handleUserDeleted(clerkId: string) {
     try {
-    } catch (error) {}
+      const user = await firstValueFrom(
+        this.authService.findUserByClerkId({ clerkId }),
+      );
+
+      if (Object.keys(user).length === 0) {
+        this.logger.warn(
+          `User with clerkId ${clerkId} not found. Skipping delete...`,
+        );
+
+        return;
+      }
+
+      this.eventsHandlerClient.emit('clear-cart', {
+        userId: user.id,
+      });
+    } catch (error) {
+      this.handleError(error, 'user deleted');
+    }
   }
 }

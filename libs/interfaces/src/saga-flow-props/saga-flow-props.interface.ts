@@ -1,4 +1,5 @@
 export interface SagaFlowProps {
-  sagaStateId: string;
+  sagaStateId?: string;
+  userId?: string;
   retryCount?: number;
 }
