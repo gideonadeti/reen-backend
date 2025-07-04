@@ -812,11 +812,14 @@ export class EventsHandlerService
 
       const productIds = products.map((product) => product.id);
 
-      const { productIds: referencedProductIds } = await firstValueFrom(
+      const findReferencedProductIdsResponse = await firstValueFrom(
         this.ordersService.findReferencedProductIds({
           productIds,
         }),
       );
+
+      const referencedProductIds =
+        findReferencedProductIdsResponse.productIds || [];
 
       // Remove products that are not linked to other order items
       const toBeDeletedProductIds = productIds.filter(
