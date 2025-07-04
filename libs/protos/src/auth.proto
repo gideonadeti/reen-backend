@@ -27,8 +27,7 @@ service AuthService {
 
   rpc ChargeFee(ChargeFeeRequest) returns (Empty) {}
   rpc UndoChargeFee(ChargeFeeRequest) returns (Empty) {}
-  rpc FindOrCreateAnonymousUser(FindOrCreateAnonymousUserRequest)
-      returns (User) {}
+  rpc FindOrCreateAnonymousUser(Empty) returns (User) {}
 
   rpc UpdateNameAndEmail(UpdateNameAndEmailRequest) returns (Empty) {}
 
@@ -139,8 +138,6 @@ message ChargeFeeRequest {
   string user_id = 1;
   double amount = 2;
 }
-
-message FindOrCreateAnonymousUserRequest {}
 
 message UpdateNameAndEmailRequest {
   string id = 1;

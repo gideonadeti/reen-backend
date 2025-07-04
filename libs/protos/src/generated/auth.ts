@@ -138,9 +138,6 @@ export interface ChargeFeeRequest {
   amount: number;
 }
 
-export interface FindOrCreateAnonymousUserRequest {
-}
-
 export interface UpdateNameAndEmailRequest {
   id: string;
   name: string;
@@ -200,7 +197,7 @@ export interface AuthServiceClient {
 
   undoChargeFee(request: ChargeFeeRequest): Observable<Empty>;
 
-  findOrCreateAnonymousUser(request: FindOrCreateAnonymousUserRequest): Observable<User>;
+  findOrCreateAnonymousUser(request: Empty): Observable<User>;
 
   updateNameAndEmail(request: UpdateNameAndEmailRequest): Observable<Empty>;
 
@@ -250,7 +247,7 @@ export interface AuthServiceController {
 
   undoChargeFee(request: ChargeFeeRequest): Promise<Empty> | Observable<Empty> | Empty;
 
-  findOrCreateAnonymousUser(request: FindOrCreateAnonymousUserRequest): Promise<User> | Observable<User> | User;
+  findOrCreateAnonymousUser(request: Empty): Promise<User> | Observable<User> | User;
 
   updateNameAndEmail(request: UpdateNameAndEmailRequest): Promise<Empty> | Observable<Empty> | Empty;
 

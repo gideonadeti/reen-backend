@@ -8,7 +8,6 @@ import {
   Empty,
   FindAdminsRequest,
   FindByIdsRequest,
-  FindOrCreateAnonymousUserRequest,
   FindUserByClerkIdRequest,
   FindUserRequest,
   RefreshTokenRequest,
@@ -114,7 +113,7 @@ export class AuthController {
   }
 
   @GrpcMethod(AUTH_SERVICE_NAME)
-  findOrCreateAnonymousUser(data: FindOrCreateAnonymousUserRequest) {
+  findOrCreateAnonymousUser(data: Empty) {
     return this.authService.findOrCreateAnonymousUser(data);
   }
 

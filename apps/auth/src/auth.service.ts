@@ -16,7 +16,6 @@ import { User as PrismaUser } from '../generated/prisma';
 import {
   ChargeFeeRequest,
   Empty,
-  FindOrCreateAnonymousUserRequest,
   RefreshTokenRequest,
   SignOutRequest,
   SignUpRequest,
@@ -460,7 +459,7 @@ export class AuthService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async findOrCreateAnonymousUser(data: FindOrCreateAnonymousUserRequest) {
+  async findOrCreateAnonymousUser(data: Empty) {
     try {
       let user = await this.prismaService.user.findFirst({
         where: { role: 'ANONYMOUS' },
