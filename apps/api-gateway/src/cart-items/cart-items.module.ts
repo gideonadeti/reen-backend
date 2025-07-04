@@ -20,7 +20,7 @@ import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
           options: {
             package: CART_ITEMS_PACKAGE_NAME,
             protoPath: join(__dirname, '../../libs/protos/cart-items.proto'),
-            url: configService.get('CART_ITEMS_SERVICE_URL') as string,
+            url: configService.get('CART-ITEMS_SERVICE_URL') as string,
           },
         }),
         inject: [ConfigService],
