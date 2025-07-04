@@ -796,11 +796,13 @@ export class EventsHandlerService
 
   async handleRemoveOrAnonymizeProducts(data: SagaFlowProps) {
     try {
-      const { products } = await firstValueFrom(
+      const response = await firstValueFrom(
         this.productsService.findAllByAdminId({
           adminId: data.userId!,
         }),
       );
+
+      const products = response.products || [];
 
       if (products.length === 0) {
         this.eventsHandlerClient.emit('remove-user', { userId: data.userId });
