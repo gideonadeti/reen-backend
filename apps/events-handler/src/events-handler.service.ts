@@ -725,8 +725,9 @@ export class EventsHandlerService
     }
   }
 
-  // Clear cart items
-  // Clear orders (order items will be deleted via cascade)
+  // Clear user's cart items
+  // Clear user's orders (order items will be deleted via cascade)
+  // Clear cart items linked to user's products
   // Deletes or anonymizes products depending on whether they’re still linked to other order items
   // Delete user (refresh token will be deleted via cascade)
   async handleUserDeleted(data: { clerkId: string; retryCount?: number }) {
@@ -772,7 +773,7 @@ export class EventsHandlerService
         }),
       );
 
-      this.eventsHandlerClient.emit('remove-or-anonymize-products', {
+      this.eventsHandlerClient.emit('remove-products-cart-items', {
         userId: data.userId,
       });
     } catch (error) {
@@ -791,6 +792,45 @@ export class EventsHandlerService
 
       // No need to undo cart-clearing as user is already deleted at Clerk's end
       // Best will probably be to manually intervene and finish the process
+    }
+  }
+
+  async handleRemoveProductsCartItems(data: SagaFlowProps) {
+    try {
+      const response = await firstValueFrom(
+        this.productsService.findAllByAdminId({
+          adminId: data.userId!,
+        }),
+      );
+
+      const products = response.products || [];
+      const productIds = products.map((product) => product.id);
+
+      await firstValueFrom(
+        this.cartItemsService.removeByProductIds({
+          productIds,
+        }),
+      );
+
+      this.eventsHandlerClient.emit('remove-or-anonymize-products', {
+        userId: data.userId,
+      });
+    } catch (error) {
+      this.handleError(
+        error,
+        `remove products cart items for user with id ${data.userId}`,
+      );
+
+      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
+
+      const retryCount = data.retryCount || 0;
+
+      if (retryCount < 2) {
+        this.eventsHandlerClient.emit('remove-products-cart-items', {
+          userId: data.userId,
+          retryCount: retryCount + 1,
+        });
+      }
     }
   }
 
