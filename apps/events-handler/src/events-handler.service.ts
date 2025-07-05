@@ -806,11 +806,13 @@ export class EventsHandlerService
       const products = response.products || [];
       const productIds = products.map((product) => product.id);
 
-      await firstValueFrom(
-        this.cartItemsService.removeByProductIds({
-          productIds,
-        }),
-      );
+      if (productIds.length > 0) {
+        await firstValueFrom(
+          this.cartItemsService.removeByProductIds({
+            productIds,
+          }),
+        );
+      }
 
       this.eventsHandlerClient.emit('remove-or-anonymize-products', {
         userId: data.userId,
@@ -844,10 +846,6 @@ export class EventsHandlerService
 
       const products = response.products || [];
 
-      this.logger.log(
-        `Found ${products.length} products for user with id ${data.userId}`,
-      );
-
       if (products.length === 0) {
         this.eventsHandlerClient.emit('remove-user', { userId: data.userId });
 
@@ -865,24 +863,18 @@ export class EventsHandlerService
       const referencedProductIds =
         findReferencedProductIdsResponse.productIds || [];
 
-      this.logger.log(
-        `Found ${referencedProductIds.length} referenced products for user with id ${data.userId}`,
-      );
-
       // Remove products that are not linked to other order items
       const toBeDeletedProductIds = productIds.filter(
         (id) => !referencedProductIds.includes(id),
       );
 
-      this.logger.log(
-        `Found ${toBeDeletedProductIds.length} products to be deleted for user with id ${data.userId}`,
-      );
-
-      await firstValueFrom(
-        this.productsService.removeByIds({
-          ids: toBeDeletedProductIds,
-        }),
-      );
+      if (toBeDeletedProductIds.length > 0) {
+        await firstValueFrom(
+          this.productsService.removeByIds({
+            ids: toBeDeletedProductIds,
+          }),
+        );
+      }
 
       if (referencedProductIds.length > 0) {
         const anonymousUser = await firstValueFrom(
@@ -969,10 +961,6 @@ export class EventsHandlerService
 
       const products = response.products || [];
 
-      this.logger.log(
-        `Found ${products.length} products for anonymous user with id ${anonymousUser.id}`,
-      );
-
       if (products.length === 0) return;
 
       const productIds = products.map((product) => product.id);
@@ -986,24 +974,18 @@ export class EventsHandlerService
       const referencedProductIds =
         findReferencedProductIdsResponse.productIds || [];
 
-      this.logger.log(
-        `Found ${referencedProductIds.length} referenced products for anonymous user with id ${anonymousUser.id}`,
-      );
-
       // Remove products that are not linked to other order items
       const toBeDeletedProductIds = productIds.filter(
         (id) => !referencedProductIds.includes(id),
       );
 
-      this.logger.log(
-        `Found ${toBeDeletedProductIds.length} orphaned products to be deleted for anonymous user with id ${anonymousUser.id}`,
-      );
-
-      await firstValueFrom(
-        this.productsService.removeByIds({
-          ids: toBeDeletedProductIds,
-        }),
-      );
+      if (toBeDeletedProductIds.length > 0) {
+        await firstValueFrom(
+          this.productsService.removeByIds({
+            ids: toBeDeletedProductIds,
+          }),
+        );
+      }
 
       await this.cacheManager.del('/products');
     } catch (error) {
