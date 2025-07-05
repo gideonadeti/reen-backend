@@ -16,6 +16,7 @@ service CartItemsService {
       returns (FindByProductIdResponse) {}
 
   rpc RemoveByProductId(RemoveByProductIdRequest) returns (Empty) {}
+  rpc RemoveByProductIds(RemoveByProductIdsRequest) returns (Empty) {}
 }
 
 message CreateRequest {
@@ -75,3 +76,5 @@ message FindByProductIdResponse { repeated CartItem cart_items = 1; }
 message RemoveByProductIdRequest { string product_id = 1; }
 
 message Empty {}
+
+message RemoveByProductIdsRequest { repeated string product_ids = 1; }
