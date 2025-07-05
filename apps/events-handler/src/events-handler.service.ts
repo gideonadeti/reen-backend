@@ -909,21 +909,26 @@ export class EventsHandlerService
         this.authService.findOrCreateAnonymousUser({}),
       );
 
-      const { products } = await firstValueFrom(
+      const response = await firstValueFrom(
         this.productsService.findAllByAdminId({
           adminId: anonymousUser.id,
         }),
       );
 
+      const products = response.products || [];
+
       if (products.length === 0) return;
 
       const productIds = products.map((product) => product.id);
 
-      const { productIds: referencedProductIds } = await firstValueFrom(
+      const findReferencedProductIdsResponse = await firstValueFrom(
         this.ordersService.findReferencedProductIds({
           productIds,
         }),
       );
+
+      const referencedProductIds =
+        findReferencedProductIdsResponse.productIds || [];
 
       // Remove products that are not linked to other order items
       const toBeDeletedProductIds = productIds.filter(
