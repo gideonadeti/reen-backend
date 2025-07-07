@@ -382,7 +382,7 @@ export class EventsHandlerService
           this.cartItemsService.removeAll({ userId: userId as string }),
         );
 
-        this.eventsHandlerClient.emit('remove-orders', {
+        this.eventsHandlerClient.emit('remove-products-cart-items', {
           userId,
         });
       }
@@ -726,7 +726,6 @@ export class EventsHandlerService
   }
 
   // Clear user's cart items
-  // Clear user's orders (order items will be deleted via cascade)
   // Clear cart items linked to user's products
   // Deletes or anonymizes products depending on whether they’re still linked to other order items
   // Delete user (refresh token will be deleted via cascade)
@@ -762,36 +761,6 @@ export class EventsHandlerService
       }
 
       // Give up after retries
-    }
-  }
-
-  async handleRemoveOrders(data: SagaFlowProps) {
-    try {
-      await firstValueFrom(
-        this.ordersService.removeAll({
-          userId: data.userId!,
-        }),
-      );
-
-      this.eventsHandlerClient.emit('remove-products-cart-items', {
-        userId: data.userId,
-      });
-    } catch (error) {
-      this.handleError(error, `remove orders for user with id ${data.userId}`);
-
-      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
-
-      const retryCount = data.retryCount || 0;
-
-      if (retryCount < 2) {
-        this.eventsHandlerClient.emit('remove-orders', {
-          userId: data.userId,
-          retryCount: retryCount + 1,
-        });
-      }
-
-      // No need to undo cart-clearing as user is already deleted at Clerk's end
-      // Best will probably be to manually intervene and finish the process
     }
   }
 
