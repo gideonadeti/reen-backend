@@ -100,6 +100,7 @@ export class CheckoutService {
         metadata: {
           userId,
         },
+        payment_method_types: ['card'],
         success_url: `${frontendBaseUrl}/checkout?success=true`,
         cancel_url: `${frontendBaseUrl}/checkout?canceled=true`,
       });
