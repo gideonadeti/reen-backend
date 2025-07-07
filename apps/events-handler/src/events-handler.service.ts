@@ -12,10 +12,10 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 
-import { MailersendService } from './mailersend/mailersend.service';
 import { AdminNotificationPayload } from '@app/interfaces/admin-notification-payload/admin-notification-payload.interface';
 import { HandleCheckoutSessionCompletedPayload } from '@app/interfaces/handle-checkout-session-completed-payload/handle-checkout-session-completed-payload.interface';
 import { SagaFlowProps } from '@app/interfaces/saga-flow-props/saga-flow-props.interface';
+import { NodemailerService } from './nodemailer/nodemailer.service';
 import {
   CART_ITEMS_PACKAGE_NAME,
   CART_ITEMS_SERVICE_NAME,
@@ -49,7 +49,7 @@ export class EventsHandlerService
     @Inject('EVENTS_HANDLER_SERVICE') private eventsHandlerClient: ClientProxy,
     @Inject(AUTH_PACKAGE_NAME) private authClient: ClientGrpc,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private readonly mailersendService: MailersendService,
+    private readonly nodemailerService: NodemailerService,
   ) {}
 
   private cartItemsService: CartItemsServiceClient;
@@ -642,15 +642,17 @@ export class EventsHandlerService
   async handleNotifyBuyer(data: SagaFlowProps) {
     try {
       const payload = await this.cacheManager.get(data.sagaStateId!);
-      const { userId } = payload as HandleCheckoutSessionCompletedPayload;
+      const { userId, orderId } =
+        payload as HandleCheckoutSessionCompletedPayload;
       const user = await firstValueFrom(
         this.authService.findUser({ id: userId }),
       );
 
-      await this.mailersendService.notifyBuyer(
+      await this.nodemailerService.notifyBuyer(
         user.email,
         user.name,
         user.name.split(' ')[0],
+        orderId,
       );
 
       this.eventsHandlerClient.emit('notify-admins', {
@@ -696,7 +698,7 @@ export class EventsHandlerService
 
           if (!admin || !buyer) return;
 
-          await this.mailersendService.notifyAdmin(
+          await this.nodemailerService.notifyAdmin(
             admin.email,
             admin.name,
             admin.name.split(' ')[0],
