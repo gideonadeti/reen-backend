@@ -15,6 +15,7 @@ import { RmqLoggingInterceptor } from './rmq-logging/rmq-logging.middleware';
 import { AUTH_PACKAGE_NAME } from '@app/protos/generated/auth';
 import { ResendService } from './resend/resend.service';
 import { MailersendService } from './mailersend/mailersend.service';
+import { NodemailerService } from './nodemailer/nodemailer.service';
 
 @Module({
   imports: [
@@ -119,6 +120,7 @@ import { MailersendService } from './mailersend/mailersend.service';
     },
     ResendService,
     MailersendService,
+    NodemailerService,
   ],
 })
 export class EventsHandlerModule {}
