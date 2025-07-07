@@ -729,6 +729,7 @@ export class EventsHandlerService
   // Clear cart items linked to user's products
   // Deletes or anonymizes products depending on whether they’re still linked to other order items
   // Delete user (refresh token will be deleted via cascade)
+  // Delete orphaned products (products that are linked to anonymous user but not linked to any order items)
   async handleUserDeleted(data: { clerkId: string; retryCount?: number }) {
     try {
       const user = await firstValueFrom(
