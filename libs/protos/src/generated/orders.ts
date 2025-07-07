@@ -69,10 +69,6 @@ export interface FindOrderItemsByProductIdResponse {
   orderItems: OrderItem[];
 }
 
-export interface RemoveAllRequest {
-  userId: string;
-}
-
 export interface Empty {
 }
 
@@ -108,8 +104,6 @@ export interface OrdersServiceClient {
 
   findOrderItemsByProductId(request: FindOrderItemsByProductIdRequest): Observable<FindOrderItemsByProductIdResponse>;
 
-  removeAll(request: RemoveAllRequest): Observable<Empty>;
-
   findReferencedProductIds(request: FindReferencedProductIdsRequest): Observable<FindReferencedProductIdsResponse>;
 }
 
@@ -136,8 +130,6 @@ export interface OrdersServiceController {
     | Observable<FindOrderItemsByProductIdResponse>
     | FindOrderItemsByProductIdResponse;
 
-  removeAll(request: RemoveAllRequest): Promise<Empty> | Observable<Empty> | Empty;
-
   findReferencedProductIds(
     request: FindReferencedProductIdsRequest,
   ):
@@ -155,7 +147,6 @@ export function OrdersServiceControllerMethods() {
       "findOne",
       "findProductOrderCounts",
       "findOrderItemsByProductId",
-      "removeAll",
       "findReferencedProductIds",
     ];
     for (const method of grpcMethods) {

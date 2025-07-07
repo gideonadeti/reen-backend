@@ -15,7 +15,6 @@ service OrdersService {
   rpc FindOrderItemsByProductId(FindOrderItemsByProductIdRequest)
       returns (FindOrderItemsByProductIdResponse) {}
 
-  rpc RemoveAll(RemoveAllRequest) returns (Empty) {}
   rpc FindReferencedProductIds(FindReferencedProductIdsRequest)
       returns (FindReferencedProductIdsResponse) {}
 }
@@ -64,8 +63,6 @@ message FindOrderItemsByProductIdRequest { string product_id = 1; }
 message FindOrderItemsByProductIdResponse {
   repeated OrderItem order_items = 1;
 }
-
-message RemoveAllRequest { string user_id = 1; }
 
 message Empty {}
 
