@@ -89,6 +89,15 @@ export class EventsHandlerService
     return Array.from(userIdSet);
   }
 
+  // Prepare all relevant data for the saga flow
+  // Store data in cache with a unique saga state ID
+  // Update product quantities
+  // Update financial infos for user and admins
+  // Clear user's cart items
+  // Create order
+  // Update purchases and sales counts for user and admins
+  // Notify buyer and admins
+  // Clear cache
   async handleCheckoutSessionCompleted(data: {
     session: Stripe.Checkout.Session;
     retryCount?: number;
