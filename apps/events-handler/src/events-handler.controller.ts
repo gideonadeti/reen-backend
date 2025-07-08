@@ -92,9 +92,4 @@ export class EventsHandlerController {
   handleRemoveUser(@Payload() data: SagaFlowProps) {
     return this.eventsHandlerService.handleRemoveUser(data);
   }
-
-  @EventPattern('remove-orphaned-products')
-  handleRemoveOrphanedProducts(@Payload() data: SagaFlowProps) {
-    return this.eventsHandlerService.handleRemoveOrphanedProducts(data);
-  }
 }

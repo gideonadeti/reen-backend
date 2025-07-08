@@ -740,7 +740,6 @@ export class EventsHandlerService
   // Clear cart items linked to user's products
   // Deletes or anonymizes products depending on whether they’re still linked to other order items
   // Delete user (refresh token will be deleted via cascade)
-  // Delete orphaned products (products that are linked to anonymous user but not linked to any order items)
   async handleUserDeleted(data: { clerkId: string; retryCount?: number }) {
     try {
       const user = await firstValueFrom(
@@ -908,10 +907,6 @@ export class EventsHandlerService
 
       await this.cacheManager.del('/auth/find-all');
       await this.cacheManager.del(`/auth/users/${user.clerkId}`);
-
-      this.eventsHandlerClient.emit('remove-orphaned-products', {
-        retryCount: 0,
-      });
     } catch (error) {
       this.handleError(error, `remove user with id ${data.userId}`);
 
@@ -922,62 +917,6 @@ export class EventsHandlerService
       if (retryCount < 2) {
         this.eventsHandlerClient.emit('remove-user', {
           userId: data.userId,
-          retryCount: retryCount + 1,
-        });
-      }
-    }
-  }
-
-  async handleRemoveOrphanedProducts(data: SagaFlowProps) {
-    try {
-      const anonymousUser = await firstValueFrom(
-        this.authService.findOrCreateAnonymousUser({}),
-      );
-
-      const response = await firstValueFrom(
-        this.productsService.findAllByAdminId({
-          adminId: anonymousUser.id,
-        }),
-      );
-
-      const products = response.products || [];
-
-      if (products.length === 0) return;
-
-      const productIds = products.map((product) => product.id);
-
-      const findReferencedProductIdsResponse = await firstValueFrom(
-        this.ordersService.findReferencedProductIds({
-          productIds,
-        }),
-      );
-
-      const referencedProductIds =
-        findReferencedProductIdsResponse.productIds || [];
-
-      // Remove products that are not linked to other order items
-      const toBeDeletedProductIds = productIds.filter(
-        (id) => !referencedProductIds.includes(id),
-      );
-
-      if (toBeDeletedProductIds.length > 0) {
-        await firstValueFrom(
-          this.productsService.removeByIds({
-            ids: toBeDeletedProductIds,
-          }),
-        );
-      }
-
-      await this.cacheManager.del('/products');
-    } catch (error) {
-      this.handleError(error, 'remove orphaned products');
-
-      await new Promise((res) => setTimeout(res, 2000)); // 2 secs delay
-
-      const retryCount = data.retryCount || 0;
-
-      if (retryCount < 2) {
-        this.eventsHandlerClient.emit('remove-orphaned-products', {
           retryCount: retryCount + 1,
         });
       }
