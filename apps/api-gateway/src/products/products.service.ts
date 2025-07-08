@@ -300,6 +300,9 @@ export class ProductsService implements OnModuleInit {
             newAdminId: anonymousUser.id,
           }),
         );
+
+        // Invalidate users cache
+        await this.cacheManager.del('/auth/find-all');
       }
 
       // Invalidate products cache after product deletion
