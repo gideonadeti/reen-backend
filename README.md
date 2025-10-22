@@ -163,8 +163,6 @@ REEN is architected as a modular microservices-based system, designed for scalab
 - CI/CD pipeline **not yet automated** due to billing issues
   → For now: `Build → Push to GHCR → SSH into EC2 → Pull & restart containers manually`
 
-Good calls, Gideon — you're absolutely right on multiple points. Here's a refined version with your adjustments applied, keeping it clear, categorized, and focused:
-
 ## 🧱 Tech Stack
 
 ### 🖼️ Frontend
