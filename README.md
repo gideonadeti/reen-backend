@@ -4,6 +4,12 @@
 
 This project simulates a virtual economy where users can browse, buy, sell, and manage digital products—with role-based upgrades, economic constraints, and robust transaction handling.
 
+## ⚠ Note on Deployment
+
+This project was originally deployed using AWS EC2.  
+The service has since been terminated after the free-tier period ended.  
+The application code, architecture, and core logic remain intact and can be redeployed if needed.
+
 ## 🚀 Features (User Journey Flow)
 
 - **Clerk-based authentication**  
