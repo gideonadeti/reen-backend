@@ -13,7 +13,6 @@ import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
 import { ORDERS_PACKAGE_NAME } from '@app/protos/generated/orders';
 import { RmqLoggingInterceptor } from './rmq-logging/rmq-logging.middleware';
 import { AUTH_PACKAGE_NAME } from '@app/protos/generated/auth';
-import { ResendService } from './resend/resend.service';
 import { MailersendService } from './mailersend/mailersend.service';
 import { NodemailerService } from './nodemailer/nodemailer.service';
 
@@ -118,7 +117,6 @@ import { NodemailerService } from './nodemailer/nodemailer.service';
       provide: APP_INTERCEPTOR,
       useClass: RmqLoggingInterceptor,
     },
-    ResendService,
     MailersendService,
     NodemailerService,
   ],
