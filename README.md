@@ -2,6 +2,8 @@
 
 A scalable microservices-based RESTful API built with NestJS for powering a modern e-commerce platform. This backend service provides authentication, product management, shopping cart functionality, checkout processing, and order management through a distributed architecture that ensures high availability, scalability, and maintainability.
 
+> **Note:** This project is currently not deployed online as my AWS free tier has ended. However, everything works perfectly locally. You can follow the instructions in the [Running Locally](#running-locally) section to set up and run the project on your machine.
+
 ## Table of Contents
 
 - [REEN Backend API](#reen-backend-api)
