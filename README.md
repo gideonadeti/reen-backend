@@ -35,6 +35,9 @@ A scalable microservices-based RESTful API built with NestJS for powering a mode
     - [Using Docker Compose](#using-docker-compose)
   - [Deployment](#deployment)
     - [Docker Compose Deployment](#docker-compose-deployment)
+  - [Future Enhancements](#future-enhancements)
+    - [Monitoring \& Logging](#monitoring--logging)
+    - [CI/CD Pipeline](#cicd-pipeline)
   - [Contributing](#contributing)
     - [Development Guidelines](#development-guidelines)
   - [Support](#support)
@@ -461,6 +464,23 @@ This project is designed to be deployed using Docker Compose with images stored 
    - Configure `FRONTEND_BASE_URL` to use your domain
 
 **Note:** Make sure the `.env` file is in the root directory where you run the `docker compose` command, as all services mount this file for their configuration.
+
+## Future Enhancements
+
+The following features are planned for future implementation:
+
+### Monitoring & Logging
+
+- **Prometheus** - Metrics collection and monitoring for all microservices
+- **Grafana** - Visualization and dashboards for system metrics and performance monitoring
+- **ELK Stack (Elasticsearch, Logstash, Kibana)** - Centralized logging aggregation and log analysis across all microservices
+
+### CI/CD Pipeline
+
+- **GitHub Actions** or **Jenkins** - Automated build, test, and deployment pipeline for each microservice
+- Automated testing integration
+- Container image building and pushing to registry
+- Automated deployment to staging and production environments
 
 ## Contributing
 
