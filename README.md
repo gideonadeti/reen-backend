@@ -28,6 +28,7 @@ A scalable microservices-based RESTful API built with NestJS for powering a mode
     - [Development Tools](#development-tools)
     - [Testing](#testing)
   - [Architecture](#architecture)
+    - [Architecture Diagram](#architecture-diagram)
   - [Running Locally](#running-locally)
     - [Prerequisites](#prerequisites)
     - [Environment Variables](#environment-variables)
@@ -324,7 +325,7 @@ NODE_ENV=development
    ```
 
 7. **Access the API**
-   - API Base URL: `http://localhost:3000/api/v1`
+   - API Base URL: `http://localhost:3000`
    - Swagger Documentation: `http://localhost:3000/api-gateway/documentation`
 
 ### Using Docker Compose
@@ -361,7 +362,7 @@ For easier local development, you can use Docker Compose:
    This will start all services, Redis, and set up the necessary networking.
 
 3. **Access the API**
-   - API Base URL: `http://localhost:3000/api/v1`
+   - API Base URL: `http://localhost:3000`
    - Swagger Documentation: `http://localhost:3000/api-gateway/documentation`
 
 ## Deployment
@@ -451,7 +452,7 @@ This project is designed to be deployed using Docker Compose with images stored 
       Update your frontend's API base URL to point to your ngrok domain:
 
       ```text
-      https://your-ngrok-domain.ngrok-free.app/api/v1
+      https://your-ngrok-domain.ngrok-free.app
       ```
 
 5. **SSL/TLS Configuration (For Production with Domain)**
