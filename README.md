@@ -320,7 +320,7 @@ For easier local development, you can use Docker Compose:
 2. **Start all services with Docker Compose**
 
    ```bash
-   docker compose -f compose.yaml -f compose.dev.yaml up
+   docker compose -f compose.yaml -f compose.local.yaml up
    ```
 
    This will start all services, Redis, and set up the necessary networking.
@@ -428,7 +428,7 @@ This project is designed to be deployed using Docker Compose with images stored 
    - Update your DNS to point to your server's IP address
    - Configure `FRONTEND_BASE_URL` to use your domain
 
-**Note:** Use `.env.local` for local development (`compose.dev.yaml`) and `.env` for shared/deployment compose (`compose.yaml`/`compose.prod.yaml`).
+**Note:** Use `.env.local` for local development (`compose.local.yaml`) and `.env` for shared/deployment compose (`compose.yaml`/`compose.prod.yaml`).
 
 ## Future Enhancements
 
