@@ -12,7 +12,7 @@ import {
 
 import { PrismaService } from './prisma/prisma.service';
 import { AuthPayload } from '@app/interfaces';
-import { User as PrismaUser } from '../generated/prisma';
+import { Prisma, User as PrismaUser } from '../generated/prisma';
 import {
   ChargeFeeRequest,
   Empty,
@@ -45,7 +45,7 @@ export class AuthService {
   }
 
   private async handleSuccessfulAuth(user: User) {
-    const payload = this.createAuthPayload(user) as AuthPayload;
+    const payload = this.createAuthPayload(user);
     const accessToken = this.createJwtToken('access', payload);
     const refreshToken = this.createJwtToken('refresh', payload);
     const hashedRefreshToken = await this.hashPassword(refreshToken);
@@ -92,33 +92,74 @@ export class AuthService {
     throw new RpcException(JSON.stringify(error));
   }
 
+  private mapPrismaUserToGrpcUser(user: PrismaUser): User {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...rest } = user;
+
+    return {
+      ...rest,
+      clerkId: rest.clerkId as string | undefined,
+      role: UserRole[rest.role],
+    };
+  }
+
   async signUp(signUpRequest: SignUpRequest) {
     try {
-      let user: PrismaUser;
-
-      if (!signUpRequest.password) {
-        user = await this.prismaService.user.create({
-          data: signUpRequest,
+      if (!signUpRequest.password && signUpRequest.clerkId) {
+        const existingUser = await this.prismaService.user.findUnique({
+          where: { clerkId: signUpRequest.clerkId },
         });
-      } else {
-        const hashedPassword = await this.hashPassword(signUpRequest.password);
 
-        user = await this.prismaService.user.create({
-          data: {
-            ...signUpRequest,
-            password: hashedPassword,
-          },
-        });
+        if (existingUser) {
+          return await this.handleSuccessfulAuth(
+            this.mapPrismaUserToGrpcUser(existingUser),
+          );
+        }
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...rest } = user;
+      let user: PrismaUser;
+      try {
+        if (!signUpRequest.password) {
+          user = await this.prismaService.user.create({
+            data: signUpRequest,
+          });
+        } else {
+          const hashedPassword = await this.hashPassword(
+            signUpRequest.password,
+          );
 
-      return await this.handleSuccessfulAuth({
-        ...rest,
-        clerkId: rest.clerkId as string | undefined,
-        role: UserRole[rest.role],
-      });
+          user = await this.prismaService.user.create({
+            data: {
+              ...signUpRequest,
+              password: hashedPassword,
+            },
+          });
+        }
+      } catch (error) {
+        const isUniqueConstraintError =
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === 'P2002';
+
+        if (!isUniqueConstraintError || !signUpRequest.clerkId) {
+          throw error;
+        }
+
+        const existingUser = await this.prismaService.user.findUnique({
+          where: { clerkId: signUpRequest.clerkId },
+        });
+
+        if (!existingUser) {
+          throw error;
+        }
+
+        return await this.handleSuccessfulAuth(
+          this.mapPrismaUserToGrpcUser(existingUser),
+        );
+      }
+
+      return await this.handleSuccessfulAuth(
+        this.mapPrismaUserToGrpcUser(user),
+      );
     } catch (error) {
       this.handleError(error, 'sign up');
     }
@@ -156,9 +197,13 @@ export class AuthService {
 
   async refreshToken({ user, refreshToken }: RefreshTokenRequest) {
     try {
+      if (!user) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
       const existingRefreshToken =
         await this.prismaService.refreshToken.findUnique({
-          where: { userId: user!.id },
+          where: { userId: user.id },
         });
 
       if (!existingRefreshToken) {
@@ -174,7 +219,7 @@ export class AuthService {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
-      const payload = this.createAuthPayload(user as User) as AuthPayload;
+      const payload = this.createAuthPayload(user);
       const accessToken = this.createJwtToken('access', payload);
 
       return { accessToken };
