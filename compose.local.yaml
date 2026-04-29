@@ -1,9 +1,9 @@
 x-gateway-env: &gateway-env
-  AUTH_SERVICE_URL: host.docker.internal:5001
-  PRODUCTS_SERVICE_URL: host.docker.internal:5002
-  CART-ITEMS_SERVICE_URL: host.docker.internal:5003
-  CHECKOUT_SERVICE_URL: host.docker.internal:5004
-  ORDERS_SERVICE_URL: host.docker.internal:5005
+  AUTH_SERVICE_URL: host.docker.internal:5000
+  PRODUCTS_SERVICE_URL: host.docker.internal:5001
+  CART_ITEMS_SERVICE_URL: host.docker.internal:5002
+  CHECKOUT_SERVICE_URL: host.docker.internal:5003
+  ORDERS_SERVICE_URL: host.docker.internal:5004
   REDIS_SERVICE_URL: redis://redis:6379
 
 x-gateway-shared: &gateway-shared
