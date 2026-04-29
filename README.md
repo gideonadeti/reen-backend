@@ -261,16 +261,16 @@ Services communicate through:
 
    ```bash
    # Start all services concurrently
-   pnpm run start:dev:all
+   pnpm start:dev:all
    
    # Or start services individually
-   pnpm run start:dev                    # API Gateway
-   pnpm run start:dev auth               # Auth Service
-   pnpm run start:dev products           # Products Service
-   pnpm run start:dev cart-items         # Cart Items Service
-   pnpm run start:dev checkout           # Checkout Service
-   pnpm run start:dev orders             # Orders Service
-   pnpm run start:dev events-handler     # Events Handler Service
+   pnpm start:dev                    # API Gateway
+   pnpm start:dev auth               # Auth Service
+   pnpm start:dev products           # Products Service
+   pnpm start:dev cart-items         # Cart Items Service
+   pnpm start:dev checkout           # Checkout Service
+   pnpm start:dev orders             # Orders Service
+   pnpm start:dev events-handler     # Events Handler Service
    ```
 
 7. **Access the API**
@@ -313,7 +313,7 @@ For easier local development, you can use Docker Compose:
 3. **Start backend services on host**
 
    ```bash
-   pnpm run start:dev:all
+   pnpm start:dev:all
    ```
 
 4. **Access the API**
