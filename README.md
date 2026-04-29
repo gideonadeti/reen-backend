@@ -250,29 +250,14 @@ Services communicate through:
 
    This command will push your Prisma schema to each MongoDB database and automatically generate the Prisma Client for each service.
 
-5. **Start Redis server**
+5. **Start infrastructure services (MongoDB, Redis, RabbitMQ)**
 
    ```bash
-   # Using Docker
-   docker run -d -p 6379:6379 redis:8.0.2
-   
-   # Or using your system's package manager
-   # Ubuntu/Debian: sudo apt-get install redis-server
-   # macOS: brew install redis
+   # Recommended: start infra only via Docker Compose
+   docker compose --env-file .env.local -f compose.local.yaml up -d mongodb redis rabbitmq
    ```
 
-6. **Start RabbitMQ server**
-
-   ```bash
-   # Using Docker
-   docker run -d -p 5672:5672 -p 15672:15672 rabbitmq:3-management
-   
-   # Or using your system's package manager
-   # Ubuntu/Debian: sudo apt-get install rabbitmq-server
-   # macOS: brew install rabbitmq
-   ```
-
-7. **Start all services**
+6. **Start all services**
 
    ```bash
    # Start all services concurrently
@@ -288,7 +273,7 @@ Services communicate through:
    pnpm run start:dev events-handler     # Events Handler Service
    ```
 
-8. **Access the API**
+7. **Access the API**
    - API Base URL: `http://localhost:3000`
    - Swagger Documentation: `http://localhost:3000/api-gateway/documentation`
 
@@ -317,17 +302,34 @@ For easier local development, you can use Docker Compose:
 
    **Note:** If you're running MongoDB and RabbitMQ outside of Docker Compose, keep using `localhost` for those URLs.
 
-2. **Start all services with Docker Compose**
+2. **Start local infrastructure with Docker Compose**
 
    ```bash
-   docker compose -f compose.yaml -f compose.local.yaml up
+   docker compose --env-file .env.local -f compose.local.yaml up -d mongodb redis rabbitmq
    ```
 
-   This will start all services, Redis, and set up the necessary networking.
+   This starts MongoDB, Redis, and RabbitMQ for hybrid local development.
 
-3. **Access the API**
+3. **Start backend services on host**
+
+   ```bash
+   pnpm run start:dev:all
+   ```
+
+4. **Access the API**
    - API Base URL: `http://localhost:3000`
    - Swagger Documentation: `http://localhost:3000/api-gateway/documentation`
+
+5. **(Optional) Test local load balancing with Nginx**
+
+   Keep backend services running on host, then start two API gateway containers behind Nginx:
+
+   ```bash
+   docker compose --env-file .env.local -f compose.local.yaml up --build api-gateway-1 api-gateway-2 nginx
+   ```
+
+   Test through Nginx at:
+   - Load-balanced API URL: `http://localhost:8080`
 
 ## Deployment
 
