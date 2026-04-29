@@ -220,45 +220,10 @@ Services communicate through:
 
 ### Environment Variables
 
-Create a `.env` file in the root directory with the following variables:
+Copy the example env file and then update values as needed:
 
-```env
-# Frontend Configuration
-FRONTEND_BASE_URL="http://localhost:3001"
-
-# Database URLs (one per service)
-AUTH_DATABASE_URL="mongodb://user:password@localhost:27017/reen-auth?authSource=admin"
-PRODUCTS_DATABASE_URL="mongodb://user:password@localhost:27017/reen-products?authSource=admin"
-CART-ITEMS_DATABASE_URL="mongodb://user:password@localhost:27017/reen-cart-items?authSource=admin"
-ORDERS_DATABASE_URL="mongodb://user:password@localhost:27017/reen-orders?authSource=admin"
-
-# Redis Configuration
-REDIS_SERVICE_URL="redis://localhost:6379"
-
-# RabbitMQ Configuration
-MESSAGE_BROKER_URL="amqp://guest:guest@localhost:5672"
-
-# Service URLs (gRPC endpoints)
-AUTH_SERVICE_URL="localhost:5001"
-PRODUCTS_SERVICE_URL="localhost:5002"
-CART-ITEMS_SERVICE_URL="localhost:5003"
-CHECKOUT_SERVICE_URL="localhost:5004"
-ORDERS_SERVICE_URL="localhost:5005"
-
-# Clerk Configuration
-CLERK_SECRET_KEY="your-clerk-secret-key"
-CLERK_PUBLISHABLE_KEY="your-clerk-publishable-key"
-
-# Stripe Configuration
-STRIPE_SECRET_KEY="your-stripe-secret-key"
-STRIPE_WEBHOOK_SIGNING_SECRET="your-stripe-webhook-signing-secret"
-
-# Email Configuration (Optional)
-EMAIL_SERVICE_API_KEY="your-email-service-api-key"
-
-# Server Configuration
-PORT=3000
-NODE_ENV=development
+```bash
+cp .env.local.example .env.local
 ```
 
 ### Installation Steps
@@ -276,7 +241,13 @@ NODE_ENV=development
    npm install
    ```
 
-3. **Set up the databases**
+3. **Create local environment file**
+
+   ```bash
+   cp .env.local.example .env.local
+   ```
+
+4. **Set up the databases**
 
    ```bash
    # Push schema to each service's database and generate Prisma Client
@@ -288,7 +259,7 @@ NODE_ENV=development
 
    This command will push your Prisma schema to each MongoDB database and automatically generate the Prisma Client for each service.
 
-4. **Start Redis server**
+5. **Start Redis server**
 
    ```bash
    # Using Docker
@@ -299,7 +270,7 @@ NODE_ENV=development
    # macOS: brew install redis
    ```
 
-5. **Start RabbitMQ server**
+6. **Start RabbitMQ server**
 
    ```bash
    # Using Docker
@@ -310,7 +281,7 @@ NODE_ENV=development
    # macOS: brew install rabbitmq
    ```
 
-6. **Start all services**
+7. **Start all services**
 
    ```bash
    # Start all services concurrently
@@ -326,7 +297,7 @@ NODE_ENV=development
    npm run start:dev events-handler     # Events Handler Service
    ```
 
-7. **Access the API**
+8. **Access the API**
    - API Base URL: `http://localhost:3000`
    - Swagger Documentation: `http://localhost:3000/api-gateway/documentation`
 
@@ -336,7 +307,7 @@ For easier local development, you can use Docker Compose:
 
 1. **Adjust Service URLs for Docker Compose**
 
-   When using Docker Compose, services communicate through Docker's internal network. Update your `.env` file to use Docker service names instead of `localhost` for service URLs:
+   When using Docker Compose, services communicate through Docker's internal network. Update your `.env.local` file to use Docker service names instead of `localhost` for service URLs:
 
    ```env
    # Service URLs (gRPC endpoints) - Use Docker service names
@@ -466,7 +437,7 @@ This project is designed to be deployed using Docker Compose with images stored 
    - Update your DNS to point to your server's IP address
    - Configure `FRONTEND_BASE_URL` to use your domain
 
-**Note:** Make sure the `.env` file is in the root directory where you run the `docker compose` command, as all services mount this file for their configuration.
+**Note:** Use `.env.local` for local development (`compose.dev.yaml`) and `.env` for shared/deployment compose (`compose.yaml`/`compose.prod.yaml`).
 
 ## Future Enhancements
 
