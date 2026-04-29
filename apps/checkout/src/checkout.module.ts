@@ -42,7 +42,7 @@ import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
     ]),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: 'apps/checkout/.env',
+      envFilePath: ['apps/checkout/.env.local', 'apps/checkout/.env'],
     }),
   ],
   controllers: [CheckoutController],

@@ -11,7 +11,7 @@ import { GrpcLoggingInterceptor } from '@app/interceptors';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: 'apps/products/.env',
+      envFilePath: ['apps/products/.env.local', 'apps/products/.env'],
     }),
   ],
   controllers: [ProductsController],

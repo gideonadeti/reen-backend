@@ -12,7 +12,7 @@ import { GrpcLoggingInterceptor } from '@app/interceptors';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: 'apps/auth/.env',
+      envFilePath: ['apps/auth/.env.local', 'apps/auth/.env'],
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
