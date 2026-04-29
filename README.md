@@ -242,10 +242,10 @@ Services communicate through:
 
    ```bash
    # Push schema to each service's database and generate Prisma Client
-   npx prisma db push --schema=apps/auth/prisma/schema.prisma
-   npx prisma db push --schema=apps/products/prisma/schema.prisma
-   npx prisma db push --schema=apps/cart-items/prisma/schema.prisma
-   npx prisma db push --schema=apps/orders/prisma/schema.prisma
+   pnpm prisma db push --schema=apps/auth/prisma/schema.prisma
+   pnpm prisma db push --schema=apps/products/prisma/schema.prisma
+   pnpm prisma db push --schema=apps/cart-items/prisma/schema.prisma
+   pnpm prisma db push --schema=apps/orders/prisma/schema.prisma
    ```
 
    This command will push your Prisma schema to each MongoDB database and automatically generate the Prisma Client for each service.
