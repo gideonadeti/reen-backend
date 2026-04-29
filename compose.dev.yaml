@@ -59,6 +59,14 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+  rabbitmq:
+    image: rabbitmq:4.3.0-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
 volumes:
   mongodb_data:
+  rabbitmq_data:
