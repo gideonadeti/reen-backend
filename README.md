@@ -216,7 +216,7 @@ Services communicate through:
 - Clerk account (for authentication)
 - Stripe account (for payment processing)
 - Docker and Docker Compose (recommended for local development)
-- npm or yarn package manager
+- pnpm package manager
 
 ### Environment Variables
 
@@ -238,7 +238,7 @@ cp .env.local.example .env.local
 2. **Install dependencies**
 
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. **Create local environment file**
@@ -285,16 +285,16 @@ cp .env.local.example .env.local
 
    ```bash
    # Start all services concurrently
-   npm run start:dev:all
+   pnpm run start:dev:all
    
    # Or start services individually
-   npm run start:dev                    # API Gateway
-   npm run start:dev auth               # Auth Service
-   npm run start:dev products           # Products Service
-   npm run start:dev cart-items         # Cart Items Service
-   npm run start:dev checkout           # Checkout Service
-   npm run start:dev orders             # Orders Service
-   npm run start:dev events-handler     # Events Handler Service
+   pnpm run start:dev                    # API Gateway
+   pnpm run start:dev auth               # Auth Service
+   pnpm run start:dev products           # Products Service
+   pnpm run start:dev cart-items         # Cart Items Service
+   pnpm run start:dev checkout           # Checkout Service
+   pnpm run start:dev orders             # Orders Service
+   pnpm run start:dev events-handler     # Events Handler Service
    ```
 
 8. **Access the API**
