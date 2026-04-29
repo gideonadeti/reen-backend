@@ -241,6 +241,9 @@ Services communicate through:
 4. **Set up the databases**
 
    ```bash
+   # Prisma CLI reads .env by default
+   cp .env.local .env
+
    # Push schema to each service's database and generate Prisma Client
    pnpm prisma db push --schema=apps/auth/prisma/schema.prisma
    pnpm prisma db push --schema=apps/products/prisma/schema.prisma
@@ -260,6 +263,9 @@ Services communicate through:
 6. **Start all services**
 
    ```bash
+   # Build shared libraries/proto assets first
+   pnpm build:libs
+
    # Start all services concurrently
    pnpm start:dev:all
    
@@ -279,30 +285,9 @@ Services communicate through:
 
 ### Using Docker Compose
 
-For easier local development, you can use Docker Compose:
+For local development, Docker Compose is used for infrastructure and optional load-balancing checks:
 
-1. **Adjust Service URLs for Docker Compose**
-
-   When using Docker Compose, services communicate through Docker's internal network. Update your `.env.local` file to use Docker service names instead of `localhost` for service URLs:
-
-   ```env
-   # Service URLs (gRPC endpoints) - Use Docker service names
-   AUTH_SERVICE_URL="auth:5001"
-   PRODUCTS_SERVICE_URL="products:5002"
-   CART-ITEMS_SERVICE_URL="cart-items:5003"
-   CHECKOUT_SERVICE_URL="checkout:5004"
-   ORDERS_SERVICE_URL="orders:5005"
-   
-   # Redis Configuration - Use Docker service name
-   REDIS_SERVICE_URL="redis://redis:6379"
-   
-   # RabbitMQ Configuration - Use Docker service name (if running in Docker)
-   MESSAGE_BROKER_URL="amqp://guest:guest@rabbitmq:5672"
-   ```
-
-   **Note:** If you're running MongoDB and RabbitMQ outside of Docker Compose, keep using `localhost` for those URLs.
-
-2. **Start local infrastructure with Docker Compose**
+1. **Start local infrastructure with Docker Compose**
 
    ```bash
    docker compose --env-file .env.local -f compose.local.yaml up -d mongodb redis rabbitmq
@@ -310,17 +295,18 @@ For easier local development, you can use Docker Compose:
 
    This starts MongoDB, Redis, and RabbitMQ for hybrid local development.
 
-3. **Start backend services on host**
+2. **Start backend services on host**
 
    ```bash
+   pnpm build:libs
    pnpm start:dev:all
    ```
 
-4. **Access the API**
+3. **Access the API**
    - API Base URL: `http://localhost:3000`
    - Swagger Documentation: `http://localhost:3000/api-gateway/documentation`
 
-5. **(Optional) Test local load balancing with Nginx**
+4. **(Optional) Test local load balancing with Nginx**
 
    Keep backend services running on host, then start two API gateway containers behind Nginx:
 
