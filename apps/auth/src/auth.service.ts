@@ -50,21 +50,12 @@ export class AuthService {
     const refreshToken = this.createJwtToken('refresh', payload);
     const hashedRefreshToken = await this.hashPassword(refreshToken);
     const userId = user.id;
-    const existingRefreshToken =
-      await this.prismaService.refreshToken.findUnique({
-        where: { userId },
-      });
 
-    if (existingRefreshToken) {
-      await this.prismaService.refreshToken.update({
-        where: { userId },
-        data: { value: hashedRefreshToken },
-      });
-    } else {
-      await this.prismaService.refreshToken.create({
-        data: { userId, value: hashedRefreshToken },
-      });
-    }
+    await this.prismaService.refreshToken.upsert({
+      where: { userId },
+      create: { userId, value: hashedRefreshToken },
+      update: { value: hashedRefreshToken },
+    });
 
     return {
       refreshToken,
@@ -106,11 +97,40 @@ export class AuthService {
   async signUp(signUpRequest: SignUpRequest) {
     try {
       if (!signUpRequest.password && signUpRequest.clerkId) {
-        const existingUser = await this.prismaService.user.findUnique({
-          where: { clerkId: signUpRequest.clerkId },
-        });
+        try {
+          const user = await this.prismaService.user.upsert({
+            where: { clerkId: signUpRequest.clerkId },
+            create: {
+              name: signUpRequest.name,
+              email: signUpRequest.email,
+              clerkId: signUpRequest.clerkId,
+            },
+            update: {
+              name: signUpRequest.name,
+              email: signUpRequest.email,
+            },
+          });
 
-        if (existingUser) {
+          return await this.handleSuccessfulAuth(
+            this.mapPrismaUserToGrpcUser(user),
+          );
+        } catch (error) {
+          const isUniqueConstraintError =
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === 'P2002';
+
+          if (!isUniqueConstraintError) {
+            throw error;
+          }
+
+          const existingUser = await this.prismaService.user.findUnique({
+            where: { clerkId: signUpRequest.clerkId },
+          });
+
+          if (!existingUser) {
+            throw error;
+          }
+
           return await this.handleSuccessfulAuth(
             this.mapPrismaUserToGrpcUser(existingUser),
           );
