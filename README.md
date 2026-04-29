@@ -33,7 +33,6 @@ A scalable microservices-based RESTful API built with NestJS for powering a mode
     - [Architecture Diagram](#architecture-diagram)
   - [Running Locally](#running-locally)
     - [Prerequisites](#prerequisites)
-    - [Environment Variables](#environment-variables)
     - [Installation Steps](#installation-steps)
     - [Using Docker Compose](#using-docker-compose)
   - [Deployment](#deployment)
@@ -217,14 +216,6 @@ Services communicate through:
 - Stripe account (for payment processing)
 - Docker and Docker Compose (recommended for local development)
 - pnpm package manager
-
-### Environment Variables
-
-Copy the example env file and then update values as needed:
-
-```bash
-cp .env.local.example .env.local
-```
 
 ### Installation Steps
 
