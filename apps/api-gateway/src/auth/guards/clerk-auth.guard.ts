@@ -29,6 +29,7 @@ export class ClerkAuthGuard implements CanActivate, OnModuleInit {
 
   private authService: AuthServiceClient;
   private logger = new Logger(ClerkAuthGuard.name);
+  private inFlightUserLookups = new Map<string, Promise<User>>();
 
   onModuleInit() {
     this.authService = this.authClient.getService(AUTH_SERVICE_NAME);
@@ -52,26 +53,42 @@ export class ClerkAuthGuard implements CanActivate, OnModuleInit {
   }
 
   async attachUserToRequest(clerkId: string, req: Request) {
-    let user = await firstValueFrom(
-      this.authService.findUserByClerkId({ clerkId }),
-    );
-
-    if (Object.keys(user).length === 0) {
-      const clerkUser = await clerkClient.users.getUser(clerkId);
-
-      const signUpResponse = await firstValueFrom(
-        this.authService.signUp({
-          name: clerkUser.fullName as string,
-          email: clerkUser.primaryEmailAddress!.emailAddress,
-          clerkId,
-        }),
-      );
-
-      user = signUpResponse.user as User;
-
-      await this.cacheManager.del('/auth/find-all');
+    const existingLookup = this.inFlightUserLookups.get(clerkId);
+    if (existingLookup) {
+      req['user'] = await existingLookup;
+      return;
     }
 
-    req['user'] = user;
+    const lookupPromise = (async () => {
+      let user = await firstValueFrom(
+        this.authService.findUserByClerkId({ clerkId }),
+      );
+
+      if (Object.keys(user).length === 0) {
+        const clerkUser = await clerkClient.users.getUser(clerkId);
+
+        const signUpResponse = await firstValueFrom(
+          this.authService.signUp({
+            name: clerkUser.fullName as string,
+            email: clerkUser.primaryEmailAddress!.emailAddress,
+            clerkId,
+          }),
+        );
+
+        user = signUpResponse.user as User;
+
+        await this.cacheManager.del('/auth/find-all');
+      }
+
+      return user;
+    })();
+
+    this.inFlightUserLookups.set(clerkId, lookupPromise);
+
+    try {
+      req['user'] = await lookupPromise;
+    } finally {
+      this.inFlightUserLookups.delete(clerkId);
+    }
   }
 }
