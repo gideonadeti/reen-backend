@@ -1,53 +1,62 @@
+x-gateway-env: &gateway-env
+  AUTH_SERVICE_URL: host.docker.internal:5001
+  PRODUCTS_SERVICE_URL: host.docker.internal:5002
+  CART-ITEMS_SERVICE_URL: host.docker.internal:5003
+  CHECKOUT_SERVICE_URL: host.docker.internal:5004
+  ORDERS_SERVICE_URL: host.docker.internal:5005
+  REDIS_SERVICE_URL: redis://redis:6379
+
+x-gateway-shared: &gateway-shared
+  build:
+    context: .
+    dockerfile: apps/api-gateway/Dockerfile.dev
+  volumes:
+    - ./.env.local:/app/apps/api-gateway/.env
+  environment:
+    <<: *gateway-env
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    redis:
+      condition: service_healthy
+  healthcheck:
+    test:
+      [
+        "CMD-SHELL",
+        "node -e \"require('http').get('http://localhost:3000', (res) =>
+          process.exit(res.statusCode < 500 ? 0 : 1)).on('error', () =>
+          process.exit(1))\"",
+      ]
+    interval: 10s
+    timeout: 5s
+    retries: 5
+    start_period: 30s
+
 services:
   api-gateway-1:
-    build:
-      context: .
-      dockerfile: apps/api-gateway/Dockerfile.dev
-    volumes:
-      - ./.env.local:/app/apps/api-gateway/.env
+    <<: *gateway-shared
+
   api-gateway-2:
-    build:
-      context: .
-      dockerfile: apps/api-gateway/Dockerfile.dev
+    <<: *gateway-shared
+
+  nginx:
+    image: nginx:1.30.0-alpine
+    ports:
+      - "8080:80"
+    depends_on:
+      api-gateway-1:
+        condition: service_healthy
+      api-gateway-2:
+        condition: service_healthy
     volumes:
-      - ./.env.local:/app/apps/api-gateway/.env
-  auth:
-    build:
-      context: .
-      dockerfile: apps/auth/Dockerfile.dev
-    volumes:
-      - ./.env.local:/app/apps/auth/.env
-  products:
-    build:
-      context: .
-      dockerfile: apps/products/Dockerfile.dev
-    volumes:
-      - ./.env.local:/app/apps/products/.env
-  cart-items:
-    build:
-      context: .
-      dockerfile: apps/cart-items/Dockerfile.dev
-    volumes:
-      - ./.env.local:/app/apps/cart-items/.env
-  checkout:
-    build:
-      context: .
-      dockerfile: apps/checkout/Dockerfile.dev
-    volumes:
-      - ./.env.local:/app/apps/checkout/.env
-  events-handler:
-    build:
-      context: .
-      dockerfile: apps/events-handler/Dockerfile.dev
-    volumes:
-      - ./apps/events-handler:/app/apps/events-handler
-      - ./.env.local:/app/apps/events-handler/.env
-  orders:
-    build:
-      context: .
-      dockerfile: apps/orders/Dockerfile.dev
-    volumes:
-      - ./.env.local:/app/apps/orders/.env
+      - ./apps/nginx/nginx.local.conf:/etc/nginx/nginx.conf:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q -O /dev/null http://localhost/ || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   mongodb:
     image: mongo:8.2.7
     restart: always
@@ -59,6 +68,32 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mongosh",
+          "--quiet",
+          "--eval",
+          "quit(db.runCommand({ ping: 1 }).ok ? 0 : 1)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+  redis:
+    image: redis:8.0.2
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: [ "redis-server", "--appendonly", "yes" ]
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   rabbitmq:
     image: rabbitmq:4.3.0-management
     ports:
@@ -66,7 +101,14 @@ services:
       - "15672:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
 volumes:
   mongodb_data:
+  redis_data:
   rabbitmq_data:
