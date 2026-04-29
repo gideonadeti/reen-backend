@@ -11,7 +11,7 @@ x-gateway-shared: &gateway-shared
     context: .
     dockerfile: apps/api-gateway/Dockerfile.dev
   volumes:
-    - ./.env.local:/app/apps/api-gateway/.env
+    - ./.env.local:/app/.env.local
   environment:
     <<: *gateway-env
   extra_hosts:

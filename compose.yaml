@@ -6,15 +6,15 @@ services:
   # api-gateway:
   #   container_name: api-gateway
   #   volumes:
-  #     - ./.env:/app/apps/api-gateway/.env
+  #     - ./.env:/app/.env
   api-gateway-1:
     container_name: api-gateway-1
     volumes:
-      - ./.env:/app/apps/api-gateway/.env
+      - ./.env:/app/.env
   api-gateway-2:
     container_name: api-gateway-2
     volumes:
-      - ./.env:/app/apps/api-gateway/.env
+      - ./.env:/app/.env
   nginx:
     container_name: nginx
     image: ghcr.io/gideonadeti/reen-backend-nginx:latest
@@ -30,27 +30,27 @@ services:
   auth:
     container_name: auth
     volumes:
-      - ./.env:/app/apps/auth/.env
+      - ./.env:/app/.env
   products:
     container_name: products
     volumes:
-      - ./.env:/app/apps/products/.env
+      - ./.env:/app/.env
   cart-items:
     container_name: cart-items
     volumes:
-      - ./.env:/app/apps/cart-items/.env
+      - ./.env:/app/.env
   checkout:
     container_name: checkout
     volumes:
-      - ./.env:/app/apps/checkout/.env
+      - ./.env:/app/.env
   events-handler:
     container_name: events-handler
     volumes:
-      - ./.env:/app/apps/events-handler/.env
+      - ./.env:/app/.env
   orders:
     container_name: orders
     volumes:
-      - ./.env:/app/apps/orders/.env
+      - ./.env:/app/.env
   redis:
     container_name: redis
     image: redis:8.0.2
