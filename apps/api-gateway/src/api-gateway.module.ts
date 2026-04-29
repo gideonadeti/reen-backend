@@ -23,7 +23,7 @@ import { OrdersModule } from './orders/orders.module';
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['apps/api-gateway/.env.local', 'apps/api-gateway/.env'],
+      envFilePath: ['.env.local', '.env'],
     }),
     ProductsModule,
     CartItemsModule,

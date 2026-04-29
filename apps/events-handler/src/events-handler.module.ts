@@ -20,7 +20,7 @@ import { NodemailerService } from './nodemailer/nodemailer.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['apps/events-handler/.env.local', 'apps/events-handler/.env'],
+      envFilePath: ['.env.local', '.env'],
     }),
     ClientsModule.registerAsync([
       {

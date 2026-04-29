@@ -14,7 +14,7 @@ import { PRODUCTS_PACKAGE_NAME } from '@app/protos/generated/products';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['apps/cart-items/.env.local', 'apps/cart-items/.env'],
+      envFilePath: ['.env.local', '.env'],
     }),
     ClientsModule.registerAsync([
       {
