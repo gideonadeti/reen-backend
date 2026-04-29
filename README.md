@@ -260,6 +260,16 @@ Services communicate through:
    docker compose --env-file .env.local -f compose.local.yaml up -d mongodb redis rabbitmq
    ```
 
+   Initialize MongoDB replica set once (required by Prisma transactions):
+
+   ```bash
+   # If you previously started mongodb with auth enabled, reset local mongo volume once:
+   # docker compose --env-file .env.local -f compose.local.yaml down -v
+
+   docker compose --env-file .env.local -f compose.local.yaml exec mongodb \
+     mongosh --eval 'rs.initiate({_id:"rs0",members:[{_id:0,host:"localhost:27017"}]})'
+   ```
+
 6. **Start all services**
 
    ```bash
