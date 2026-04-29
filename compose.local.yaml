@@ -60,10 +60,7 @@ services:
   mongodb:
     image: mongo:8.2.7
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
     ports:
       - "27017:27017"
     volumes:
@@ -75,7 +72,7 @@ services:
           "mongosh",
           "--quiet",
           "--eval",
-          "quit(db.runCommand({ ping: 1 }).ok ? 0 : 1)",
+          "quit(db.hello().isWritablePrimary ? 0 : 1)",
         ]
       interval: 10s
       timeout: 5s
